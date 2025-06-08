@@ -1,0 +1,25 @@
+# Pattern Pilot Dash - Professional Terminal
+# ==========================================
+
+# Core Trading APIs (unchanged from your v2)
+ccxt==4.2.47                 # 130+ Exchanges unified API
+talib==0.4.28                # 150+ Technical indicators & patterns
+
+# Dash Framework (replaces streamlit)
+dash==2.14.2                 # Professional web apps
+dash-bootstrap-components==1.5.0  # Bootstrap components for Dash
+
+# Visualization (plotly stays, but now native in Dash)
+plotly==5.17.0               # Interactive charts (better integration)
+
+# Data Processing (unchanged)
+pandas==2.1.4                # Data manipulation
+numpy==1.24.3                # Numerical computing
+
+# Optional Enhancements (unchanged)
+redis==5.0.1                 # Fast caching
+python-dotenv==1.0.0         # Environment variables
+requests==2.31.0             # HTTP fallback
+
+# Removed: streamlit dependencies
+# Added: dash dependencies
