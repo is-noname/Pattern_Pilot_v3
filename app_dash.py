@@ -32,7 +32,7 @@ app.index_string = '''
                 margin: 0;
                 padding: 0;
             }
-            
+
             /* Header Bar */
             .header-bar {
                 background: #2a2a2a;
@@ -44,12 +44,12 @@ app.index_string = '''
                 font-size: 12px;
                 height: 40px;
             }
-            
+
             /* Exchange Status */
             .exchange-status {
                 margin-right: 16px;
             }
-            
+
             .exchange-dot {
                 display: inline-block;
                 width: 8px;
@@ -57,22 +57,22 @@ app.index_string = '''
                 border-radius: 50%;
                 margin-right: 4px;
             }
-            
+
             .online { background: #4CAF50; }
             .offline { background: #f44336; }
-            
+
             /* Main Layout */
             .main-container {
                 display: flex;
                 height: calc(100vh - 40px);
             }
-            
+
             .trading-panel {
                 flex: 1;
                 padding: 16px;
                 background: #1a1a1a;
             }
-            
+
             .news-sidebar {
                 width: 300px;
                 background: #1e1e1e;
@@ -80,7 +80,7 @@ app.index_string = '''
                 padding: 16px;
                 overflow-y: auto;
             }
-            
+
             /* Controls */
             .controls-row {
                 display: flex;
@@ -88,19 +88,19 @@ app.index_string = '''
                 margin-bottom: 16px;
                 align-items: end;
             }
-            
+
             .control-group {
                 display: flex;
                 flex-direction: column;
                 gap: 4px;
             }
-            
+
             .control-label {
                 font-size: 11px;
                 color: #999;
                 text-transform: uppercase;
             }
-            
+
             /* Dropdown Styling */
             .Select-control {
                 background: #2a2a2a !important;
@@ -109,21 +109,21 @@ app.index_string = '''
                 color: #e0e0e0 !important;
                 height: 36px !important;
             }
-            
+
             .Select-menu-outer {
                 background: #2a2a2a !important;
                 border: 1px solid #404040 !important;
             }
-            
+
             .Select-option {
                 background: #2a2a2a !important;
                 color: #e0e0e0 !important;
             }
-            
+
             .Select-option:hover {
                 background: #404040 !important;
             }
-            
+
             /* Button */
             .analyze-btn {
                 background: #404040;
@@ -135,12 +135,12 @@ app.index_string = '''
                 height: 36px;
                 transition: all 0.2s ease;
             }
-            
+
             .analyze-btn:hover {
                 background: #505050;
                 border-color: #707070;
             }
-            
+
             /* Chart Container */
             .chart-container {
                 background: #1a1a1a;
@@ -148,7 +148,7 @@ app.index_string = '''
                 border-radius: 4px;
                 height: 600px;
             }
-            
+
             /* News Panel */
             .news-panel h3 {
                 color: #e0e0e0;
@@ -157,7 +157,7 @@ app.index_string = '''
                 border-bottom: 1px solid #404040;
                 padding-bottom: 8px;
             }
-            
+
             .news-item {
                 background: #2a2a2a;
                 border: 1px solid #404040;
@@ -166,7 +166,7 @@ app.index_string = '''
                 margin-bottom: 8px;
                 font-size: 11px;
             }
-            
+
             .news-badge {
                 background: #f44336;
                 color: white;
@@ -175,16 +175,16 @@ app.index_string = '''
                 font-size: 9px;
                 margin-right: 6px;
             }
-            
+
             .news-badge.medium { background: #ff9800; }
             .news-badge.low { background: #4CAF50; }
-            
+
             .news-time {
                 color: #666;
                 font-size: 9px;
                 margin-top: 4px;
             }
-            
+
             /* Status Bar */
             .status-bar {
                 background: #2a2a2a;
@@ -196,23 +196,23 @@ app.index_string = '''
                 height: 50px;
                 align-items: center;
             }
-            
+
             .status-metric {
                 text-align: center;
             }
-            
+
             .status-value {
                 font-size: 14px;
                 font-weight: bold;
                 color: #4CAF50;
             }
-            
+
             .status-label {
                 color: #999;
                 text-transform: uppercase;
                 font-size: 9px;
             }
-            
+
             /* Pattern Summary */
             .pattern-summary {
                 background: #2a2a2a;
@@ -221,13 +221,13 @@ app.index_string = '''
                 padding: 12px;
                 margin-top: 16px;
             }
-            
+
             .pattern-summary h4 {
                 color: #e0e0e0;
                 font-size: 12px;
                 margin-bottom: 8px;
             }
-            
+
             /* Loading State */
             .loading {
                 text-align: center;
@@ -247,13 +247,14 @@ app.index_string = '''
 </html>
 '''
 
+
 def get_layout():
     """Professional Terminal Layout"""
-    
+
     # Get available symbols from your existing engine
     available_symbols = market_engine.get_available_symbols()[:50]
     exchange_info = market_engine.get_exchange_info()
-    
+
     # Header Bar
     exchange_indicators = []
     for name, info in exchange_info.items():
@@ -264,15 +265,15 @@ def get_layout():
                 name.title()
             ], className="exchange-status")
         )
-    
+
     current_time = datetime.now().strftime("%H:%M:%S UTC")
-    
+
     header = html.Div([
         html.Div("Professional Trading Terminal", style={"fontWeight": "bold"}),
         html.Div(exchange_indicators),
         html.Div(current_time, id="time-display")
     ], className="header-bar")
-    
+
     # Main Trading Panel
     trading_panel = html.Div([
         # Controls Row
@@ -287,7 +288,7 @@ def get_layout():
                     style={"width": "200px"}
                 )
             ], className="control-group"),
-            
+
             html.Div([
                 html.Div("Timeframe", className="control-label"),
                 dcc.Dropdown(
@@ -306,7 +307,7 @@ def get_layout():
                     style={"width": "100px"}
                 )
             ], className="control-group"),
-            
+
             html.Div([
                 html.Div("Candles", className="control-label"),
                 dcc.Input(
@@ -315,29 +316,29 @@ def get_layout():
                     value=200,
                     min=50,
                     max=1000,
-                    style={"width": "80px", "height": "36px", "background": "#2a2a2a", 
+                    style={"width": "80px", "height": "36px", "background": "#2a2a2a",
                            "border": "1px solid #404040", "color": "#e0e0e0", "borderRadius": "4px"}
                 )
             ], className="control-group"),
-            
+
             html.Div([
                 html.Div("Exchange", className="control-label"),
                 dcc.Dropdown(
                     id="exchange-dropdown",
-                    options=[{"label": "Auto", "value": "auto"}] + 
+                    options=[{"label": "Auto", "value": "auto"}] +
                             [{"label": name.title(), "value": name} for name in market_engine.exchanges.keys()],
                     value="auto",
                     clearable=False,
                     style={"width": "120px"}
                 )
             ], className="control-group"),
-            
+
             html.Div([
                 html.Div("", className="control-label"),  # Spacer
                 html.Button("ANALYZE", id="analyze-btn", className="analyze-btn")
             ], className="control-group")
         ], className="controls-row"),
-        
+
         # Chart Area
         html.Div([
             dcc.Graph(
@@ -346,52 +347,53 @@ def get_layout():
                 style={"height": "600px"}
             )
         ], className="chart-container"),
-        
+
         # Pattern Summary
         html.Div(id="pattern-summary")
-        
+
     ], className="trading-panel")
-    
+
     # News Sidebar
     news_sidebar = html.Div([
         html.H3("Market News & Analysis"),
         html.Div(id="news-feed", children=create_news_items())
     ], className="news-sidebar")
-    
+
     # Status Bar
     status_bar = html.Div([
         html.Div([
             html.Div("$1.34T", className="status-value"),
             html.Div("Market Cap", className="status-label")
         ], className="status-metric"),
-        
+
         html.Div([
             html.Div("2,847", className="status-value"),
             html.Div("24h Volume", className="status-label")
         ], className="status-metric"),
-        
+
         html.Div([
             html.Div("73", className="status-value"),
             html.Div("Fear & Greed", className="status-label")
         ], className="status-metric"),
-        
+
         html.Div([
             html.Div("BTC 52.3%", className="status-value"),
             html.Div("Dominance", className="status-label")
         ], className="status-metric"),
-        
+
         html.Div([
             html.Div("1,247", className="status-value"),
             html.Div("Active Pairs", className="status-label")
         ], className="status-metric")
     ], className="status-bar")
-    
+
     # Complete Layout
     return html.Div([
         header,
         html.Div([trading_panel, news_sidebar], className="main-container"),
         status_bar
     ])
+
 
 def create_placeholder_chart():
     """Placeholder chart for initial load"""
@@ -413,6 +415,7 @@ def create_placeholder_chart():
     )
     return fig
 
+
 def create_news_items():
     """Generate news items (mock data)"""
     news_data = [
@@ -425,7 +428,7 @@ def create_news_items():
         {"type": "low", "text": "Major whale movements detected: 12,000 BTC moved", "time": "08:15"},
         {"type": "medium", "text": "DeFi TVL reaches new ATH at $84.5B across protocols", "time": "07:33"}
     ]
-    
+
     news_items = []
     for item in news_data:
         badge_class = f"news-badge {item['type']}"
@@ -436,14 +439,16 @@ def create_news_items():
                 html.Div(item["time"], className="news-time")
             ], className="news-item")
         )
-    
+
     return news_items
+
 
 # Set layout
 app.layout = get_layout()
 
+
 # Callback for analysis
-@callback(
+@app.callback(
     [Output("main-chart", "figure"),
      Output("pattern-summary", "children")],
     Input("analyze-btn", "n_clicks"),
@@ -454,41 +459,42 @@ app.layout = get_layout()
 )
 def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange):
     """Analyze symbol using your existing market engine"""
-    
+
     if not n_clicks:
         return create_placeholder_chart(), html.Div()
-    
+
     try:
         # Use your existing market engine (unchanged!)
         ex = None if exchange == 'auto' else exchange
         df = market_engine.get_ohlcv(symbol, timeframe, limit, ex)
-        
+
         if df.empty:
             return create_error_chart(f"No data found for {symbol}"), html.Div(
-                f"❌ No data found for {symbol}", 
+                f"❌ No data found for {symbol}",
                 style={"color": "#f44336", "padding": "16px"}
             )
-        
+
         # Detect patterns using your existing engine
         patterns = market_engine.detect_patterns(df)
-        
+
         # Create professional chart
         fig = create_professional_chart(df, patterns, symbol, timeframe)
-        
+
         # Create pattern summary
         summary = create_pattern_summary(patterns, len(df))
-        
+
         return fig, summary
-        
+
     except Exception as e:
         return create_error_chart(f"Error: {str(e)}"), html.Div(
-            f"❌ Error: {str(e)}", 
+            f"❌ Error: {str(e)}",
             style={"color": "#f44336", "padding": "16px"}
         )
 
+
 def create_professional_chart(df, patterns, symbol, timeframe):
     """Create professional trading chart"""
-    
+
     fig = make_subplots(
         rows=2, cols=1,
         shared_xaxes=True,
@@ -496,7 +502,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         row_heights=[0.7, 0.3],
         subplot_titles=(f'{symbol} {timeframe}', 'Volume')
     )
-    
+
     # Candlestick chart
     fig.add_trace(
         go.Candlestick(
@@ -513,11 +519,11 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         ),
         row=1, col=1
     )
-    
+
     # Volume bars
-    colors = ['#4CAF50' if close >= open else '#f44336' 
+    colors = ['#4CAF50' if close >= open else '#f44336'
               for close, open in zip(df['close'], df['open'])]
-    
+
     fig.add_trace(
         go.Bar(
             x=df['datetime'],
@@ -528,29 +534,29 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         ),
         row=2, col=1
     )
-    
+
     # Add pattern markers
     pattern_colors = {
         'doji': '#ff9800',
-        'hammer': '#4CAF50', 
+        'hammer': '#4CAF50',
         'engulfing': '#f44336',
         'ma_crossover': '#2196F3',
         'support_resistance': '#9c27b0'
     }
-    
+
     for pattern_name, signals in patterns.items():
         if not signals:
             continue
-            
+
         color = pattern_colors.get(pattern_name, '#ffffff')
-        
+
         for signal in signals:
             direction = signal.get('direction', 'neutral')
             if direction == 'bullish':
                 color = '#4CAF50'
             elif direction == 'bearish':
                 color = '#f44336'
-            
+
             fig.add_trace(
                 go.Scatter(
                     x=[signal['datetime']],
@@ -565,13 +571,13 @@ def create_professional_chart(df, patterns, symbol, timeframe):
                     name=pattern_name.replace('_', ' ').title(),
                     showlegend=False,
                     hovertemplate=f"<b>{pattern_name.replace('_', ' ').title()}</b><br>" +
-                                f"Price: ${signal['price']:.4f}<br>" +
-                                f"Direction: {direction}<br>" +
-                                f"Strength: {signal.get('strength', 0):.2f}<extra></extra>"
+                                  f"Price: ${signal['price']:.4f}<br>" +
+                                  f"Direction: {direction}<br>" +
+                                  f"Strength: {signal.get('strength', 0):.2f}<extra></extra>"
                 ),
                 row=1, col=1
             )
-    
+
     # Professional styling
     fig.update_layout(
         height=600,
@@ -582,38 +588,39 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         showlegend=False,
         margin=dict(l=40, r=40, t=40, b=40)
     )
-    
+
     # Grid styling
     fig.update_xaxes(gridcolor='#404040', gridwidth=1)
     fig.update_yaxes(gridcolor='#404040', gridwidth=1)
-    
+
     return fig
+
 
 def create_pattern_summary(patterns, candle_count):
     """Create pattern analysis summary"""
-    
+
     if not patterns:
         return html.Div([
             html.H4("Pattern Analysis"),
-            html.P(f"No significant patterns detected in {candle_count} candles.", 
+            html.P(f"No significant patterns detected in {candle_count} candles.",
                    style={"color": "#666"})
         ], className="pattern-summary")
-    
+
     # Calculate statistics
     all_signals = []
     for signals in patterns.values():
         all_signals.extend(signals)
-    
+
     if not all_signals:
         return html.Div([
             html.H4("Pattern Analysis"),
             html.P("No patterns detected.", style={"color": "#666"})
         ], className="pattern-summary")
-    
+
     bullish_count = len([s for s in all_signals if s.get('direction') == 'bullish'])
     bearish_count = len([s for s in all_signals if s.get('direction') == 'bearish'])
     avg_strength = sum(s.get('strength', 0) for s in all_signals) / len(all_signals)
-    
+
     # Create summary content
     summary_content = [
         html.H4("Pattern Analysis"),
@@ -622,14 +629,16 @@ def create_pattern_summary(patterns, candle_count):
             html.Span(f"🔴 {bearish_count} Bearish", style={"color": "#f44336", "marginRight": "16px"}),
             html.Span(f"💪 {avg_strength:.2f} Avg Strength", style={"color": "#ff9800"})
         ], style={"marginBottom": "12px"}),
-        
+
         html.Div([
-            html.P(f"Detected {len(all_signals)} signals across {len(patterns)} pattern types in {candle_count} candles.",
-                   style={"fontSize": "11px", "color": "#999", "margin": "0"})
+            html.P(
+                f"Detected {len(all_signals)} signals across {len(patterns)} pattern types in {candle_count} candles.",
+                style={"fontSize": "11px", "color": "#999", "margin": "0"})
         ])
     ]
-    
+
     return html.Div(summary_content, className="pattern-summary")
+
 
 def create_error_chart(error_message):
     """Create error chart"""
@@ -651,5 +660,6 @@ def create_error_chart(error_message):
     )
     return fig
 
+
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True, port=8050)
