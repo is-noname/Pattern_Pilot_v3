@@ -3,7 +3,7 @@ import streamlit as st
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
-from core.market_engine_lite import market_engine
+from core.market_engine import market_engine
 
 # Page config
 st.set_page_config(
