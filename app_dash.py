@@ -17,239 +17,6 @@ from core.market_engine import market_engine
 app = dash.Dash(__name__)
 app.title = "Pattern Pilot Pro"
 
-# Professional Trading Terminal CSS
-app.index_string = '''
-<!DOCTYPE html>
-<html>
-    <head>
-        {%metas%}
-        <title>{%title%}</title>
-        {%favicon%}
-        {%css%}
-        <style>
-            /* Professional Trading Terminal Theme */
-            body {
-                background: #1a1a1a;
-                color: #e0e0e0;
-                font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
-                margin: 0;
-                padding: 0;
-            }
-
-            /* Header Bar */
-            .header-bar {
-                background: #2a2a2a;
-                border-bottom: 1px solid #404040;
-                padding: 8px 16px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                font-size: 12px;
-                height: 40px;
-            }
-
-            /* Exchange Status */
-            .exchange-status {
-                margin-right: 16px;
-            }
-
-            .exchange-dot {
-                display: inline-block;
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                margin-right: 4px;
-            }
-
-            .online { background: #4CAF50; }
-            .offline { background: #f44336; }
-
-            /* Main Layout */
-            .main-container {
-                display: flex;
-                height: calc(100vh - 40px);
-            }
-
-            .trading-panel {
-                flex: 1;
-                padding: 16px;
-                background: #1a1a1a;
-            }
-
-            .news-sidebar {
-                width: 300px;
-                background: #1e1e1e;
-                border-left: 1px solid #404040;
-                padding: 16px;
-                overflow-y: auto;
-            }
-
-            /* Controls */
-            .controls-row {
-                display: flex;
-                gap: 12px;
-                margin-bottom: 16px;
-                align-items: end;
-            }
-
-            .control-group {
-                display: flex;
-                flex-direction: column;
-                gap: 4px;
-            }
-
-            .control-label {
-                font-size: 11px;
-                color: #999;
-                text-transform: uppercase;
-            }
-
-            /* Dropdown Styling */
-            .Select-control {
-                background: #2a2a2a !important;
-                border: 1px solid #404040 !important;
-                border-radius: 4px !important;
-                color: #e0e0e0 !important;
-                height: 36px !important;
-            }
-
-            .Select-menu-outer {
-                background: #2a2a2a !important;
-                border: 1px solid #404040 !important;
-            }
-
-            .Select-option {
-                background: #2a2a2a !important;
-                color: #e0e0e0 !important;
-            }
-
-            .Select-option:hover {
-                background: #404040 !important;
-            }
-
-            /* Button */
-            .analyze-btn {
-                background: #404040;
-                border: 1px solid #606060;
-                color: #e0e0e0;
-                padding: 8px 24px;
-                border-radius: 4px;
-                cursor: pointer;
-                height: 36px;
-                transition: all 0.2s ease;
-            }
-
-            .analyze-btn:hover {
-                background: #505050;
-                border-color: #707070;
-            }
-
-            /* Chart Container */
-            .chart-container {
-                background: #1a1a1a;
-                border: 1px solid #404040;
-                border-radius: 4px;
-                height: 600px;
-            }
-
-            /* News Panel */
-            .news-panel h3 {
-                color: #e0e0e0;
-                font-size: 14px;
-                margin-bottom: 16px;
-                border-bottom: 1px solid #404040;
-                padding-bottom: 8px;
-            }
-
-            .news-item {
-                background: #2a2a2a;
-                border: 1px solid #404040;
-                border-radius: 4px;
-                padding: 8px;
-                margin-bottom: 8px;
-                font-size: 11px;
-            }
-
-            .news-badge {
-                background: #f44336;
-                color: white;
-                padding: 2px 6px;
-                border-radius: 3px;
-                font-size: 9px;
-                margin-right: 6px;
-            }
-
-            .news-badge.medium { background: #ff9800; }
-            .news-badge.low { background: #4CAF50; }
-
-            .news-time {
-                color: #666;
-                font-size: 9px;
-                margin-top: 4px;
-            }
-
-            /* Status Bar */
-            .status-bar {
-                background: #2a2a2a;
-                border-top: 1px solid #404040;
-                padding: 8px 16px;
-                display: flex;
-                justify-content: space-around;
-                font-size: 11px;
-                height: 50px;
-                align-items: center;
-            }
-
-            .status-metric {
-                text-align: center;
-            }
-
-            .status-value {
-                font-size: 14px;
-                font-weight: bold;
-                color: #4CAF50;
-            }
-
-            .status-label {
-                color: #999;
-                text-transform: uppercase;
-                font-size: 9px;
-            }
-
-            /* Pattern Summary */
-            .pattern-summary {
-                background: #2a2a2a;
-                border: 1px solid #404040;
-                border-radius: 4px;
-                padding: 12px;
-                margin-top: 16px;
-            }
-
-            .pattern-summary h4 {
-                color: #e0e0e0;
-                font-size: 12px;
-                margin-bottom: 8px;
-            }
-
-            /* Loading State */
-            .loading {
-                text-align: center;
-                color: #666;
-                padding: 40px;
-            }
-        </style>
-    </head>
-    <body>
-        {%app_entry%}
-        <footer>
-            {%config%}
-            {%scripts%}
-            {%renderer%}
-        </footer>
-    </body>
-</html>
-'''
-
 
 def get_layout():
     """Professional Terminal Layout"""
@@ -345,7 +112,7 @@ def get_layout():
 
         html.Div([
             html.Button(
-                "🛑 SHUTDOWN",
+                "🛑 QUIT",
                 id="shutdown-btn",
                 style={
                     'position': 'fixed',
@@ -388,27 +155,27 @@ def get_layout():
     # Status Bar
     status_bar = html.Div([
         html.Div([
-            html.Div("$1.34T", className="status-value"),
+            html.Div("$1.34T", className="status-value"), # noch statisch
             html.Div("Market Cap", className="status-label")
         ], className="status-metric"),
 
         html.Div([
-            html.Div("2,847", className="status-value"),
+            html.Div("2,847", className="status-value"), # noch statisch
             html.Div("24h Volume", className="status-label")
         ], className="status-metric"),
 
         html.Div([
-            html.Div("73", className="status-value"),
+            html.Div("73", className="status-value"), # noch statisch
             html.Div("Fear & Greed", className="status-label")
         ], className="status-metric"),
 
         html.Div([
-            html.Div("BTC 52.3%", className="status-value"),
+            html.Div("BTC 52.3%", className="status-value"), # noch statisch
             html.Div("Dominance", className="status-label")
         ], className="status-metric"),
 
         html.Div([
-            html.Div("1,247", className="status-value"),
+            html.Div("1,247", className="status-value"), # noch statisch
             html.Div("Active Pairs", className="status-label")
         ], className="status-metric")
     ], className="status-bar")
