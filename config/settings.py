@@ -1,8 +1,11 @@
-# config/settings.py - Zentrale Konfiguration
+# config/settings.py - ZENTRALE KONFIGURATION - Settings für Pattern Pilot
 import os
 from typing import Dict, List
 
-# 📡 Exchange Konfiguration
+
+#==============================================================================
+# region               📡 EXCHANGE KONFIGURATION
+#==============================================================================
 EXCHANGE_CONFIG = {
     'binance': {
         'rateLimit': 1200,
@@ -18,8 +21,11 @@ EXCHANGE_CONFIG = {
         'enableRateLimit': True,
     }
 }
+# endregion
 
-# 🎯 Pattern Konfiguration  
+#==============================================================================
+# region                🎯 PATTERN KONFIGURATION
+#==============================================================================
 PATTERN_CONFIG = {
     # Welche Candlestick-Pattern aktivieren
     'candlestick_patterns': [
@@ -56,16 +62,22 @@ PATTERN_CONFIG = {
         'dark_cloud': {'symbol': 'triangle-down-open', 'color': '#aa4444', 'size': 14, 'emoji': '🔻'},
     }
 }
+# endregion
 
-# 💾 Cache Konfiguration
+#==============================================================================
+# region              💾 CACHE KONFIGURATION
+#==============================================================================
 CACHE_CONFIG = {
     'enabled': True,
     'ttl_seconds': 300,  # 5 Minuten
     'type': 'memory',    # 'memory' oder 'redis'
     'redis_url': 'redis://localhost:6379/0'
 }
+# endregion
 
-# 📊 Chart Konfiguration
+#==============================================================================
+# region               📊 CHART KONFIGURATION
+#==============================================================================
 CHART_CONFIG = {
     'default_candles': 200,
     'max_candles': 1000,
@@ -78,8 +90,11 @@ CHART_CONFIG = {
         'background': '#0e1117'
     }
 }
+# endregion
 
-# 🎨 UI Konfiguration
+#==============================================================================
+# region               🎨 UI KONFIGURATION
+#==============================================================================
 UI_CONFIG = {
     'page_title': 'Pattern Pilot v2',
     'page_icon': '🚀',
@@ -91,8 +106,11 @@ UI_CONFIG = {
     ],
     'default_timeframes': ['1m', '5m', '15m', '1h', '4h', '1d', '1w']
 }
+# endregion
 
-# 🔧 Development Settings
+#==============================================================================
+# region               🔧 DEVELOPMENT SETTINGS
+#==============================================================================
 DEV_CONFIG = {
     'debug_mode': os.getenv('DEBUG', 'False').lower() == 'true',
     'log_level': os.getenv('LOG_LEVEL', 'INFO'),
@@ -121,8 +139,11 @@ MOBILE_CONFIG = {
     'simplified_ui': True,  # Weniger Buttons auf Mobile
     'pattern_limit_mobile': 20  # Max Patterns auf Mobile anzeigen
 }
+# endregion
 
-# Utility Functions
+#==============================================================================
+# region               🔧 UTILITY FUNKTIONEN
+#==============================================================================
 def get_exchange_config(exchange_name: str) -> Dict:
     """Holt Konfiguration für spezifischen Exchange"""
     return EXCHANGE_CONFIG.get(exchange_name, {})
@@ -134,3 +155,4 @@ def get_enabled_patterns() -> List[str]:
 def is_debug_mode() -> bool:
     """Prüft ob Debug-Modus aktiv"""
     return DEV_CONFIG['debug_mode']
+# endregion

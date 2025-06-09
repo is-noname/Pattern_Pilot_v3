@@ -19,7 +19,7 @@ app = dash.Dash(__name__)
 app.title = "Pattern Pilot Pro"
 
 #==============================================================================
-#                      📊 CHART GENERATION HELPERS
+# region               📊 CHART GENERATION HELPERS
 #==============================================================================
 def create_loading_chart():
     """Loading chart während Exchanges starten"""
@@ -40,9 +40,10 @@ def create_loading_chart():
         yaxis=dict(visible=False)
     )
     return fig
+# endregion
 
 #==============================================================================
-#                      🎨 DASHBOARD LAYOUT & COMPONENTS
+# region               🎨 DASHBOARD LAYOUT & COMPONENTS
 #==============================================================================
 def get_layout():
     """Terminal Layout"""
@@ -245,9 +246,10 @@ def get_layout():
         status_bar
     ])
 
+# endregion
 
 #==============================================================================
-#                      📈 CHART RENDERING & VISUALIZATION
+# region               📈 CHART RENDERING & VISUALIZATION
 #==============================================================================
 def create_placeholder_chart():
     """Placeholder chart for initial load"""
@@ -299,10 +301,10 @@ def create_news_items():
 
 # Set layout
 app.layout = get_layout()
-
+# endregion
 
 #==============================================================================
-#                      🔄 CALLBACKS & INTERAKTIONEN (Callback for analysis)
+# region               🔄 CALLBACKS & INTERAKTIONEN (Callback for analysis)
 #==============================================================================
 @app.callback(
     [Output("main-chart", "figure"),
@@ -639,6 +641,7 @@ def update_market_stats(n):
         stats['btc_dominance'],
         stats['active_pairs']
     ]
+# endregion
 
 if __name__ == '__main__':
     app.run(debug=False, host='127.0.0.1', port=8050)
