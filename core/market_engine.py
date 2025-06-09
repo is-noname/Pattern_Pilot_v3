@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Any, Union
 import time  # 'time' hinzufügen
 
 #==============================================================================
-#                      🔄 MARKET ENGINE HAUPTKLASSE
+# region                🔄 MARKET ENGINE HAUPTKLASSE
 #==============================================================================
 
 class MarketEngine:
@@ -73,6 +73,8 @@ class MarketEngine:
             # Fehler-Status setzen
             self.exchanges[name] = {'status': 'offline', 'error': str(e)}
             print(f"❌ {name} failed: {e}")
+
+
 
     # ==============================================================================
     #                      📊 DATEN-ABRUF METHODEN
@@ -290,7 +292,7 @@ class MarketEngine:
         return signals
 
     # ==============================================================================
-    #                      🔧 UTILITY & HELPER METHODEN
+    # region               🔧 UTILITY & HELPER METHODEN
     # ==============================================================================
     def get_available_symbols(self, exchange: str = 'binance') -> List[str]:
         """Alle verfügbaren Trading-Pairs"""
@@ -416,7 +418,8 @@ class MarketEngine:
                 info[name] = {'status': 'offline', 'error': str(e)}
 
         return info
-
+    # endregion
+# endregion
 
 # Singleton instance
 market_engine = MarketEngine()
