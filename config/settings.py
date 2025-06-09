@@ -29,6 +29,7 @@ EXCHANGE_CONFIG = {
 CHART_CONFIG = {
     'default_candles': 200,
     'max_candles': 1000,
+    'default_timeframe': "1d",
     'theme': 'plotly_dark',
     'height': 800,
     'colors': {
@@ -77,6 +78,7 @@ PATTERN_CONFIG = {
         'harami': {'symbol': 'hourglass', 'color': '#ffaa44', 'size': 3, 'emoji': '⏳', 'line': {'width': 0.5, 'color': 'black'}},
         'piercing': {'symbol': 'triangle-up-open', 'color': '#44aa44', 'size': 4, 'emoji': '🔺'},
         'dark_cloud': {'symbol': 'triangle-down-open', 'color': '#aa4444', 'size': 4, 'emoji': '🔻'},
+        'support_resistance': {'symbol': 'square', 'color': '#aa00ff', 'size': 3, 'emoji': '🔷'},
     }
 }
 # endregion

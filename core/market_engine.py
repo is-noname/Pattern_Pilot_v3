@@ -206,6 +206,8 @@ class MarketEngine:
             patterns['ma_crossover'] = self._detect_ma_crossover(
                 ma_fast, ma_slow, df
             )
+            # Support/Resistance Levels
+            patterns['support_resistance'] = self._detect_support_resistance(df)
             
         except Exception as e:
             print(f"⚠️ Trend patterns failed: {e}")
@@ -289,6 +291,50 @@ class MarketEngine:
                 })
         
         return signals
+
+    def _detect_support_resistance(self, df: pd.DataFrame) -> List[Dict]:
+        """Basic Support/Resistance levels"""
+        signals = []
+
+        if len(df) < 20:
+            return signals
+
+        # Find local highs and lows
+        window = 5
+        for i in range(window, len(df) - window):
+            current_high = df['high'].iloc[i]
+            current_low = df['low'].iloc[i]
+
+            # Local high (resistance)
+            is_high = all(current_high >= df['high'].iloc[j]
+                          for j in range(i - window, i + window + 1) if j != i)
+
+            # Local low (support)
+            is_low = all(current_low <= df['low'].iloc[j]
+                         for j in range(i - window, i + window + 1) if j != i)
+
+            if is_high:
+                signals.append({
+                    'index': i,
+                    'datetime': df['datetime'].iloc[i],
+                    'price': current_high,
+                    'strength': 0.6,
+                    'direction': 'resistance',
+                    'pattern': 'support_resistance'
+                })
+
+            if is_low:
+                signals.append({
+                    'index': i,
+                    'datetime': df['datetime'].iloc[i],
+                    'price': current_low,
+                    'strength': 0.6,
+                    'direction': 'support',
+                    'pattern': 'support_resistance'
+                })
+
+        return signals
+
     # endregion
 
     # ==============================================================================

@@ -12,7 +12,7 @@ from flask import request
 
 # Import your existing engine (unchanged!)
 from core.market_engine import market_engine
-from config.settings import PATTERN_CONFIG
+from config.settings import PATTERN_CONFIG, CHART_CONFIG
 
 
 
@@ -131,7 +131,7 @@ def get_layout():
                         {"label": "1d", "value": "1d"},
                         {"label": "1w", "value": "1w"}
                     ],
-                    value="1d",
+                    value=CHART_CONFIG['default_timeframe'],  # Default aus settings.py
                     clearable=False,
                     style={"width": "100px"}
                 )
