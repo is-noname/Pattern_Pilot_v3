@@ -213,27 +213,27 @@ def get_layout():
     # •••••••••••••••••••••••••• 📉 Status Bar Components •••••••••••••••••••••••••• #
     status_bar = html.Div([
         html.Div([
-            html.Div('market_cap', className="status-value", id="market-cap-value"), # noch statisch?
+            html.Div("--", id="market-cap-value", className="status-value"), # noch statisch?
             html.Div("Market Cap", className="status-label")
         ], className="status-metric"),
 
         html.Div([
-            html.Div("2,847", className="status-value", id="volume-value"), # noch statisch?
+            html.Div("--", id="volume-value", className="status-value"), # noch statisch?
             html.Div("24h Volume", className="status-label")
         ], className="status-metric"),
 
         html.Div([
-            html.Div('fear_greed', className="status-value", id="fear-greed-value"), # noch statisch?
+            html.Div("--", id="fear-greed-value", className="status-value"), # noch statisch?
             html.Div("Fear & Greed", className="status-label")
         ], className="status-metric"),
 
         html.Div([
-            html.Div("BTC 52.3%", className="status-value", id="dominance-value"), # noch statisch?
+            html.Div("--", id="dominance-value", className="status-value"), # noch statisch?
             html.Div("Dominance", className="status-label")
         ], className="status-metric"),
 
         html.Div([
-            html.Div("1,247", className="status-value", id="pairs-value"), # noch statisch?
+            html.Div("--", id="pairs-value", className="status-value"), # noch statisch?
             html.Div("Active Pairs", className="status-label")
         ], className="status-metric")
     ], className="status-bar")
@@ -458,7 +458,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
             fig.add_trace(
                 go.Scatter(
                     x=[signal['datetime']],
-                    y=[signal['price']],
+                    y=[signal['price']* 1.1],  # 👈 Hier 1.005 erhöhen auf 1.01-1.02
                     mode='markers',
                     marker=dict(
                         symbol=style['symbol'],

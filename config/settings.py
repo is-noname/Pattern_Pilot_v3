@@ -46,20 +46,20 @@ PATTERN_CONFIG = {
 
     # 🎨 Chart Pattern Visualisierung
     'pattern_styles': {
-        'doji': {'symbol': 'circle', 'color': '#ffaa00', 'size': 6, 'emoji': '🎯'},
-        'hammer': {'symbol': 'triangle-up', 'color': '#00ff88', 'size': 8, 'emoji': '🔨'},
-        'engulfing': {'symbol': 'star', 'color': '#ff0080', 'size': 10, 'emoji': '🌟'},
-        'ma_crossover': {'symbol': 'diamond', 'color': '#00aaff', 'size': 8, 'emoji': '💎'},
-        'support_resistance': {'symbol': 'square', 'color': '#aa00ff', 'size': 6, 'emoji': '🔷'},
-        'hanging_man': {'symbol': 'triangle-down', 'color': '#ff4444', 'size': 15, 'emoji': '⚠️'},
-        'shooting_star': {'symbol': 'star-triangle-up', 'color': '#ff6600', 'size': 16, 'emoji': '⭐'},
-        'morning_star': {'symbol': 'star-square', 'color': '#66ff66', 'size': 17, 'emoji': '🌅'},
-        'evening_star': {'symbol': 'star-diamond', 'color': '#ff3366', 'size': 17, 'emoji': '🌆'},
-        'three_white_soldiers': {'symbol': 'arrow-up', 'color': '#44ff44', 'size': 20, 'emoji': '⬆️'},
-        'three_black_crows': {'symbol': 'arrow-down', 'color': '#ff4444', 'size': 20, 'emoji': '⬇️'},
-        'harami': {'symbol': 'hourglass', 'color': '#ffaa44', 'size': 6, 'emoji': '⏳'},
-        'piercing': {'symbol': 'triangle-up-open', 'color': '#44aa44', 'size': 14, 'emoji': '🔺'},
-        'dark_cloud': {'symbol': 'triangle-down-open', 'color': '#aa4444', 'size': 14, 'emoji': '🔻'},
+        'doji': {'symbol': 'circle', 'color': '#ffaa00', 'size': 3, 'emoji': '🎯'},
+        'hammer': {'symbol': 'triangle-up', 'color': '#00ff88', 'size': 4, 'emoji': '🔨'},
+        'engulfing': {'symbol': 'star', 'color': '#ff0080', 'size': 5, 'emoji': '🌟'},
+        'ma_crossover': {'symbol': 'diamond', 'color': '#00aaff', 'size': 4, 'emoji': '💎'},
+        'support_resistance': {'symbol': 'square', 'color': '#aa00ff', 'size': 3, 'emoji': '🔷'},
+        'hanging_man': {'symbol': 'triangle-down', 'color': '#ff4444', 'size': 4, 'emoji': '⚠️'},
+        'shooting_star': {'symbol': 'star-triangle-up', 'color': '#ff6600', 'size': 4, 'emoji': '⭐'},
+        'morning_star': {'symbol': 'star-square', 'color': '#66ff66', 'size': 4, 'emoji': '🌅'},
+        'evening_star': {'symbol': 'star-diamond', 'color': '#ff3366', 'size': 4, 'emoji': '🌆'},
+        'three_white_soldiers': {'symbol': 'arrow-up', 'color': '#44ff44', 'size': 5, 'emoji': '⬆️'},
+        'three_black_crows': {'symbol': 'arrow-down', 'color': '#ff4444', 'size': 5, 'emoji': '⬇️'},
+        'harami': {'symbol': 'hourglass', 'color': '#ffaa44', 'size': 3, 'emoji': '⏳', 'line': {'width': 0.5, 'color': 'black'}},
+        'piercing': {'symbol': 'triangle-up-open', 'color': '#44aa44', 'size': 4, 'emoji': '🔺'},
+        'dark_cloud': {'symbol': 'triangle-down-open', 'color': '#aa4444', 'size': 4, 'emoji': '🔻'},
     }
 }
 # endregion
