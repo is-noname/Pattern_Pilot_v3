@@ -113,8 +113,8 @@ python app_dash.py
 - ✅ Professional UI
 
 **Nächste Steps laut `9_version_comparison.md`:**
-- Phase 4: 
-- Phase 5: Portfolio Tracking
+- Phase 4: Diskusion -> cache für ladezeiten integrieren?
+- Phase 5: berfeits vorhandene Daten in Dashboard füllen
 - Phase 6: Backtesting
 - Real-time WebSocket Updates
 
