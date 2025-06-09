@@ -24,6 +24,23 @@ EXCHANGE_CONFIG = {
 # endregion
 
 #==============================================================================
+# region               📊 CHART KONFIGURATION
+#==============================================================================
+CHART_CONFIG = {
+    'default_candles': 200,
+    'max_candles': 1000,
+    'theme': 'plotly_dark',
+    'height': 800,
+    'colors': {
+        'bullish': '#00ff88',
+        'bearish': '#ff4444',
+        'neutral': '#ffaa00',
+        'background': '#0e1117'
+    }
+}
+# endregion
+
+#==============================================================================
 # region                🎯 PATTERN KONFIGURATION
 #==============================================================================
 PATTERN_CONFIG = {
@@ -46,7 +63,7 @@ PATTERN_CONFIG = {
 
     # 🎨 Chart Pattern Visualisierung
     'pattern_styles': {
-        'doji': {'symbol': 'circle', 'color': '#ffaa00', 'size': 3, 'emoji': '🎯'},
+        'doji': {'symbol': 'circle', 'color': '#117e23', 'size': 3, 'emoji': '🎯'},
         'hammer': {'symbol': 'triangle-up', 'color': '#00ff88', 'size': 4, 'emoji': '🔨'},
         'engulfing': {'symbol': 'star', 'color': '#ff0080', 'size': 5, 'emoji': '🌟'},
         'ma_crossover': {'symbol': 'diamond', 'color': '#00aaff', 'size': 4, 'emoji': '💎'},
@@ -72,23 +89,6 @@ CACHE_CONFIG = {
     'ttl_seconds': 300,  # 5 Minuten
     'type': 'memory',    # 'memory' oder 'redis'
     'redis_url': 'redis://localhost:6379/0'
-}
-# endregion
-
-#==============================================================================
-# region               📊 CHART KONFIGURATION
-#==============================================================================
-CHART_CONFIG = {
-    'default_candles': 200,
-    'max_candles': 1000,
-    'theme': 'plotly_dark',
-    'height': 800,
-    'colors': {
-        'bullish': '#00ff88',
-        'bearish': '#ff4444', 
-        'neutral': '#ffaa00',
-        'background': '#0e1117'
-    }
 }
 # endregion
 

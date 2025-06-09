@@ -439,13 +439,13 @@ def create_professional_chart(df, patterns, symbol, timeframe):
 
             # Color adjustment based on direction
             if direction == 'bullish':
-                color = '#00ff88'
+                color = style['color']
             elif direction == 'bearish':
-                color = '#ff0080'
+                color = style['color']
             elif direction == 'resistance':
-                color = '#ff4444'
+                color = style['color']
             elif direction == 'support':
-                color = '#00ff88'
+                color = style['color']
             else:
                 color = style['color']
 
@@ -458,13 +458,13 @@ def create_professional_chart(df, patterns, symbol, timeframe):
             fig.add_trace(
                 go.Scatter(
                     x=[signal['datetime']],
-                    y=[signal['price']* 1.1],  # 👈 Hier 1.005 erhöhen auf 1.01-1.02
+                    y=[signal['price']* 1.1],  # 👈 Pattern Symbol über Kerze (1.005 Standard)
                     mode='markers',
                     marker=dict(
                         symbol=style['symbol'],
                         size=style['size'] + (strength * 8),  # Size based on strength
                         color=color,
-                        line=dict(width=3, color='white'),
+                        line=dict(width=1, color='white'),
                         opacity=0.8 + (strength * 0.2)
                     ),
                     name=f"{style['emoji']} {pattern_name.replace('_', ' ').title()}",
