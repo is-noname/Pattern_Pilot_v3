@@ -165,8 +165,8 @@ def get_layout():
                 id="shutdown-btn",
                 style={
                     'position': 'fixed',
-                    'top': '42px',              # 👈 HIER ÄNDERN - Abstand von oben
-                    'right': '18px',            # 👈 HIER ÄNDERN - Abstand von rechts
+                    'top': '50px',              # 👈 HIER ÄNDERN - Abstand von oben
+                    'right': '16px',            # 👈 HIER ÄNDERN - Abstand von rechts
                     'background': '#ff4444',    # 👈 HIER ÄNDERN - Hintergrundfarbe
                     'color': 'white',           # 👈 HIER ÄNDERN - Textfarbe
                     'border': 'none',
