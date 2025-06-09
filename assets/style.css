@@ -471,3 +471,15 @@ input[type="number"]:focus {
     from { transform: translateY(-10px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+
+/* Exchange-Status-Indikatoren */
+.exchange-dot.loading {
+    background: #ffaa00;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}

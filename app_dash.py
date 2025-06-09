@@ -29,12 +29,23 @@ def get_layout():
     # Header Bar
     exchange_indicators = []
     for name, info in exchange_info.items():
-        status_class = "online" if info.get('status') == 'online' else "offline"
+        # Status-Klasse und Icon basierend auf Exchange-Status
+        if info.get('status') == 'loading':
+            status_class = "loading"
+            status_icon = "⏳"
+        elif info.get('status') == 'online':
+            status_class = "online"
+            status_icon = "✅"
+        else:
+            status_class = "offline"
+            status_icon = "❌"
+
+        # Individuelles ID für jeden Exchange-Status-Indikator für Callback-Updates
         exchange_indicators.append(
             html.Span([
                 html.Span(className=f"exchange-dot {status_class}"),
-                name.title()
-            ], className="exchange-status")
+                f"{name.title()}"
+            ], className="exchange-status", id=f"exchange-status-{name}")
         )
 
     current_time = datetime.now().strftime("%H:%M:%S UTC")
@@ -48,6 +59,16 @@ def get_layout():
     interval = dcc.Interval(
         id='clock-interval',
         interval=2000,  # 2 Sekunde in Millisekunden
+        n_intervals=0
+    )
+
+    # Speicherort für Exchange-Status - ermöglicht Aktualisierungen ohne Page-Reload
+    exchange_status_store = dcc.Store(id='exchange-status-store', data={})
+
+    # Interval für Background-Thread-Kommunikation
+    exchange_interval = dcc.Interval(
+        id='exchange-update-interval',
+        interval=1000,  # Polling-Frequenz: 1000ms
         n_intervals=0
     )
 
@@ -190,6 +211,8 @@ def get_layout():
     return html.Div([
         header,
         interval,
+        exchange_interval,  # Background-Thread Monitoring
+        exchange_status_store,  # Zentraler Status-Speicher
         html.Div([trading_panel, news_sidebar], className="main-container"),
         status_bar
     ])
@@ -506,6 +529,60 @@ def create_error_chart(error_message):
 def update_time(n):
     return datetime.now().strftime("%H:%M:%S UTC")
 
+
+# Exchange-Status in Echtzeit aktualisieren
+@app.callback(
+    [Output('exchange-status-store', 'data')] +
+    [Output(f'exchange-status-{name}', 'children') for name in ['binance', 'coinbase', 'kraken', 'bybit', 'okx']],
+    Input('exchange-update-interval', 'n_intervals')
+)
+def update_exchange_status(n):
+    """Prüft auf neue Exchange-Updates aus Background-Threads"""
+    # Aktuelle Exchange-Informationen abfragen
+    exchange_info = market_engine.get_exchange_info()
+
+    # Status-Updates für jeden Exchange generieren
+    outputs = []
+    for name in ['binance', 'coinbase', 'kraken', 'bybit', 'okx']:
+        info = exchange_info.get(name, {'status': 'offline'})
+
+        # Visuelles Feedback basierend auf Status
+        if info.get('status') == 'loading':
+            status_icon = "⏳"
+            status_class = "loading"
+        elif info.get('status') == 'online':
+            status_icon = "✅"
+            status_class = "online"
+        else:
+            status_icon = "❌"
+            status_class = "offline"
+
+        # DOM-Element für jeweiligen Exchange aktualisieren
+        outputs.append(html.Span([
+            html.Span(className=f"exchange-dot {status_class}"),
+            f"{name.title()}"
+        ]))
+
+    # Ersten Output für Store, restliche für Exchange-Indikatoren
+    return [exchange_info] + outputs
+
+
+# Exchange-Dropdown dynamisch aktualisieren wenn neue Exchanges bereit
+@app.callback(
+    Output("exchange-dropdown", "options"),
+    Input("exchange-status-store", "data")
+)
+def update_exchange_dropdown(exchange_info):
+    """Aktualisiert Exchange-Dropdown wenn neue Exchanges verfügbar werden"""
+    # Nur Online-Exchanges anzeigen
+    online_exchanges = [name for name, info in exchange_info.items()
+                        if info.get('status') == 'online']
+
+    # Dropdown-Optionen generieren
+    options = [{"label": "Auto", "value": "auto"}]
+    options += [{"label": name.title(), "value": name} for name in online_exchanges]
+
+    return options
 
 if __name__ == '__main__':
     app.run(debug=False, host='127.0.0.1', port=8050)
