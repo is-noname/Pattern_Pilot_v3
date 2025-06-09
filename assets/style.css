@@ -476,10 +476,13 @@ input[type="number"]:focus {
 .exchange-dot.loading {
     background: #ffaa00;
     animation: pulse 1.5s infinite;
+    width: 8px !important;      /* 👈 Explizite Größe erzwingen */
+    height: 8px !important;     /* 👈 Explizite Größe erzwingen */
+    transform: none !important; /* 👈 Verhindert Vergrößerung durch Transformation */
 }
 
 @keyframes pulse {
-    0% { opacity: 0.4; }
-    50% { opacity: 1; }
-    100% { opacity: 0.4; }
+    0% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1); }  /* 👈 Scale(1) behält Originalgröße */
+    100% { opacity: 0.2; transform: scale(1); }
 }

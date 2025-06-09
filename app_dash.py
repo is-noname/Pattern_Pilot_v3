@@ -1,4 +1,4 @@
-# app_dash.py - Pattern Pilot Professional Terminal
+# app_dash.py - Pattern Pilot Terminal
 import dash
 from dash import dcc, html, Input, Output, callback, dash_table
 import plotly.graph_objects as go
@@ -18,13 +18,35 @@ from config.settings import PATTERN_CONFIG
 app = dash.Dash(__name__)
 app.title = "Pattern Pilot Pro"
 
+def create_loading_chart():
+    """Loading chart während Exchanges starten"""
+    fig = go.Figure()
+    fig.add_annotation(
+        text="⏳ Exchanges werden geladen... Bitte warten",
+        xref="paper", yref="paper",
+        x=0.5, y=0.5,
+        showarrow=False,
+        font=dict(size=16, color="#ffaa00")
+    )
+    fig.update_layout(
+        paper_bgcolor='#1a1a1a',
+        plot_bgcolor='#1a1a1a',
+        font=dict(color="#e0e0e0"),
+        showlegend=False,
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False)
+    )
+    return fig
 
 def get_layout():
-    """Professional Terminal Layout"""
+    """Terminal Layout"""
 
     # Get available symbols from your existing engine
     available_symbols = market_engine.get_available_symbols()[:50]
     exchange_info = market_engine.get_exchange_info()
+    # Check ob Exchanges laden
+    exchanges_loading = all(isinstance(ex, dict) and ex.get('status') == 'loading'
+                            for ex_name, ex in market_engine.exchanges.items())
 
     # Header Bar
     exchange_indicators = []
@@ -51,7 +73,7 @@ def get_layout():
     current_time = datetime.now().strftime("%H:%M:%S UTC")
 
     header = html.Div([
-        html.Div("Professional Trading Terminal", style={"fontWeight": "bold"}),
+        html.Div("Holy Terminal v3.0", style={"fontWeight": "bold"}),
         html.Div(exchange_indicators),
         html.Div(current_time, id="time-display"),
     ], className="header-bar")
@@ -81,7 +103,7 @@ def get_layout():
                 dcc.Dropdown(
                     id="symbol-dropdown",
                     options=[{"label": s, "value": s} for s in available_symbols],
-                    value="BTC/USDT" if "BTC/USDT" in available_symbols else available_symbols[0],
+                    value="BTC/USDT" if "BTC/USDT" in available_symbols else (available_symbols[0] if available_symbols else ""),
                     clearable=False,
                     style={"width": "200px"}
                 )
@@ -143,13 +165,13 @@ def get_layout():
                 id="shutdown-btn",
                 style={
                     'position': 'fixed',
-                    'top': '20px',
-                    'right': '20px',
-                    'background': '#ff4444',
-                    'color': 'white',
+                    'top': '42px',              # 👈 HIER ÄNDERN - Abstand von oben
+                    'right': '18px',            # 👈 HIER ÄNDERN - Abstand von rechts
+                    'background': '#ff4444',    # 👈 HIER ÄNDERN - Hintergrundfarbe
+                    'color': 'white',           # 👈 HIER ÄNDERN - Textfarbe
                     'border': 'none',
-                    'padding': '10px 20px',
-                    'border-radius': '5px',
+                    'padding': '10px 20px',     # 👈 HIER ÄNDERN - Innenabstand
+                    'border-radius': '5px',     # 👈 HIER ÄNDERN - Abrundung
                     'cursor': 'pointer',
                     'z-index': '9999'
                 }
@@ -163,7 +185,7 @@ def get_layout():
         html.Div([
             dcc.Graph(
                 id="main-chart",
-                figure=create_placeholder_chart(),
+                figure=create_loading_chart() if exchanges_loading else create_placeholder_chart(),
                 style={"height": "600px"}
             )
         ], className="chart-container"),
@@ -285,6 +307,10 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange):
 
     if not n_clicks:
         return create_placeholder_chart(), html.Div()
+    # Keine Exchanges verfügbar? Early return
+    if not symbol or all(isinstance(ex, dict) for ex in market_engine.exchanges.values()):
+        return create_loading_chart(), html.Div("Exchanges werden geladen...",
+                                                style={"color": "#ffaa00", "padding": "16px"})
 
     try:
         # Use your existing market engine (unchanged!)
@@ -300,7 +326,7 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange):
         # Detect patterns using your existing engine
         patterns = market_engine.detect_patterns(df)
 
-        # Create professional chart
+        # Create chart
         fig = create_professional_chart(df, patterns, symbol, timeframe)
 
         # Create pattern summary
@@ -334,7 +360,7 @@ def shutdown_server(n_clicks):
 
 
 def create_professional_chart(df, patterns, symbol, timeframe):
-    """Create professional trading chart"""
+    """Create trading chart"""
 
     fig = make_subplots(
         rows=2, cols=1,

@@ -279,14 +279,17 @@ class MarketEngine:
     
     def get_available_symbols(self, exchange: str = 'binance') -> List[str]:
         """Alle verfügbaren Trading-Pairs"""
-        if exchange not in self.exchanges:
-            return []
-        
+        default_symbols = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT']  # Sichere Defaults
+
+        if exchange not in self.exchanges or isinstance(self.exchanges[exchange], dict):
+            return default_symbols  # Wenn Exchange noch nicht geladen, Defaults
+
         try:
             markets = self.exchanges[exchange].markets
-            return [symbol for symbol in markets.keys() if '/USDT' in symbol]
+            symbols = [symbol for symbol in markets.keys() if '/USDT' in symbol]
+            return symbols if symbols else default_symbols
         except:
-            return []
+            return default_symbols
     
     def get_exchange_info(self) -> Dict[str, Any]:
         """Exchange Status und Info"""
