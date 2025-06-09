@@ -34,7 +34,7 @@ class MarketEngine:
 
         print(f"✅ MarketEngine: UI startet sofort, Exchanges laden im Hintergrund")
 
-    # •••••••••••••••••••••••••• 🌐 Exchange Initialization •••••••••••••••••••••••••• #
+    # •••••••••••••••••••••••••• 🔄 THREAD-MANAGEMENT •••••••••••••••••••••••••• #
     def _start_exchange_threads(self):
         """Startet Exchange-Loading parallel im Hintergrund"""
         configs = [
@@ -74,10 +74,8 @@ class MarketEngine:
             self.exchanges[name] = {'status': 'offline', 'error': str(e)}
             print(f"❌ {name} failed: {e}")
 
-
-
     # ==============================================================================
-    #                      📊 DATEN-ABRUF METHODEN
+    # region               📊 DATEN-ABRUF METHODEN
     # ==============================================================================
     def get_ohlcv(self, symbol: str, timeframe: str = '1d', 
                   limit: int = 500, exchange: str = None) -> pd.DataFrame:
@@ -145,9 +143,10 @@ class MarketEngine:
         
         print(f"❌ No data found for {symbol}")
         return pd.DataFrame()
+    # endregion
 
     # ==============================================================================
-    #                      🎯 PATTERN DETECTION ENGINE
+    # region               🎯 PATTERN DETECTION ENGINE
     # ==============================================================================
     def detect_patterns(self, df: pd.DataFrame) -> Dict[str, Any]:
         """
@@ -290,6 +289,7 @@ class MarketEngine:
                 })
         
         return signals
+    # endregion
 
     # ==============================================================================
     # region               🔧 UTILITY & HELPER METHODEN
@@ -419,6 +419,7 @@ class MarketEngine:
 
         return info
     # endregion
+
 # endregion
 
 # Singleton instance
