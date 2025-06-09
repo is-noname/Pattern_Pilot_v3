@@ -127,7 +127,7 @@ dcc.Store(id="data")                  # Data storage
 
 **1. Header Bar** (`render_header()`)
 ```python
-# Location: app_dash.py, line 160-180
+# Location: app.py, line 160-180
 def render_header():
     """Professional header with exchange status"""
     return html.Div([
@@ -139,7 +139,7 @@ def render_header():
 
 **2. Trading Controls** (`render_main_interface()`)
 ```python
-# Location: app_dash.py, line 200-250
+# Location: app.py, line 200-250
 # Symbol, Timeframe, Candles, Exchange, Analyze Button
 html.Div([
     dcc.Dropdown(id="symbol-dropdown", ...),
@@ -150,7 +150,7 @@ html.Div([
 
 **3. News Sidebar** (`render_news_panel()`)
 ```python
-# Location: app_dash.py, line 280-320
+# Location: app.py, line 280-320
 def render_news_panel():
     """Professional news feed"""
     return html.Div([
@@ -178,7 +178,7 @@ def callback_function(input_value, state_value):
 
 ### Main Analysis Callback
 ```python
-# Location: app_dash.py, line 430-460
+# Location: app.py, line 430-460
 @app.callback(
     [Output("main-chart", "figure"),           # Updates chart
      Output("pattern-summary", "children")],   # Updates pattern info
@@ -217,7 +217,7 @@ if not n_clicks:
 
 ### CSS Architecture
 ```python
-# Location: app_dash.py, line 20-150
+# Location: app.py, line 20-150
 app.index_string = '''
 <style>
 /* 1. Global Theme */
@@ -316,7 +316,7 @@ def update_portfolio(selected_symbol):
 
 ```python
 # Add to create_professional_chart() function
-# Location: app_dash.py, line 520-600
+# Location: app.py, line 520-600
 
 # Example: Add moving averages
 ma_20 = df['close'].rolling(20).mean()

@@ -102,7 +102,7 @@ Dash-Charts sind **technisch** responsive, aber für ernsthafte Pattern-Analyse 
 
 Laut `app_dash.py` (Zeile 650): **JA!**
 ```bash
-python app_dash.py
+python app.py
 # → http://127.0.0.1:8050
 ```
 

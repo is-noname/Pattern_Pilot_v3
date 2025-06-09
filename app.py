@@ -1,4 +1,4 @@
-# app_dash.py - Pattern Pilot Terminal
+# app.py - Pattern Pilot Terminal
 import dash
 from dash import dcc, html, Input, Output, callback, dash_table
 import plotly.graph_objects as go
@@ -18,6 +18,9 @@ from config.settings import PATTERN_CONFIG
 app = dash.Dash(__name__)
 app.title = "Pattern Pilot Pro"
 
+#==============================================================================
+#                      📊 CHART GENERATION HELPERS
+#==============================================================================
 def create_loading_chart():
     """Loading chart während Exchanges starten"""
     fig = go.Figure()
@@ -38,6 +41,9 @@ def create_loading_chart():
     )
     return fig
 
+#==============================================================================
+#                      🎨 DASHBOARD LAYOUT & COMPONENTS
+#==============================================================================
 def get_layout():
     """Terminal Layout"""
 
@@ -48,7 +54,7 @@ def get_layout():
     exchanges_loading = all(isinstance(ex, dict) and ex.get('status') == 'loading'
                             for ex_name, ex in market_engine.exchanges.items())
 
-    # Header Bar
+    # •••••••••••••••••••••••••• 🔝 Header Bar Components •••••••••••••••••••••••••• #
     exchange_indicators = []
     for name, info in exchange_info.items():
         # Status-Klasse und Icon basierend auf Exchange-Status
@@ -94,7 +100,7 @@ def get_layout():
         n_intervals=0
     )
 
-    # Main Trading Panel
+    # •••••••••••••••••••••••••• 📉 Main Panel Components •••••••••••••••••••••••••• #
     trading_panel = html.Div([
         # Controls Row
         html.Div([
@@ -195,41 +201,41 @@ def get_layout():
 
     ], className="trading-panel")
 
-    # News Sidebar
+    # •••••••••••••••••••••••••• 📉 News Sidebar Components •••••••••••••••••••••••••• #
     news_sidebar = html.Div([
         html.H3("Market News & Analysis"),
         html.Div(id="news-feed", children=create_news_items())
     ], className="news-sidebar")
 
-    # Status Bar
+    # •••••••••••••••••••••••••• 📉 Status Bar Components •••••••••••••••••••••••••• #
     status_bar = html.Div([
         html.Div([
-            html.Div("$1.34T", className="status-value"), # noch statisch
+            html.Div('market_cap', className="status-value", id="market-cap-value"), # noch statisch?
             html.Div("Market Cap", className="status-label")
         ], className="status-metric"),
 
         html.Div([
-            html.Div("2,847", className="status-value"), # noch statisch
+            html.Div("2,847", className="status-value", id="volume-value"), # noch statisch?
             html.Div("24h Volume", className="status-label")
         ], className="status-metric"),
 
         html.Div([
-            html.Div("73", className="status-value"), # noch statisch
+            html.Div('fear_greed', className="status-value", id="fear-greed-value"), # noch statisch?
             html.Div("Fear & Greed", className="status-label")
         ], className="status-metric"),
 
         html.Div([
-            html.Div("BTC 52.3%", className="status-value"), # noch statisch
+            html.Div("BTC 52.3%", className="status-value", id="dominance-value"), # noch statisch?
             html.Div("Dominance", className="status-label")
         ], className="status-metric"),
 
         html.Div([
-            html.Div("1,247", className="status-value"), # noch statisch
+            html.Div("1,247", className="status-value", id="pairs-value"), # noch statisch?
             html.Div("Active Pairs", className="status-label")
         ], className="status-metric")
     ], className="status-bar")
 
-    # Complete Layout
+    # •••••••••••••••••••••••••• 📉 Complete Layout •••••••••••••••••••••••••• #
     return html.Div([
         header,
         interval,
@@ -608,6 +614,26 @@ def update_exchange_dropdown(exchange_info):
     options += [{"label": name.title(), "value": name} for name in online_exchanges]
 
     return options
+
+# Market Stats Callback - Status Bar aktualisieren
+@app.callback(
+    [Output("market-cap-value", "children"),
+     Output("volume-value", "children"),
+     Output("fear-greed-value", "children"),
+     Output("dominance-value", "children"),
+     Output("pairs-value", "children")],
+    [Input("clock-interval", "n_intervals")]
+)
+def update_market_stats(n):
+    """Aktualisiert Status-Bar-Daten mit echten Werten aus market_engine"""
+    stats = market_engine.get_market_stats()
+    return [
+        stats['market_cap'],
+        stats['volume_24h'],
+        stats['fear_greed'],
+        stats['btc_dominance'],
+        stats['active_pairs']
+    ]
 
 if __name__ == '__main__':
     app.run(debug=False, host='127.0.0.1', port=8050)

@@ -1,4 +1,4 @@
-# core/market_engine.py - Das Herzstück von v2
+# core/market_engine.py     MARKET ENGINE CORE - Hauptkomponente v3.0
 import ccxt
 import pandas as pd
 import talib
@@ -9,6 +9,10 @@ import threading
 from queue import Queue
 from typing import Dict, List, Optional, Any, Union
 import time  # 'time' hinzufügen
+
+#==============================================================================
+#                      🔄 MARKET ENGINE HAUPTKLASSE
+#==============================================================================
 
 class MarketEngine:
     """
@@ -30,6 +34,7 @@ class MarketEngine:
 
         print(f"✅ MarketEngine: UI startet sofort, Exchanges laden im Hintergrund")
 
+    # •••••••••••••••••••••••••• 🌐 Exchange Initialization •••••••••••••••••••••••••• #
     def _start_exchange_threads(self):
         """Startet Exchange-Loading parallel im Hintergrund"""
         configs = [
@@ -68,7 +73,10 @@ class MarketEngine:
             # Fehler-Status setzen
             self.exchanges[name] = {'status': 'offline', 'error': str(e)}
             print(f"❌ {name} failed: {e}")
-    
+
+    # ==============================================================================
+    #                      📊 DATEN-ABRUF METHODEN
+    # ==============================================================================
     def get_ohlcv(self, symbol: str, timeframe: str = '1d', 
                   limit: int = 500, exchange: str = None) -> pd.DataFrame:
         """
@@ -135,7 +143,10 @@ class MarketEngine:
         
         print(f"❌ No data found for {symbol}")
         return pd.DataFrame()
-    
+
+    # ==============================================================================
+    #                      🎯 PATTERN DETECTION ENGINE
+    # ==============================================================================
     def detect_patterns(self, df: pd.DataFrame) -> Dict[str, Any]:
         """
         🎯 Ersetzt: Deine ganze patterns/ Struktur
@@ -200,7 +211,8 @@ class MarketEngine:
         
         print(f"🎯 Detected {len(patterns)} pattern types")
         return patterns
-    
+
+    # •••••••••••••••••••••••••• 🔍 Pattern Helper Methods •••••••••••••••••••••••••• #
     def _extract_pattern_signals(self, talib_result, df: pd.DataFrame, 
                                 pattern_name: str) -> List[Dict]:
         """Konvertiert talib signals zu readable format"""
@@ -277,6 +289,9 @@ class MarketEngine:
         
         return signals
 
+    # ==============================================================================
+    #                      🔧 UTILITY & HELPER METHODEN
+    # ==============================================================================
     def get_available_symbols(self, exchange: str = 'binance') -> List[str]:
         """Alle verfügbaren Trading-Pairs"""
         default_symbols = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT']  # Sichere Defaults
