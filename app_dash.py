@@ -6,6 +6,9 @@ from plotly.subplots import make_subplots
 import pandas as pd
 from datetime import datetime
 import json
+import os
+import sys
+import request
 
 # Import your existing engine (unchanged!)
 from core.market_engine import market_engine
@@ -271,8 +274,9 @@ def get_layout():
     header = html.Div([
         html.Div("Professional Trading Terminal", style={"fontWeight": "bold"}),
         html.Div(exchange_indicators),
-        html.Div(current_time, id="time-display")
+        html.Div(current_time, id="time-display"),
     ], className="header-bar")
+
 
     # Main Trading Panel
     trading_panel = html.Div([
@@ -338,6 +342,28 @@ def get_layout():
                 html.Button("ANALYZE", id="analyze-btn", className="analyze-btn")
             ], className="control-group")
         ], className="controls-row"),
+
+        html.Div([
+            html.Button(
+                "🛑 SHUTDOWN",
+                id="shutdown-btn",
+                style={
+                    'position': 'fixed',
+                    'top': '20px',
+                    'right': '20px',
+                    'background': '#ff4444',
+                    'color': 'white',
+                    'border': 'none',
+                    'padding': '10px 20px',
+                    'border-radius': '5px',
+                    'cursor': 'pointer',
+                    'z-index': '9999'
+                }
+            )
+        ]),
+
+        # Verstecktes Div für Shutdown-Trigger
+        html.Div(id="shutdown-trigger", style={"display": "none"}),
 
         # Chart Area
         html.Div([
@@ -457,6 +483,14 @@ app.layout = get_layout()
      Input("limit-input", "value"),
      Input("exchange-dropdown", "value")]
 )
+
+# Shutdown Callback
+@app.callback(
+    Output("shutdown-trigger", "children"),
+    Input("shutdown-btn", "n_clicks"),
+    prevent_initial_call=True
+)
+
 def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange):
     """Analyze symbol using your existing market engine"""
 
@@ -490,6 +524,18 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange):
             f"❌ Error: {str(e)}",
             style={"color": "#f44336", "padding": "16px"}
         )
+
+
+def shutdown_server(n_clicks):
+    if n_clicks:
+        # Server elegant beenden
+        func = request.environ.get('werkzeug.server.shutdown')
+        if func is None:
+            # Fallback für Production
+            os._exit(0)
+        func()
+    return ""
+
 
 
 def create_professional_chart(df, patterns, symbol, timeframe):
@@ -661,5 +707,5 @@ def create_error_chart(error_message):
     return fig
 
 
-if __name__ == "__main__":
-    app.run(debug=True, port=8050)
+if __name__ == '__main__':
+    app.run(debug=False, host='127.0.0.1', port=8050)
