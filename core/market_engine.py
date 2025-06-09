@@ -18,11 +18,14 @@ class MarketEngine:
     """
 
     def __init__(self):
-        # Leeres Exchanges-Dictionary zu Beginn
-        self.exchanges = {}
-        # Queue für Thread-Kommunikation
-        self.exchange_queue = Queue()
-        # Starte Exchange-Loading im Hintergrund
+        self.exchanges = {}  # Leeres Dict erstmal
+        self.cache = {}  # Cache beibehalten
+
+        # Für jeden Exchange initialen "loading" Status setzen
+        for name in ['binance', 'coinbase', 'kraken', 'bybit', 'okx']:
+            self.exchanges[name] = {'status': 'loading'}
+
+        # Threading starten
         self._start_exchange_threads()
 
         print(f"✅ MarketEngine: UI startet sofort, Exchanges laden im Hintergrund")
@@ -109,7 +112,7 @@ class MarketEngine:
                 ohlcv = exchange_obj.fetch_ohlcv(symbol, timeframe, limit=limit)
                 
                 if not ohlcv:
-                    continue
+                    return pd.DataFrame()
                 
                 # Convert to DataFrame
                 df = pd.DataFrame(ohlcv, columns=[
@@ -128,7 +131,7 @@ class MarketEngine:
                 
             except Exception as e:
                 print(f"❌ {ex_name} error: {e}")
-                continue
+                return pd.DataFrame()
         
         print(f"❌ No data found for {symbol}")
         return pd.DataFrame()
