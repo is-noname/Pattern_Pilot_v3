@@ -8,7 +8,7 @@ from datetime import datetime
 import json
 import os
 import sys
-import request
+from flask import request
 
 # Import your existing engine (unchanged!)
 from core.market_engine import market_engine
@@ -250,14 +250,6 @@ app.layout = get_layout()
      Input("limit-input", "value"),
      Input("exchange-dropdown", "value")]
 )
-
-# Shutdown Callback
-@app.callback(
-    Output("shutdown-trigger", "children"),
-    Input("shutdown-btn", "n_clicks"),
-    prevent_initial_call=True
-)
-
 def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange):
     """Analyze symbol using your existing market engine"""
 
@@ -293,6 +285,12 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange):
         )
 
 
+# Shutdown Callback
+@app.callback(
+    Output("shutdown-trigger", "children"),
+    Input("shutdown-btn", "n_clicks"),
+    prevent_initial_call=True
+)
 def shutdown_server(n_clicks):
     if n_clicks:
         # Server elegant beenden
