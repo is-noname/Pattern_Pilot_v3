@@ -246,6 +246,9 @@ def get_layout():
     ])
 
 
+#==============================================================================
+#                      📈 CHART RENDERING & VISUALIZATION
+#==============================================================================
 def create_placeholder_chart():
     """Placeholder chart for initial load"""
     fig = go.Figure()
@@ -298,7 +301,9 @@ def create_news_items():
 app.layout = get_layout()
 
 
-# Callback for analysis
+#==============================================================================
+#                      🔄 CALLBACKS & INTERAKTIONEN (Callback for analysis)
+#==============================================================================
 @app.callback(
     [Output("main-chart", "figure"),
      Output("pattern-summary", "children")],
