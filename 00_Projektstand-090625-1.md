@@ -6,7 +6,7 @@ Professionelles **Trading-Terminal** für Krypto-Pattern-Analyse. Von "Hobby-Cod
 ## **Tech-Stack (90% weniger Code)**
 
 **Frontend:** Dash (Flask + React + Plotly)
-- `app_dash.py` - Komplette UI (655 Zeilen)
+- `app.py` - Komplette UI (655 Zeilen)
 - Professionelles Trading-Terminal Design
 - Interaktive Charts, Echtzeit-Updates
 
@@ -62,7 +62,7 @@ Professionelles **Trading-Terminal** für Krypto-Pattern-Analyse. Von "Hobby-Cod
 
 ```
 pattern_pilot_v3/
-├── app_dash.py              # 🎯 Komplette App
+├── app.py              # 🎯 Komplette App
 ├── core/market_engine.py    # 🔥 Trading-Engine  
 ├── config/settings.py       # ⚙️ Konfiguration
 └── requirements.txt         # 📦 Dependencies
@@ -100,7 +100,7 @@ Dash-Charts sind **technisch** responsive, aber für ernsthafte Pattern-Analyse 
 
 ## **Status: Läuft das schon?**
 
-Laut `app_dash.py` (Zeile 650): **JA!**
+Laut `app.py` (Zeile 650): **JA!**
 ```bash
 python app.py
 # → http://127.0.0.1:8050

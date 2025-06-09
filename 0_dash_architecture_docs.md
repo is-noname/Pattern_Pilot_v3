@@ -20,7 +20,7 @@
 ┌─────────────────────────────────────────────────┐
 │                 Frontend (Dash)                 │
 ├─────────────────────────────────────────────────┤
-│  app_dash.py     │  Layout + Callbacks          │
+│  app.py     │  Layout + Callbacks          │
 │  ├─ get_layout() │  UI Structure                │
 │  ├─ callbacks    │  User Interactions           │
 │  └─ styling      │  CSS + Professional Theme    │
@@ -47,7 +47,7 @@
 
 ```
 pattern_pilot_v3/
-├── app_dash.py                 # 🎯 Main Dash Application
+├── app.py                 # 🎯 Main Dash Application
 ├── requirements_dash.txt       # Dependencies
 ├── core/
 │   ├── __init__.py
@@ -61,7 +61,7 @@ pattern_pilot_v3/
 ```
 
 **Key Files:**
-- **`app_dash.py`:** Complete Dash application (655 lines)
+- **`app.py`:** Complete Dash application (655 lines)
 - **`core/market_engine.py`:** Unchanged from Streamlit version
 - **`config/settings.py`:** All configuration centralized
 
