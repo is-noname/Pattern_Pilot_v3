@@ -44,6 +44,11 @@ def get_layout():
         html.Div(current_time, id="time-display"),
     ], className="header-bar")
 
+    interval = dcc.Interval(
+        id='clock-interval',
+        interval=1000,  # 1 Sekunde in Millisekunden
+        n_intervals=0
+    )
 
     # Main Trading Panel
     trading_panel = html.Div([
@@ -183,6 +188,7 @@ def get_layout():
     # Complete Layout
     return html.Div([
         header,
+        interval,
         html.Div([trading_panel, news_sidebar], className="main-container"),
         status_bar
     ])
@@ -350,7 +356,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
     # 🎯 Enhanced Pattern Overlays with unique icons
     pattern_styles = {
         'doji': {'symbol': 'circle', 'color': '#ffaa00', 'size': 12, 'emoji': '🎯'},
-        'hammer': {'symbol': 'triangle-up', 'color': '#00ff88', 'size': 15, 'emoji': '🔨'},
+        'hammer': {'symbol': 'triangle-up', 'color': '#00ff88', 'size': 12, 'emoji': '🔨'},
         'engulfing': {'symbol': 'star', 'color': '#ff0080', 'size': 18, 'emoji': '🌟'},
         'ma_crossover': {'symbol': 'diamond', 'color': '#00aaff', 'size': 14, 'emoji': '💎'},
         'support_resistance': {'symbol': 'square', 'color': '#aa00ff', 'size': 10, 'emoji': '🔷'},
@@ -505,6 +511,14 @@ def create_error_chart(error_message):
         yaxis=dict(visible=False)
     )
     return fig
+
+# Zeit-Update Callback
+@app.callback(
+    Output("time-display", "children"),
+    Input("clock-interval", "n_intervals")
+)
+def update_time(n):
+    return datetime.now().strftime("%H:%M:%S UTC")
 
 
 if __name__ == '__main__':
