@@ -47,7 +47,7 @@ def get_layout():
 
     interval = dcc.Interval(
         id='clock-interval',
-        interval=1000,  # 1 Sekunde in Millisekunden
+        interval=2000,  # 2 Sekunde in Millisekunden
         n_intervals=0
     )
 
@@ -118,7 +118,7 @@ def get_layout():
 
         html.Div([
             html.Button(
-                "🛑 QUIT",
+                "[X]",
                 id="shutdown-btn",
                 style={
                     'position': 'fixed',

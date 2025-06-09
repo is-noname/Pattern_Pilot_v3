@@ -37,14 +37,14 @@ touch core/__init__.py config/__init__.py utils/__init__.py
 
 # Files von Artifacts kopieren
 # - requirements.txt (root)
-# - app.py (root) 
+# - app_streamlit.py (root) 
 # - core/market_engine.py
 ```
 
 ## **3. App starten**
 
 ```bash
-streamlit run app.py
+streamlit run app_streamlit.py
 ```
 
 ## **4. Features Overview**
