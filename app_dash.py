@@ -358,7 +358,6 @@ def shutdown_server(n_clicks):
     return ""
 
 
-
 def create_professional_chart(df, patterns, symbol, timeframe):
     """Create trading chart"""
 

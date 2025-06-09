@@ -8,7 +8,7 @@ import time
 import threading
 from queue import Queue
 from typing import Dict, List, Optional, Any, Union
-
+import time  # 'time' hinzufügen
 
 class MarketEngine:
     """
@@ -244,7 +244,7 @@ class MarketEngine:
                 })
         
         return signals
-    
+
     def _detect_ma_crossover(self, ma_fast, ma_slow, df):
         """Moving Average Crossover detection"""
         signals = []
@@ -276,7 +276,7 @@ class MarketEngine:
                 })
         
         return signals
-    
+
     def get_available_symbols(self, exchange: str = 'binance') -> List[str]:
         """Alle verfügbaren Trading-Pairs"""
         default_symbols = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT']  # Sichere Defaults
@@ -290,7 +290,96 @@ class MarketEngine:
             return symbols if symbols else default_symbols
         except:
             return default_symbols
-    
+
+    def get_market_stats(self) -> Dict[str, Any]:
+        """Globale Marktdaten für Status-Bar"""
+        # Cache check
+        if 'market_stats' in self.cache:
+            cached_data, timestamp = self.cache['market_stats']
+            if time.time() - timestamp < 300:  # 5min cache
+                return cached_data
+
+        # Standardwerte (falls API-Fehler)
+        stats = {
+            'market_cap': "$1.34T",  # Bisheriger Wert als Fallback
+            'volume_24h': "2,847",  # Bisheriger Wert als Fallback
+            'fear_greed': "73",  # Bisheriger Wert als Fallback
+            'btc_dominance': "BTC 52.3%",  # Bisheriger Wert als Fallback
+            'active_pairs': "1,247"  # Bisheriger Wert als Fallback
+        }
+
+        try:
+            # 1️⃣ Active Pairs - Einfach zu berechnen aus vorhandenen Daten
+            exchange_order = ['binance', 'coinbase', 'kraken', 'bybit', 'okx']
+            for ex_name in exchange_order:
+                if ex_name in self.exchanges and not isinstance(self.exchanges[ex_name], dict):
+                    symbols = self.get_available_symbols(ex_name)
+                    if symbols:
+                        stats['active_pairs'] = f"{len(symbols):,}"
+                    break
+
+            # 2️⃣ Volume & Marktdaten - Aus Top-Coins berechnen
+            top_symbols = ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'XRP/USDT']
+            total_volume = 0
+            total_mcap = 0
+            btc_mcap = 0
+
+            for ex_name in exchange_order:
+                if ex_name not in self.exchanges or isinstance(self.exchanges[ex_name], dict):
+                    continue
+
+                try:
+                    # Ticker-Daten für verfügbare Top-Coins abrufen
+                    for symbol in top_symbols:
+                        try:
+                            # OHLCV-Daten nutzen (bereits in der Engine implementiert)
+                            df = self.get_ohlcv(symbol, '1d', 1, ex_name)
+                            if df.empty:
+                                continue
+
+                            # Letzte Schlusskurse & Volumen extrahieren
+                            price = df['close'].iloc[-1]
+                            volume = df['volume'].iloc[-1]
+
+                            # Zum Gesamtvolumen addieren
+                            total_volume += volume * price  # Volume in USDT
+
+                            # Sehr grobe Marktkapitalisierung (vereinfacht)
+                            coin_mcap = price * volume * 10  # Heuristische Schätzung
+                            total_mcap += coin_mcap
+
+                            # BTC Dominance berechnen
+                            if symbol == 'BTC/USDT':
+                                btc_mcap = coin_mcap
+                        except:
+                            continue
+
+                    # Wenn wir Daten haben, Loop verlassen
+                    if total_volume > 0:
+                        break
+                except Exception as e:
+                    print(f"⚠️ Stats error on {ex_name}: {e}")
+                    continue
+
+            # 3️⃣ Berechnete Werte formatieren
+            if total_mcap > 0:
+                stats['market_cap'] = f"${total_mcap / 1e12:.2f}T"
+
+            if total_volume > 0:
+                stats['volume_24h'] = f"{total_volume / 1e9:.1f}B"
+
+            if total_mcap > 0 and btc_mcap > 0:
+                btc_dom = (btc_mcap / total_mcap) * 100
+                stats['btc_dominance'] = f"BTC {btc_dom:.1f}%"
+
+            # 4️⃣ Cache setzen
+            self.cache['market_stats'] = (stats, time.time())
+
+        except Exception as e:
+            print(f"❌ Error getting market stats: {e}")
+
+        return stats
+
     def get_exchange_info(self) -> Dict[str, Any]:
         """Exchange Status und Info"""
         info = {}
