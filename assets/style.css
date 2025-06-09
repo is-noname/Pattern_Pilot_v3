@@ -445,8 +445,8 @@ input[type="number"]:focus {
 }
 
 /* ===== PLOTLY CHART OVERRIDES ===== */
-.js-plotly-plot .plotly .main-svg {
-    background: #1a1a1a !important;
+.js-plotly-plot .plotly .bg {
+    fill: #1a1a1a !important;
 }
 
 .js-plotly-plot .plotly .bg {

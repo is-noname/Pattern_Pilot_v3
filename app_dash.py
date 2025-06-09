@@ -325,7 +325,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
             low=df['low'],
             close=df['close'],
             name="Price",
-            increasing_line_color='#4CAF50',
+            increasing_line_color='#06fc99',
             decreasing_line_color='#f44336',
             increasing_fillcolor='#4CAF50',
             decreasing_fillcolor='#f44336'
@@ -349,44 +349,79 @@ def create_professional_chart(df, patterns, symbol, timeframe):
     )
 
     # Add pattern markers
-    pattern_colors = {
-        'doji': '#ff9800',
-        'hammer': '#4CAF50',
-        'engulfing': '#f44336',
-        'ma_crossover': '#2196F3',
-        'support_resistance': '#9c27b0'
+    # 🎯 Enhanced Pattern Overlays with unique icons
+    pattern_styles = {
+        'doji': {'symbol': 'circle', 'color': '#ffaa00', 'size': 12, 'emoji': '🎯'},
+        'hammer': {'symbol': 'triangle-up', 'color': '#00ff88', 'size': 15, 'emoji': '🔨'},
+        'engulfing': {'symbol': 'star', 'color': '#ff0080', 'size': 18, 'emoji': '🌟'},
+        'ma_crossover': {'symbol': 'diamond', 'color': '#00aaff', 'size': 14, 'emoji': '💎'},
+        'support_resistance': {'symbol': 'square', 'color': '#aa00ff', 'size': 10, 'emoji': '🔷'},
+        'hanging_man': {'symbol': 'triangle-down', 'color': '#ff4444', 'size': 15, 'emoji': '⚠️'},
+        'shooting_star': {'symbol': 'star-triangle-up', 'color': '#ff6600', 'size': 16, 'emoji': '⭐'},
+        'morning_star': {'symbol': 'star-square', 'color': '#66ff66', 'size': 17, 'emoji': '🌅'},
+        'evening_star': {'symbol': 'star-diamond', 'color': '#ff3366', 'size': 17, 'emoji': '🌆'},
+        'three_white_soldiers': {'symbol': 'arrow-up', 'color': '#44ff44', 'size': 20, 'emoji': '⬆️'},
+        'three_black_crows': {'symbol': 'arrow-down', 'color': '#ff4444', 'size': 20, 'emoji': '⬇️'},
+        'harami': {'symbol': 'hourglass', 'color': '#ffaa44', 'size': 13, 'emoji': '⏳'},
+        'piercing': {'symbol': 'triangle-up-open', 'color': '#44aa44', 'size': 14, 'emoji': '🔺'},
+        'dark_cloud': {'symbol': 'triangle-down-open', 'color': '#aa4444', 'size': 14, 'emoji': '🔻'},
     }
+
+    pattern_legend_added = set()  # Track which patterns are in legend
 
     for pattern_name, signals in patterns.items():
         if not signals:
             continue
 
-        color = pattern_colors.get(pattern_name, '#ffffff')
+        style = pattern_styles.get(pattern_name, {
+            'symbol': 'circle',
+            'color': '#ffffff',
+            'size': 12,
+            'emoji': '📊'
+        })
 
-        for signal in signals:
+        for i, signal in enumerate(signals):
             direction = signal.get('direction', 'neutral')
-            if direction == 'bullish':
-                color = '#4CAF50'
-            elif direction == 'bearish':
-                color = '#f44336'
+            strength = signal.get('strength', 0.5)
 
+            # Color adjustment based on direction
+            if direction == 'bullish':
+                color = '#00ff88'
+            elif direction == 'bearish':
+                color = '#ff0080'
+            elif direction == 'resistance':
+                color = '#ff4444'
+            elif direction == 'support':
+                color = '#00ff88'
+            else:
+                color = style['color']
+
+            # Show legend only for first occurrence of each pattern
+            show_legend = pattern_name not in pattern_legend_added
+            if show_legend:
+                pattern_legend_added.add(pattern_name)
+
+            # Enhanced pattern marker
             fig.add_trace(
                 go.Scatter(
                     x=[signal['datetime']],
                     y=[signal['price']],
                     mode='markers',
                     marker=dict(
-                        symbol='circle',
-                        size=10,
+                        symbol=style['symbol'],
+                        size=style['size'] + (strength * 8),  # Size based on strength
                         color=color,
-                        line=dict(width=2, color='white')
+                        line=dict(width=3, color='white'),
+                        opacity=0.8 + (strength * 0.2)
                     ),
-                    name=pattern_name.replace('_', ' ').title(),
-                    showlegend=False,
-                    hovertemplate=f"<b>{pattern_name.replace('_', ' ').title()}</b><br>" +
-                                  f"Price: ${signal['price']:.4f}<br>" +
-                                  f"Direction: {direction}<br>" +
-                                  f"Strength: {signal.get('strength', 0):.2f}<extra></extra>"
+                    name=f"{style['emoji']} {pattern_name.replace('_', ' ').title()}",
+                    hovertemplate=f"<b>{style['emoji']} {pattern_name.replace('_', ' ').title()}</b><br>" +
+                                  f"🎯 Direction: {direction}<br>" +
+                                  f"💪 Strength: {strength:.2f}<br>" +
+                                  f"💰 Price: ${signal['price']:.4f}<br>" +
+                                  f"⏰ Time: %{{x}}<extra></extra>",
+                    showlegend=show_legend,
+                    legendgroup=pattern_name
                 ),
                 row=1, col=1
             )

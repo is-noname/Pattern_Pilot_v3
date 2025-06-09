@@ -284,7 +284,7 @@ def create_enhanced_chart(df: pd.DataFrame, patterns: dict, symbol: str, timefra
             low=df['low'],
             close=df['close'],
             name="Price Matrix",
-            increasing_line_color='#00ff88',
+            increasing_line_color='#06fc99',
             decreasing_line_color='#ff0080',
             increasing_fillcolor='rgba(0, 255, 136, 0.8)',
             decreasing_fillcolor='rgba(255, 0, 128, 0.8)'
@@ -306,14 +306,23 @@ def create_enhanced_chart(df: pd.DataFrame, patterns: dict, symbol: str, timefra
         ),
         row=2, col=1
     )
-    
+
     # 🎯 Enhanced Pattern Overlays with unique icons
     pattern_styles = {
         'doji': {'symbol': 'circle', 'color': '#ffaa00', 'size': 12, 'emoji': '🎯'},
         'hammer': {'symbol': 'triangle-up', 'color': '#00ff88', 'size': 15, 'emoji': '🔨'},
         'engulfing': {'symbol': 'star', 'color': '#ff0080', 'size': 18, 'emoji': '🌟'},
         'ma_crossover': {'symbol': 'diamond', 'color': '#00aaff', 'size': 14, 'emoji': '💎'},
-        'support_resistance': {'symbol': 'square', 'color': '#aa00ff', 'size': 10, 'emoji': '🔷'}
+        'support_resistance': {'symbol': 'square', 'color': '#aa00ff', 'size': 10, 'emoji': '🔷'},
+        'hanging_man': {'symbol': 'triangle-down', 'color': '#ff4444', 'size': 15, 'emoji': '⚠️'},
+        'shooting_star': {'symbol': 'star-triangle-up', 'color': '#ff6600', 'size': 16, 'emoji': '⭐'},
+        'morning_star': {'symbol': 'star-square', 'color': '#66ff66', 'size': 17, 'emoji': '🌅'},
+        'evening_star': {'symbol': 'star-diamond', 'color': '#ff3366', 'size': 17, 'emoji': '🌆'},
+        'three_white_soldiers': {'symbol': 'arrow-up', 'color': '#44ff44', 'size': 20, 'emoji': '⬆️'},
+        'three_black_crows': {'symbol': 'arrow-down', 'color': '#ff4444', 'size': 20, 'emoji': '⬇️'},
+        'harami': {'symbol': 'hourglass', 'color': '#ffaa44', 'size': 13, 'emoji': '⏳'},
+        'piercing': {'symbol': 'triangle-up-open', 'color': '#44aa44', 'size': 14, 'emoji': '🔺'},
+        'dark_cloud': {'symbol': 'triangle-down-open', 'color': '#aa4444', 'size': 14, 'emoji': '🔻'},
     }
     
     pattern_legend_added = set()  # Track which patterns are in legend
@@ -323,7 +332,10 @@ def create_enhanced_chart(df: pd.DataFrame, patterns: dict, symbol: str, timefra
             continue
         
         style = pattern_styles.get(pattern_name, {
-            'symbol': 'circle', 'color': '#ffffff', 'size': 12, 'emoji': '⭐'
+            'symbol': 'circle',
+            'color': '#ffffff',
+            'size': 12,
+            'emoji': '📊'
         })
         
         for i, signal in enumerate(signals):
