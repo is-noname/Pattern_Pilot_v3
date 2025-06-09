@@ -1,6 +1,8 @@
 /* Pattern Pilot v3.0 - Complete Professional Trading Terminal CSS */
 
-/* ===== GLOBAL STYLES ===== */
+/* ========================= */
+/*       GLOBAL STYLES       */
+/* ========================= */
 body {
     background: #1a1a1a;
     color: #e0e0e0;
@@ -14,7 +16,9 @@ body {
     box-sizing: border-box;
 }
 
-/* ===== HEADER BAR ===== */
+/* ========================= */
+/*        HEADER BAR         */
+/* ========================= */
 .header-bar {
     background: #2a2a2a;
     border-bottom: 1px solid #404040;
@@ -34,7 +38,9 @@ body {
     color: #06fc99;
 }
 
-/* ===== EXCHANGE STATUS ===== */
+/* ========================= */
+/*       EXCHANGE STATUS     */
+/* ========================= */
 .exchange-status {
     margin-right: 16px;
     display: inline-flex;
@@ -57,7 +63,9 @@ body {
     background: #f44336;
 }
 
-/* ===== MAIN LAYOUT ===== */
+/* ========================= */
+/*       MAIN LAYOUT         */
+/* ========================= */
 .main-container {
     display: flex;
     height: calc(100vh - 40px);
@@ -79,7 +87,9 @@ body {
     overflow-y: auto;
 }
 
-/* ===== CONTROLS ===== */
+/* ========================= */
+/*       CONTROLS            */
+/* ========================= */
 .controls-row {
     display: flex;
     gap: 12px;
@@ -102,7 +112,9 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* ===== DROPDOWN STYLING (Dash Select Components) ===== */
+/* ========================= */
+/*       DROPDOWN STYLING (Dash Select Components)          */
+/* ========================= */
 .Select-control {
     background: #2a2a2a !important;
     border: 1px solid #404040 !important;
@@ -168,7 +180,9 @@ body {
     color: #999 !important;
 }
 
-/* ===== BUTTON STYLING ===== */
+/* ========================= */
+/*       BUTTON STYLING          */
+/* ========================= */
 .analyze-btn {
     background: #404040;
     border: 1px solid #606060;
@@ -196,7 +210,10 @@ body {
     color: #1a1a1a;
 }
 
-/* ===== INPUT FIELDS ===== */
+/* ========================= */
+/*       INPUT FIELDS          */
+/* ========================= */
+
 input[type="number"] {
     background: #2a2a2a;
     border: 1px solid #404040;
@@ -214,7 +231,10 @@ input[type="number"]:focus {
     box-shadow: 0 0 0 1px #06fc99;
 }
 
-/* ===== CHART CONTAINER ===== */
+/* ========================= */
+/*       CHART CONTAINER          */
+/* ========================= */
+
 .chart-container {
     background: #1a1a1a;
     border: 1px solid #404040;
@@ -223,7 +243,9 @@ input[type="number"]:focus {
     margin-bottom: 16px;
 }
 
-/* ===== NEWS PANEL ===== */
+/* ========================= */
+/*       NEWS PANEL          */
+/* ========================= */
 .news-panel h3 {
     color: #e0e0e0;
     font-size: 14px;
@@ -275,7 +297,10 @@ input[type="number"]:focus {
     text-align: right;
 }
 
-/* ===== STATUS BAR ===== */
+/* ========================= */
+/*       STATUS BAR          */
+/* ========================= */
+
 .status-bar {
     background: #2a2a2a;
     border-top: 1px solid #404040;
@@ -308,7 +333,9 @@ input[type="number"]:focus {
     letter-spacing: 0.5px;
 }
 
-/* ===== PATTERN SUMMARY ===== */
+/* ========================= */
+/*       PATTERN SUMMARY     */
+/* ========================= */
 .pattern-summary {
     background: #2a2a2a;
     border: 1px solid #404040;
@@ -335,7 +362,9 @@ input[type="number"]:focus {
     line-height: 1.4;
 }
 
-/* ===== LOADING STATE ===== */
+/* ========================= */
+/*       OADING STATE        */
+/* ========================= */
 .loading {
     text-align: center;
     color: #666;
@@ -365,7 +394,9 @@ input[type="number"]:focus {
     }
 }
 
-/* ===== ERROR STATES ===== */
+/* ========================= */
+/*       ERROR STATES        */
+/* ========================= */
 .error-message {
     background: #2a1a1a;
     border: 1px solid #f44336;
@@ -376,7 +407,9 @@ input[type="number"]:focus {
     margin: 16px 0;
 }
 
-/* ===== UTILITY CLASSES ===== */
+/* ========================= */
+/*       UTILITY CLASSES     */
+/* ========================= */
 .text-green {
     color: #4CAF50;
 }
@@ -397,7 +430,9 @@ input[type="number"]:focus {
     font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
+/* ========================= */
+/*       RESPONSIVE DESIGN   */
+/* ========================= */
 @media (max-width: 1200px) {
     .news-sidebar {
         width: 250px;
@@ -426,7 +461,9 @@ input[type="number"]:focus {
     }
 }
 
-/* ===== SCROLLBAR STYLING ===== */
+/* ========================= */
+/*       SCROLLBAR STYLING   */
+/* ========================= */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -444,7 +481,9 @@ input[type="number"]:focus {
     background: #606060;
 }
 
-/* ===== PLOTLY CHART OVERRIDES ===== */
+/* ========================= */
+/*       PLOTLY CHART OVERRIDES */
+/* ========================= */
 .js-plotly-plot .plotly .bg {
     fill: #1a1a1a !important;
 }
@@ -453,7 +492,9 @@ input[type="number"]:focus {
     fill: #1a1a1a !important;
 }
 
-/* ===== ANIMATION CLASSES ===== */
+/* ========================= */
+/*       ANIMATION CLASSES   */
+/* ========================= */
 .fade-in {
     animation: fadeIn 0.3s ease-in;
 }
@@ -472,7 +513,9 @@ input[type="number"]:focus {
     to { transform: translateY(0); opacity: 1; }
 }
 
-/* Exchange-Status-Indikatoren */
+/* ========================= */
+/*       Exchange-Status-Indikatoren */
+/* ========================= */
 .exchange-dot.loading {
     background: #ffaa00;
     animation: pulse 1.5s infinite;
