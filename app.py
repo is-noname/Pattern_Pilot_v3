@@ -10,7 +10,7 @@ import os
 import sys
 from flask import request
 
-# Import your existing engine (unchanged!)
+# Import your existing engine and settings
 from core.market_engine import market_engine
 from config.settings import PATTERN_CONFIG, CHART_CONFIG
 
