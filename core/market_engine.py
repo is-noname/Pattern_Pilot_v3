@@ -7,6 +7,7 @@ from datetime import datetime
 import time
 import threading
 from queue import Queue
+from typing import Dict, List, Optional, Any, Union
 
 
 class MarketEngine:
@@ -15,19 +16,19 @@ class MarketEngine:
     
     Nutzt ccxt für Daten und talib für Pattern - Profi-Standard
     """
-    
+
     def __init__(self):
-        # 130+ Exchanges sofort verfügbar - keine custom APIs nötig
-        self.exchanges = self._init_exchanges()
-        self.cache = {}  # Simple dict cache erstmal (später Redis)
-        
-        print(f"✅ MarketEngine: {len(self.exchanges)} Exchanges bereit")
-    
-    def _init_exchanges(self) -> Dict[str, ccxt.Exchange]:
-        """Initialisiert alle wichtigen Exchanges"""
-        exchanges = {}
-        
-        # Top Crypto Exchanges
+        # Leeres Exchanges-Dictionary zu Beginn
+        self.exchanges = {}
+        # Queue für Thread-Kommunikation
+        self.exchange_queue = Queue()
+        # Starte Exchange-Loading im Hintergrund
+        self._start_exchange_threads()
+
+        print(f"✅ MarketEngine: UI startet sofort, Exchanges laden im Hintergrund")
+
+    def _start_exchange_threads(self):
+        """Startet Exchange-Loading parallel im Hintergrund"""
         configs = [
             ('binance', ccxt.binance, {'rateLimit': 1200}),
             ('coinbase', ccxt.coinbase, {'rateLimit': 1000}),
@@ -35,16 +36,35 @@ class MarketEngine:
             ('bybit', ccxt.bybit, {'rateLimit': 1000}),
             ('okx', ccxt.okx, {'rateLimit': 1000}),
         ]
-        
+
+        # Für jeden Exchange initialen "loading" Status setzen
+        for name, _, _ in configs:
+            self.exchanges[name] = {'status': 'loading'}
+
+        # Für jeden Exchange eigenen Thread starten
         for name, exchange_class, config in configs:
-            try:
-                exchanges[name] = exchange_class(config)
-                exchanges[name].load_markets()  # Preload symbols
-                print(f"📡 {name}: {len(exchanges[name].markets)} markets")
-            except Exception as e:
-                print(f"❌ {name} failed: {e}")
-        
-        return exchanges
+            thread = threading.Thread(
+                target=self._load_exchange_thread,
+                args=(name, exchange_class, config),
+                daemon=True  # Thread endet mit Hauptprogramm
+            )
+            thread.start()
+
+    def _load_exchange_thread(self, name, exchange_class, config):
+        """In separatem Thread ausgeführt"""
+        try:
+            print(f"📡 {name}: Loading Exchange...")
+            exchange = exchange_class(config)
+            exchange.load_markets()
+
+            # Exchange im Dictionary aktualisieren
+            self.exchanges[name] = exchange
+
+            print(f"✅ {name}: {len(exchange.markets)} markets")
+        except Exception as e:
+            # Fehler-Status setzen
+            self.exchanges[name] = {'status': 'offline', 'error': str(e)}
+            print(f"❌ {name} failed: {e}")
     
     def get_ohlcv(self, symbol: str, timeframe: str = '1d', 
                   limit: int = 500, exchange: str = None) -> pd.DataFrame:
@@ -64,13 +84,21 @@ class MarketEngine:
         
         # Exchange priority order
         if exchange and exchange in self.exchanges:
-            exchange_order = [exchange]
+            # Prüfen ob Exchange online ist
+            if isinstance(self.exchanges[exchange], dict):
+                if self.exchanges[exchange].get('status') != 'online':
+                    exchange = None  # Fallback, wenn Exchange nicht online
+            exchange_order = [exchange] if exchange else []
         else:
-            # Volume-based priority für besten Spread
-            exchange_order = ['binance', 'coinbase', 'bybit', 'kraken', 'okx']
-        
-        for ex_name in exchange_order:
-            if ex_name not in self.exchanges:
+            # Nur Online-Exchanges verwenden
+            exchange_order = []
+
+            # Fallback-Liste mit verfügbaren Exchanges
+        if not exchange_order:
+            for ex_name in ['binance', 'coinbase', 'kraken', 'bybit', 'okx']:
+                # Nur Online-Exchanges zur Liste hinzufügen
+                if ex_name in self.exchanges and not isinstance(self.exchanges[ex_name], dict):
+                    exchange_order.append(ex_name)
                 continue
                 
             try:
@@ -260,18 +288,23 @@ class MarketEngine:
     def get_exchange_info(self) -> Dict[str, Any]:
         """Exchange Status und Info"""
         info = {}
-        
+
         for name, exchange in self.exchanges.items():
             try:
-                info[name] = {
-                    'status': 'online',
-                    'markets': len(exchange.markets),
-                    'rate_limit': exchange.rateLimit,
-                    'has_ohlcv': exchange.has['fetchOHLCV'],
-                }
+                # Wenn es ein Statusobjekt ist
+                if isinstance(exchange, dict) and 'status' in exchange:
+                    info[name] = exchange
+                # Wenn es ein ccxt.Exchange Objekt ist
+                else:
+                    info[name] = {
+                        'status': 'online',
+                        'markets': len(exchange.markets),
+                        'rate_limit': exchange.rateLimit,
+                        'has_ohlcv': exchange.has['fetchOHLCV'],
+                    }
             except Exception as e:
-                info[name] = {'status': 'error', 'error': str(e)}
-        
+                info[name] = {'status': 'offline', 'error': str(e)}
+
         return info
 
 
