@@ -14,6 +14,8 @@ from flask import request
 from core.market_engine import market_engine
 from config.settings import PATTERN_CONFIG
 
+
+
 # Initialize Dash app
 app = dash.Dash(__name__)
 app.title = "Pattern Pilot Pro"
