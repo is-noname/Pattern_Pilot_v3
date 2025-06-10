@@ -105,7 +105,7 @@ def get_layout():
 
     # •••••••••••••••••••••••••• 📉 Main Panel Components •••••••••••••••••••••••••• #
     trading_panel = html.Div([
-        # Controls Row
+        # •••••••••••••••••••••••••• Controls Row •••••••••••••••••••••••••• #
         html.Div([
             html.Div([
                 html.Div("Symbol", className="control-label"),
@@ -190,7 +190,62 @@ def get_layout():
         # Verstecktes Div für Shutdown-Trigger
         html.Div(id="shutdown-trigger", style={"display": "none"}),
 
-        # Chart Area
+        # •••••••••••••••••••••••••• Filter Panel •••••••••••••••••••••••••• #
+        html.Div([
+            html.Div([
+                html.Div("Pattern Filter", className="control-label"),
+                dcc.Dropdown(
+                    id="pattern-type-filter",
+                    options=[
+                                {"label": "All Patterns", "value": "all"}
+                            ] + [
+                                {"label": name.replace('_', ' ').title(), "value": name}
+                                for name in PATTERN_CONFIG['candlestick_patterns']
+                            ],
+                    value="all",
+                    clearable=False,
+                    multi=True,
+                    style={"width": "100%"}
+                )
+            ], className="control-group", style={"flex": "2"}),
+
+            html.Div([
+                html.Div("Direction", className="control-label"),
+                dcc.Checklist(
+                    id="direction-filter",
+                    options=[
+                        {"label": "Bullish", "value": "bullish"},
+                        {"label": "Bearish", "value": "bearish"},
+                        {"label": "Support", "value": "support"},
+                        {"label": "Resistance", "value": "resistance"},
+                        {"label": "Neutral", "value": "neutral"}
+                    ],
+                    value=["bullish", "bearish", "support", "resistance", "neutral"],
+                    inline=True,
+                    labelStyle={"marginRight": "12px", "color": "#e0e0e0"}
+                )
+            ], className="control-group", style={"flex": "3"}),
+
+            html.Div([
+                html.Div("Min Strength", className="control-label"),
+                dcc.Slider(
+                    id="strength-filter",
+                    min=0,
+                    max=1,
+                    step=0.1,
+                    value=0.5,
+                    marks={i / 10: {"label": str(i / 10), "style": {"color": "#e0e0e0"}} for i in range(0, 11)},
+                )
+            ], className="control-group", style={"flex": "2"})
+        ], className="filter-row"),
+
+        # Pattern Count Badge - direkt nach dem Filter-Panel
+        html.Div([
+            html.Span(id="pattern-count-badge", className="pattern-count"),
+            html.Span("Patterns Found", className="pattern-label")
+        ], className="pattern-count-container"),
+
+        # •••••••••••••••••••••••••• Chart Area •••••••••••••••••••••••••• #
         html.Div([
             dcc.Graph(
                 id="main-chart",
@@ -199,7 +254,7 @@ def get_layout():
             )
         ], className="chart-container"),
 
-        # Pattern Summary
+        # •••••••••••••••••••••••••• Pattern Summary •••••••••••••••••••••••••• #
         html.Div(id="pattern-summary")
 
     ], className="trading-panel")
@@ -315,9 +370,14 @@ app.layout = get_layout()
     [Input("symbol-dropdown", "value"),
      Input("timeframe-dropdown", "value"),
      Input("limit-input", "value"),
-     Input("exchange-dropdown", "value")]
+     Input("exchange-dropdown", "value")],
+    # Neue Filter-Inputs
+    [Output("pattern-count-badge", "children"),
+     Input("pattern-type-filter", "value"),
+     Input("direction-filter", "value"),
+     Input("strength-filter", "value")]
 )
-def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange):
+def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, directions, min_strength):
     """Analyze symbol using your existing market engine"""
 
     if not n_clicks:
@@ -341,13 +401,29 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange):
         # Detect patterns using your existing engine
         patterns = market_engine.detect_patterns(df)
 
+        # •••••••••••••••••••••••••• Filter patterns •••••••••••••••••••••••••• #
+        if pattern_types != "all":
+            pattern_filter = pattern_types  # Liste von gewählten Pattern-Typen
+        else:
+            pattern_filter = None  # Alle Pattern-Typen
+
+        filtered_patterns = market_engine.filter_patterns(
+            patterns,
+            min_strength=min_strength,
+            directions=directions,
+            pattern_types=pattern_filter
+        )
+
         # Create chart
-        fig = create_professional_chart(df, patterns, symbol, timeframe)
+        fig = create_professional_chart(df, filtered_patterns, symbol, timeframe)
 
         # Create pattern summary
-        summary = create_pattern_summary(patterns, len(df))
+        summary = create_pattern_summary(filtered_patterns, len(df))
 
-        return fig, summary
+        # Total Patterns = all filtered patterns
+        total_patterns = sum(len(signals) for signals in filtered_patterns.values())
+
+        return fig, summary, total_patterns
 
     except Exception as e:
         return create_error_chart(f"Error: {str(e)}"), html.Div(

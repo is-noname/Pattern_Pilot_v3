@@ -227,7 +227,62 @@ class MarketEngine:
         print(f"🎯 Detected {len(patterns)} pattern types")
         return patterns
 
-    # •••••••••••••••••••••••••• 🔍 Pattern Helper Methods •••••••••••••••••••••••••• #
+    # ==============================================================================
+    # region               Pattern UI Filter
+    # ==============================================================================
+    def filter_patterns(self, patterns: Dict[str, List],
+                        min_strength: float = 0.0,
+                        directions: List[str] = None,
+                        pattern_types: List[str] = None) -> Dict[str, List]:
+        """
+        Dynamischer Pattern-Filter - nimmt ALLE Patterns, auch zukünftige
+
+        Args:
+            patterns: Original Patterns aus detect_patterns()
+            min_strength: Minimale Signalstärke (0.0-1.0)
+            directions: Liste von Richtungen ('bullish', 'bearish', 'neutral', 'support', 'resistance')
+            pattern_types: Spezifische Pattern-Typen (wenn None, dann alle)
+
+        Returns:
+            Gefilterte Patterns
+        """
+        if not patterns:
+            return {}
+
+        filtered = {}
+
+        # 1. Erst nach Pattern-Typen filtern (wenn angegeben)
+        if pattern_types:
+            patterns = {k: v for k, v in patterns.items() if k in pattern_types}
+
+        # 2. Für jedes Pattern die Signale nach Strength/Direction filtern
+        for pattern_name, signals in patterns.items():
+            # Leere Signal-Liste für diesen Pattern-Typ
+            filtered_signals = []
+
+            for signal in signals:
+                # Strength-Filter anwenden
+                if signal.get('strength', 0) < min_strength:
+                    continue
+
+                # Direction-Filter anwenden (wenn angegeben)
+                if directions and signal.get('direction') not in directions:
+                    continue
+
+                # Signal hat alle Filter bestanden
+                filtered_signals.append(signal)
+
+            # Nur Pattern-Typen mit Signalen behalten
+            if filtered_signals:
+                filtered[pattern_name] = filtered_signals
+
+        return filtered
+
+    # endregion
+
+    # ==============================================================================
+    #                      🔍 Pattern Helper Methods
+    # ==============================================================================
     def _extract_pattern_signals(self, talib_result, df: pd.DataFrame, 
                                 pattern_name: str) -> List[Dict]:
         """Konvertiert talib signals zu readable format"""

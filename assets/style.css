@@ -529,3 +529,43 @@ input[type="number"]:focus {
     50% { opacity: 0.4; transform: scale(1); }  /* 👈 Scale(1) behält Originalgröße */
     100% { opacity: 0.2; transform: scale(1); }
 }
+
+/* ========================= */
+/*       Filter Panel        */
+/* ========================= */
+/* Filter Panel Styling */
+.filter-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: end;
+    flex-wrap: wrap;
+    background: #2a2a2a;
+    border: 1px solid #404040;
+    border-radius: 4px;
+    padding: 12px;
+    margin-top: 12px;
+}
+
+.pattern-count-container {
+    background: #2a2a2a;
+    border: 1px solid #404040;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pattern-count {
+    font-weight: bold;
+    font-size: 18px;
+    color: #06fc99;
+    margin-right: 8px;
+}
+
+.pattern-label {
+    color: #e0e0e0;
+    font-size: 14px;
+}
