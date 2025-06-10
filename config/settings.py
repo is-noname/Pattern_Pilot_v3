@@ -79,6 +79,15 @@ PATTERN_CONFIG = {
         'piercing': {'symbol': 'triangle-up-open', 'color': '#44aa44', 'size': 4, 'emoji': '🔺'},
         'dark_cloud': {'symbol': 'triangle-down-open', 'color': '#aa4444', 'size': 4, 'emoji': '🔻'},
         'support_resistance': {'symbol': 'square', 'color': '#aa00ff', 'size': 3, 'emoji': '🔷'},
+        # Neue Pattern-Styles
+        'inverted_hammer': {'symbol': 'triangle-up-open', 'color': '#ff9900', 'size': 4, 'emoji': '🔨'},
+        'marubozu': {'symbol': 'diamond', 'color': '#00ffcc', 'size': 4, 'emoji': '📊'},
+        'spinning_top': {'symbol': 'circle-open', 'color': '#aaaaaa', 'size': 3, 'emoji': '🔄'},
+        'dragonfly_doji': {'symbol': 'triangle-down-dot', 'color': '#33ccff', 'size': 4, 'emoji': '🐉'},
+        'kicking': {'symbol': 'x', 'color': '#ff3366', 'size': 5, 'emoji': '👟'},
+        'tasuki_gap': {'symbol': 'diamond-tall', 'color': '#66ff66', 'size': 4, 'emoji': '🧩'},
+        'breakaway': {'symbol': 'star-diamond', 'color': '#ff6600', 'size': 5, 'emoji': '💥'},
+        'doji_star': {'symbol': 'star', 'color': '#ffff00', 'size': 4, 'emoji': '⭐'},
     }
 }
 # endregion

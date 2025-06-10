@@ -165,8 +165,8 @@ class MarketEngine:
         volume = df['volume'].values
         
         patterns = {}
-        
-        # 🔥 Candlestick Patterns (die wichtigsten von 61 verfügbaren)
+
+        # •••••••••••••••••••••••••• 🔥 Candlestick Patterns •••••••••••••••••••••••••• #
         candlestick_patterns = {
             'doji': talib.CDLDOJI,
             'hammer': talib.CDLHAMMER,
@@ -180,8 +180,19 @@ class MarketEngine:
             'harami': talib.CDLHARAMI,
             'piercing': talib.CDLPIERCING,
             'dark_cloud': talib.CDLDARKCLOUDCOVER,
+            # Zusätzliche einzelne Candlestick-Patterns
+            'inverted_hammer': talib.CDLINVERTEDHAMMER,     # Umgedrehter Hammer
+            'marubozu': talib.CDLMARUBOZU,                  # Volle Kerze ohne Schatten
+            'spinning_top': talib.CDLSPINNINGTOP,           # Spinning Top (Unentschlossenheit)
+            'dragonfly_doji': talib.CDLDRAGONFLYDOJI,       # Dragonfly Doji
+            # Mehr Trend-Confirmation Patterns
+            'kicking': talib.CDLKICKING,                    # Kicking Pattern (starker Trend)
+            'tasuki_gap': talib.CDLTASUKIGAP,               # Tasuki Gap (Trendfortsetzung)
+            'breakaway': talib.CDLBREAKAWAY,                # Breakaway (Trendstart)
+            'doji_star': talib.CDLDOJISTAR,                 # Doji Star (potentielle Umkehr)
         }
-        
+        # (die wichtigsten von 61 verfügbaren)
+
         for name, func in candlestick_patterns.items():
             try:
                 result = func(open_prices, high_prices, low_prices, close_prices)
@@ -191,8 +202,9 @@ class MarketEngine:
                     patterns[name] = signals
             except Exception as e:
                 print(f"⚠️ Pattern {name} failed: {e}")
-        
-        # 🔥 Trend Patterns (Moving Averages, Bollinger, etc.)
+
+        # •••••••••••••••••••••••••• 🔥 Trend Patterns •••••••••••••••••••••••••• #
+        # (Moving Averages, Bollinger, etc.)
         try:
             # Bollinger Bands
             bb_upper, bb_middle, bb_lower = talib.BBANDS(close_prices)
@@ -246,9 +258,8 @@ class MarketEngine:
         bb_width_ma = talib.SMA(bb_width, timeperiod=20)
         
         for i in range(20, len(bb_width)):
-            if (bb_width[i] < bb_width_ma[i] * 0.8 and  # Tight bands
-                bb_width[i-1] >= bb_width_ma[i-1] * 0.8):  # Was wider before
-                
+            if (bb_width[i] < bb_width_ma[i] * 0.8 and      # Tight bands
+                bb_width[i-1] >= bb_width_ma[i-1] * 0.8):   # Was wider before
                 signals.append({
                     'index': i,
                     'datetime': df['datetime'].iloc[i],
