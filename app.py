@@ -473,14 +473,14 @@ def create_professional_chart(df, patterns, symbol, timeframe):
             name="Price",
             increasing_line_color='#06fc99',
             decreasing_line_color='#f44336',
-            increasing_fillcolor='#4CAF50',
-            decreasing_fillcolor='#f44336'
+            increasing_fillcolor='#06fc99',
+            decreasing_fillcolor='#f44336',
         ),
         row=1, col=1
     )
 
     # •••••••••••••••••••••••••• Volume bars •••••••••••••••••••••••••• #
-    colors = ['#4CAF50' if close >= open else '#f44336'
+    colors = ['#06fc99' if close >= open else '#f44336'
               for close, open in zip(df['close'], df['open'])]
 
     fig.add_trace(
