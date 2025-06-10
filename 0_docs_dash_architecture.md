@@ -206,7 +206,7 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange):
 ```python
 # Only runs when button is clicked
 if not n_clicks:
-    return create_placeholder_chart(), html.Div()
+    return create_placeholder_chart(), html.Div(), 0  # Nullwert für Counter
 
 # Button was clicked -> run analysis
 ```
@@ -435,13 +435,13 @@ def get_layout():
 ```python
 def analyze_symbol(n_clicks, ...):
     if not n_clicks:
-        return create_placeholder_chart(), html.Div()
+        return create_placeholder_chart(), html.Div(), 0  # Nullwert für Counter
     
     try:
         # Main logic
         return success_result
     except Exception as e:
-        return create_error_chart(str(e)), error_summary
+        return create_error_chart(str(e)), error_summary, 0  # Nullwert für Counter
 ```
 
 ### 4. Performance

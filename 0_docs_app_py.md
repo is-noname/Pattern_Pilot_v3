@@ -131,7 +131,7 @@ html.Button("[X]", id="shutdown-btn", style={...})
 ```python
 # Zeile 320-322: Exchange-Loading Check
 if not symbol or all(isinstance(ex, dict) for ex in market_engine.exchanges.values()):
-    return create_loading_chart(), html.Div("Exchanges werden geladen...")
+    return create_loading_chart(), html.Div("Exchanges werden geladen..."), 0 # Nullwert für Container
 ```
 
 ### 2. Shutdown Callback

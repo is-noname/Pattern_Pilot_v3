@@ -166,7 +166,7 @@ class MarketEngine:
         
         patterns = {}
 
-        # •••••••••••••••••••••••••• 🔥 Candlestick Patterns •••••••••••••••••••••••••• #
+        # •••••••••••••••••••••••••• 🔥 Candlestick Patterns ######•••••••••••••••••••••••••• #
         candlestick_patterns = {
             'doji': talib.CDLDOJI,
             'hammer': talib.CDLHAMMER,
@@ -203,7 +203,7 @@ class MarketEngine:
             except Exception as e:
                 print(f"⚠️ Pattern {name} failed: {e}")
 
-        # •••••••••••••••••••••••••• 🔥 Trend Patterns •••••••••••••••••••••••••• #
+        # •••••••••••••••••••••••••• 🔥 Trend Patterns ######•••••••••••••••••••••••••• #
         # (Moving Averages, Bollinger, etc.)
         try:
             # Bollinger Bands
@@ -220,6 +220,15 @@ class MarketEngine:
             )
             # Support/Resistance Levels
             patterns['support_resistance'] = self._detect_support_resistance(df)
+
+            # RSI hinzufügen
+            rsi = talib.RSI(close_prices, timeperiod=14)
+            patterns['rsi_oversold'] = self._detect_rsi_signals(rsi, df, 'oversold')
+            patterns['rsi_overbought'] = self._detect_rsi_signals(rsi, df, 'overbought')
+
+            # MACD hinzufügen
+            macd, signal, hist = talib.MACD(close_prices)
+            patterns['macd_crossover'] = self._detect_macd_crossover(macd, signal, df)
             
         except Exception as e:
             print(f"⚠️ Trend patterns failed: {e}")
@@ -283,8 +292,8 @@ class MarketEngine:
     # ==============================================================================
     #                      🔍 Pattern Helper Methods
     # ==============================================================================
-    def _extract_pattern_signals(self, talib_result, df: pd.DataFrame, 
-                                pattern_name: str) -> List[Dict]:
+    # ••••••••••••••••••••••••••  Extract Pattern Signals •••••••••••••••••••••••••• #
+    def _extract_pattern_signals(self, talib_result, df: pd.DataFrame, pattern_name: str) -> List[Dict]:
         """Konvertiert talib signals zu readable format"""
         signals = []
         
@@ -300,7 +309,8 @@ class MarketEngine:
                 })
         
         return signals
-    
+
+    # •••••••••••••••••••••••••• Detect BB-Squeeze •••••••••••••••••••••••••• #
     def _detect_bb_squeeze(self, close_prices, bb_upper, bb_lower, df):
         """Custom Bollinger Band Squeeze detection"""
         signals = []
@@ -326,6 +336,7 @@ class MarketEngine:
         
         return signals
 
+    # •••••••••••••••••••••••••• Detect MA-Crossover •••••••••••••••••••••••••• #
     def _detect_ma_crossover(self, ma_fast, ma_slow, df):
         """Moving Average Crossover detection"""
         signals = []
@@ -358,6 +369,48 @@ class MarketEngine:
         
         return signals
 
+    # •••••••••••••••••••••••••• Detect RSI-Signals •••••••••••••••••••••••••• #
+    def _detect_rsi_signals(self, rsi_values, df: pd.DataFrame, signal_type: str) -> List[Dict]:
+        """RSI Überkauft/Überverkauft Detection"""
+        signals = []
+
+        # RSI-Schwellwerte definieren
+        oversold_threshold = 30
+        overbought_threshold = 70
+
+        for i in range(1, len(rsi_values)):
+            if pd.isna(rsi_values[i]):
+                continue
+
+            # Überverkauft Signal (bullish)
+            if signal_type == 'oversold' and rsi_values[i] <= oversold_threshold and rsi_values[
+                i - 1] > oversold_threshold:
+                signals.append({
+                    'index': i,
+                    'datetime': df['datetime'].iloc[i],
+                    'price': df['close'].iloc[i],
+                    'rsi_value': rsi_values[i],
+                    'strength': 0.8,
+                    'direction': 'bullish',
+                    'pattern': 'rsi_oversold'
+                })
+
+            # Überkauft Signal (bearish)
+            elif signal_type == 'overbought' and rsi_values[i] >= overbought_threshold and rsi_values[
+                i - 1] < overbought_threshold:
+                signals.append({
+                    'index': i,
+                    'datetime': df['datetime'].iloc[i],
+                    'price': df['close'].iloc[i],
+                    'rsi_value': rsi_values[i],
+                    'strength': 0.8,
+                    'direction': 'bearish',
+                    'pattern': 'rsi_overbought'
+                })
+
+        return signals
+
+    # •••••••••••••••••••••••••• Detect Support & Resistance •••••••••••••••••••••••••• #
     def _detect_support_resistance(self, df: pd.DataFrame) -> List[Dict]:
         """Basic Support/Resistance levels"""
         signals = []
@@ -397,6 +450,43 @@ class MarketEngine:
                     'strength': 0.6,
                     'direction': 'support',
                     'pattern': 'support_resistance'
+                })
+
+        return signals
+
+    # •••••••••••••••••••••••••• Detect MACD-Crossover •••••••••••••••••••••••••• #
+    def _detect_macd_crossover(self, macd_line, signal_line, df: pd.DataFrame) -> List[Dict]:
+        """MACD Signal-Line Crossover Detection"""
+        signals = []
+
+        for i in range(1, len(macd_line)):
+            if pd.isna(macd_line[i]) or pd.isna(signal_line[i]):
+                continue
+
+            # Bullish Crossover: MACD crosses above Signal
+            if macd_line[i] > signal_line[i] and macd_line[i - 1] <= signal_line[i - 1]:
+                signals.append({
+                    'index': i,
+                    'datetime': df['datetime'].iloc[i],
+                    'price': df['close'].iloc[i],
+                    'macd_value': macd_line[i],
+                    'signal_value': signal_line[i],
+                    'strength': 0.75,
+                    'direction': 'bullish',
+                    'pattern': 'macd_crossover'
+                })
+
+            # Bearish Crossover: MACD crosses below Signal
+            elif macd_line[i] < signal_line[i] and macd_line[i - 1] >= signal_line[i - 1]:
+                signals.append({
+                    'index': i,
+                    'datetime': df['datetime'].iloc[i],
+                    'price': df['close'].iloc[i],
+                    'macd_value': macd_line[i],
+                    'signal_value': signal_line[i],
+                    'strength': 0.75,
+                    'direction': 'bearish',
+                    'pattern': 'macd_crossover'
                 })
 
         return signals

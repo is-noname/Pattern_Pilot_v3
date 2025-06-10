@@ -72,6 +72,9 @@ PATTERN_CONFIG = {
         'bollinger_squeeze',  # BB Squeeze
         'ma_crossover',  # MA Crossover
         'support_resistance'  # S/R Levels
+        'rsi_oversold',
+        'rsi_overbought',
+        'macd_crossover'
     ],
     
     # Custom Pattern Settings
@@ -83,12 +86,13 @@ PATTERN_CONFIG = {
     # Minimum pattern strength to display
     'min_pattern_strength': 0.5,
 
-    # 🎨 Chart Pattern Visualisierung
+    # •••••••••••••••••••••••••• 🎨 Chart Pattern Visualisierung •••••••••••••••••••••••••• #
     'pattern_styles': {
         'doji': {'symbol': 'circle', 'color': '#117e23', 'size': 3, 'emoji': '🎯'},
         'hammer': {'symbol': 'triangle-up', 'color': '#00ff88', 'size': 4, 'emoji': '🔨'},
         'engulfing': {'symbol': 'star', 'color': '#ff0080', 'size': 5, 'emoji': '🌟'},
-        'ma_crossover': {'symbol': 'diamond', 'color': '#00aaff', 'size': 4, 'emoji': '💎'},
+        'ma_crossover': {'symbol': 'x', 'color': '#ff00dd', 'size': 6, 'emoji': '💎'},
+        'macd_crossover': {'symbol': 'x-open', 'color': '#ff00dd', 'size': 5, 'emoji': '⚡'},
         'support_resistance': {'symbol': 'square', 'color': '#aa00ff', 'size': 3, 'emoji': '🔷'},
         'hanging_man': {'symbol': 'triangle-down', 'color': '#ff4444', 'size': 4, 'emoji': '⚠️'},
         'shooting_star': {'symbol': 'star-triangle-up', 'color': '#ff6600', 'size': 4, 'emoji': '⭐'},
@@ -96,10 +100,9 @@ PATTERN_CONFIG = {
         'evening_star': {'symbol': 'star-diamond', 'color': '#ff3366', 'size': 4, 'emoji': '🌆'},
         'three_white_soldiers': {'symbol': 'arrow-up', 'color': '#44ff44', 'size': 5, 'emoji': '⬆️'},
         'three_black_crows': {'symbol': 'arrow-down', 'color': '#ff4444', 'size': 5, 'emoji': '⬇️'},
-        'harami': {'symbol': 'hourglass', 'color': '#ffaa44', 'size': 3, 'emoji': '⏳', 'line': {'width': 0.5, 'color': 'black'}},
+        'harami': {'symbol': 'hourglass', 'color': '#ffaa44', 'size': 3, 'emoji': '⏳'},
         'piercing': {'symbol': 'triangle-up-open', 'color': '#44aa44', 'size': 4, 'emoji': '🔺'},
         'dark_cloud': {'symbol': 'triangle-down-open', 'color': '#aa4444', 'size': 4, 'emoji': '🔻'},
-        # Neue Pattern-Styles
         'inverted_hammer': {'symbol': 'triangle-up-open', 'color': '#ff9900', 'size': 4, 'emoji': '🔨'},
         'marubozu': {'symbol': 'diamond', 'color': '#00ffcc', 'size': 4, 'emoji': '📊'},
         'spinning_top': {'symbol': 'circle-open', 'color': '#aaaaaa', 'size': 3, 'emoji': '🔄'},
@@ -108,6 +111,9 @@ PATTERN_CONFIG = {
         'tasuki_gap': {'symbol': 'diamond-tall', 'color': '#66ff66', 'size': 4, 'emoji': '🧩'},
         'breakaway': {'symbol': 'star-diamond', 'color': '#ff6600', 'size': 5, 'emoji': '💥'},
         'doji_star': {'symbol': 'star', 'color': '#ffff00', 'size': 4, 'emoji': '⭐'},
+        # Neue Pattern-Styles hinzufügen:
+        'rsi_oversold': {'symbol': 'triangle-up', 'color': '#00ff00', 'size': 4, 'emoji': '📈'},
+        'rsi_overbought': {'symbol': 'triangle-down', 'color': '#ff0000', 'size': 4, 'emoji': '📉'},
     }
 }
 # endregion

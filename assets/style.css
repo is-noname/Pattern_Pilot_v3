@@ -140,11 +140,15 @@ body {
     border-radius: 4px !important;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
     z-index: 1000 !important;
+    max-height: 400px !important;
+
 }
 
 .Select-menu {
     background: #2a2a2a !important;
     border-radius: 4px !important;
+    max-height: 398px !important;
+
 }
 
 .Select-option {

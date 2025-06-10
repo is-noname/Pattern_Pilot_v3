@@ -380,11 +380,11 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, 
     """Analyze symbol using your existing market engine"""
 
     if not n_clicks:
-        return create_placeholder_chart(), html.Div()
+        return create_placeholder_chart(), html.Div(), 0  # Nullwert für Counter
     # Keine Exchanges verfügbar? Early return
     if not symbol or all(isinstance(ex, dict) for ex in market_engine.exchanges.values()):
         return create_loading_chart(), html.Div("Exchanges werden geladen...",
-                                                style={"color": "#ffaa00", "padding": "16px"})
+                                                style={"color": "#ffaa00", "padding": "16px"}), 0  # Nullwert für Counter
 
     try:
         # Use your existing market engine (unchanged!)
@@ -395,7 +395,7 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, 
             return create_error_chart(f"No data found for {symbol}"), html.Div(
                 f"❌ No data found for {symbol}",
                 style={"color": "#f44336", "padding": "16px"}
-            )
+            ), 0  # Nullwert für Counter
 
         # Detect patterns using your existing engine
         patterns = market_engine.detect_patterns(df)
@@ -428,7 +428,7 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, 
         return create_error_chart(f"Error: {str(e)}"), html.Div(
             f"❌ Error: {str(e)}",
             style={"color": "#f44336", "padding": "16px"}
-        )
+        ), 0  # Nullwert für Counter
 
 
 # Shutdown Callback
