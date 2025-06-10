@@ -373,6 +373,9 @@ def shutdown_server(n_clicks):
     return ""
 
 
+# ==============================================================================
+#                      create_professional_chart
+# ==============================================================================
 def create_professional_chart(df, patterns, symbol, timeframe):
     """Create trading chart"""
 
@@ -384,7 +387,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         subplot_titles=(f'{symbol} {timeframe}', 'Volume')
     )
 
-    # Candlestick chart
+    # •••••••••••••••••••••••••• Candlestick chart •••••••••••••••••••••••••• #
     fig.add_trace(
         go.Candlestick(
             x=df['datetime'],
@@ -401,7 +404,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         row=1, col=1
     )
 
-    # Volume bars
+    # •••••••••••••••••••••••••• Volume bars •••••••••••••••••••••••••• #
     colors = ['#4CAF50' if close >= open else '#f44336'
               for close, open in zip(df['close'], df['open'])]
 
@@ -487,7 +490,30 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         font=dict(family="Monaco, Consolas", size=10, color="#e0e0e0"),
         xaxis_rangeslider_visible=False,
         showlegend=False,
-        margin=dict(l=40, r=40, t=40, b=40)
+        margin=dict(l=40, r=40, t=40, b=40),
+        hovermode="x unified"  # Zeigt Hover-Info für alle Traces an einem X-Punkt
+    )
+
+    # X-Achse mit Fadenkreuz
+    fig.update_xaxes(
+        gridcolor='#404040',
+        gridwidth=1,
+        showspikes=True,  # Zeigt vertikale Spike-Linie
+        spikethickness=1,  # Dicke der Linie
+        spikecolor="#06fc99",  # Farbe der Linie (Canto Green)
+        spikemode="across",  # Geht über den ganzen Chart
+        spikesnap="cursor"  # Folgt genau dem Cursor
+    )
+
+    # Y-Achse mit Fadenkreuz
+    fig.update_yaxes(
+        gridcolor='#404040',
+        gridwidth=1,
+        showspikes=True,  # Zeigt horizontale Spike-Linie
+        spikethickness=1,  # Dicke der Linie
+        spikecolor="#06fc99",  # Farbe der Linie (Canto Green)
+        spikemode="across",  # Geht über den ganzen Chart
+        spikesnap="cursor"  # Folgt genau dem Cursor
     )
 
     # Grid styling
