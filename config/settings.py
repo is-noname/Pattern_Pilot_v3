@@ -47,10 +47,31 @@ CHART_CONFIG = {
 PATTERN_CONFIG = {
     # Welche Candlestick-Pattern aktivieren
     'candlestick_patterns': [
-        'doji', 'hammer', 'hanging_man', 'shooting_star',
-        'engulfing_bullish', 'morning_star', 'evening_star',
-        'three_white_soldiers', 'three_black_crows',
-        'harami', 'piercing', 'dark_cloud'
+        'doji',
+        'hammer',
+        'hanging_man',
+        'shooting_star',
+        'engulfing_bullish',
+        'morning_star',
+        'evening_star',
+        'three_white_soldiers',
+        'three_black_crows',
+        'harami',
+        'piercing',
+        'dark_cloud',
+        'inverted_hammer',  # Umgedrehter Hammer
+        'marubozu',  # Volle Kerze ohne Schatten
+        'spinning_top',  # Spinning Top (Unentschlossenheit)
+        'dragonfly_doji',  # Dragonfly Doji
+        'kicking',  # Kicking Pattern (starker Trend)
+        'tasuki_gap',  # Tasuki Gap (Trendfortsetzung)
+        'breakaway',  # Breakaway (Trendstart)
+        'doji_star',  # Doji Star (potentielle Umkehr)
+
+        # Multi-Candle Patterns (auch implementiert)
+        'bollinger_squeeze',  # BB Squeeze
+        'ma_crossover',  # MA Crossover
+        'support_resistance'  # S/R Levels
     ],
     
     # Custom Pattern Settings
