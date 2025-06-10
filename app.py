@@ -365,17 +365,16 @@ app.layout = get_layout()
 #==============================================================================
 @app.callback(
     [Output("main-chart", "figure"),
-     Output("pattern-summary", "children")],
+     Output("pattern-summary", "children"),
+     Output("pattern-count-badge", "children")],  # Filter-Input
     Input("analyze-btn", "n_clicks"),
     [Input("symbol-dropdown", "value"),
      Input("timeframe-dropdown", "value"),
      Input("limit-input", "value"),
      Input("exchange-dropdown", "value")],
-    # Neue Filter-Inputs
-    [Output("pattern-count-badge", "children"),
-     Input("pattern-type-filter", "value"),
-     Input("direction-filter", "value"),
-     Input("strength-filter", "value")]
+    [Input("pattern-type-filter", "value"),  # Filter-Input
+     Input("direction-filter", "value"),  # Filter-Input
+     Input("strength-filter", "value")]  # Filter-Input
 )
 def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, directions, min_strength):
     """Analyze symbol using your existing market engine"""
