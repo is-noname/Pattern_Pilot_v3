@@ -20,6 +20,8 @@ from queue import Queue
 from typing import Dict, List, Optional, Any, Union
 import time  # 'time' hinzufügen
 
+from config.settings import  PATTERN_CONFIG
+
 #==============================================================================
 # region                🔄 MARKET ENGINE HAUPTKLASSE
 #==============================================================================
@@ -223,8 +225,8 @@ class MarketEngine:
             )
             
             # Moving Average Crossovers
-            ma_fast = talib.SMA(close_prices, timeperiod=20)
-            ma_slow = talib.SMA(close_prices, timeperiod=50)
+            ma_fast = talib.SMA(close_prices, PATTERN_CONFIG['ma_crossover_fast'])
+            ma_slow = talib.SMA(close_prices, PATTERN_CONFIG['ma_crossover_slow'])
             patterns['ma_crossover'] = self._detect_ma_crossover(
                 ma_fast, ma_slow, df
             )
@@ -232,7 +234,7 @@ class MarketEngine:
             patterns['support_resistance'] = self._detect_support_resistance(df)
 
             # RSI hinzufügen
-            rsi = talib.RSI(close_prices, timeperiod=14)
+            rsi = talib.RSI(close_prices, PATTERN_CONFIG['rsi_period'])
             patterns['rsi_oversold'] = self._detect_rsi_signals(rsi, df, 'oversold')
             patterns['rsi_overbought'] = self._detect_rsi_signals(rsi, df, 'overbought')
 
@@ -330,7 +332,7 @@ class MarketEngine:
             
         # Squeeze = when bands are tight
         bb_width = (bb_upper - bb_lower) / close_prices
-        bb_width_ma = talib.SMA(bb_width, timeperiod=20)
+        bb_width_ma = talib.SMA(bb_width, PATTERN_CONFIG['bollinger_periods'])
         
         for i in range(20, len(bb_width)):
             if (bb_width[i] < bb_width_ma[i] * 0.8 and      # Tight bands

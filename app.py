@@ -32,7 +32,7 @@ from flask import request
 
 # Import your existing engine and settings
 from core.market_engine import market_engine
-from config.settings import PATTERN_CONFIG, CHART_CONFIG
+from config.settings import UI_CONFIG, PATTERN_CONFIG, CHART_CONFIG
 
 # Initialize Dash app
 app = dash.Dash(__name__)
@@ -129,7 +129,7 @@ def get_layout():
 
     interval = dcc.Interval(
         id='clock-interval',
-        interval=2000,  # 2 Sekunde in Millisekunden
+        interval=UI_CONFIG['clock_interval'],  # 2 Sekunde in Millisekunden
         n_intervals=0
     )
 
@@ -139,7 +139,7 @@ def get_layout():
     # Interval für Background-Thread-Kommunikation
     exchange_interval = dcc.Interval(
         id='exchange-update-interval',
-        interval=1000,  # Polling-Frequenz: 1000ms
+        interval=UI_CONFIG['exchange_interval'],  # Polling-Frequenz: 1000ms
         n_intervals=0
     )
 
@@ -666,7 +666,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
 
     # Professional styling
     fig.update_layout(
-        height=600,
+        height=CHART_CONFIG['height'],
         paper_bgcolor='#1a1a1a',
         plot_bgcolor='#1a1a1a',
         font=dict(family="Monaco, Consolas", size=10, color="#e0e0e0"),

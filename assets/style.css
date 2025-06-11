@@ -372,7 +372,7 @@ input[type="number"]:focus {
 .loading {
     text-align: center;
     color: #666;
-    padding: 8px;       # <- Größe der Punkte beim Laden
+    padding: 8px;       /* <- Größe der Punkte beim Laden */
     font-size: 8px;
 }
 
@@ -572,4 +572,10 @@ input[type="number"]:focus {
 .pattern-label {
     color: #e0e0e0;
     font-size: 14px;
+}
+
+.multi-dropdown .Select-value {
+    margin-right: 4px !important;
+    border-right: 1px solid #555 !important;
+    padding-right: 4px !important;
 }

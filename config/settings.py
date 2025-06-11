@@ -38,14 +38,17 @@ EXCHANGE_CONFIG = {
 # region               🎨 UI KONFIGURATION
 # ==============================================================================
 UI_CONFIG = {
-    'page_title': 'Pattern Pilot v2',
+    'page_title': 'Holy Panel v3',
     'page_icon': '🚀',
     'layout': 'wide',
     'sidebar_width': 300,
     'default_symbols': [
         'BTC/USDT', 'ETH/USDT', 'SOL/USDT'
     ],
-    'default_timeframes': ['1m', '5m', '15m', '1h', '4h', '1d', '1w']
+    'default_timeframes': ['1m', '5m', '15m', '1h', '4h', '1d', '1w'],
+    'default_directions': ["bullish", "bearish", "support", "resistance", "neutral"],
+    'clock_interval': 2000, # 2 Sekunde in Millisekunden
+    'exchange_interval': 1000, # Polling-Frequenz: 1000ms
 }
 # endregion
 
@@ -59,10 +62,14 @@ CHART_CONFIG = {
     'theme': 'plotly_dark',
     'height': 800,
     'colors': {
-        'bullish': '#00ff88',
-        'bearish': '#ff4444',
+        'bullish': '#06fc99',
+        'bearish': '#f44336',
         'neutral': '#ffaa00',
         'background': '#0e1117'
+    },
+    'candle_colors': {
+        'up': '#06fc99',
+        'down': '#f44336'
     }
 }
 # endregion
@@ -106,10 +113,12 @@ PATTERN_CONFIG = {
     ],
     
     # •••••••••••••••••••••••••• 🔧 Custom Pattern Settings 🔧  •••••••••••••••••••••••••• #
-    'bollinger_periods': 20,
-    'ma_fast_period': 20,
-    'ma_slow_period': 50,
-    'rsi_period': 14,
+    'bollinger_periods': 20,        # Standard-Lookback-Periode für BB-Berechnung
+    'rsi_period': 14,               # Lookback-Periode für RSI-Berechnung 14-Perioden RSI ist der Industrie-Standard seit 1978. Overbought >70, Oversold <30
+    'support_resistance_window': 5,
+    # MA_Cross def
+    'ma_crossover_fast': 20,        # Schneller MA für Crossover-Signale
+    'ma_crossover_slow': 50,        # Langsamer MA für Trend-Identifikation
     
     # Minimum pattern strength to display     <--Filter Panel Default??? nach CHART KONFIGURATION verschieben ???
     'min_pattern_strength': 0.5,
