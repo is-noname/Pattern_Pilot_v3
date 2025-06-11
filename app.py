@@ -1,4 +1,13 @@
 # app.py - Pattern Pilot Terminal
+"""
+Pattern Pilot 3.0 Terminal - Hauptanwendung (Dash)
+
+Implementiert ein professionelles Trading-Terminal mit interaktiven Charts,
+Pattern-Detection und Multi-Exchange-Support. Nutzt Dash für die UI und
+verbindet sich mit der market_engine für Daten und Pattern-Analyse.
+
+Enthält alle UI-Callbacks, Chart-Rendering und Layout-Definitionen.
+"""
 import dash
 from dash import dcc, html, Input, Output, callback, dash_table
 import plotly.graph_objects as go

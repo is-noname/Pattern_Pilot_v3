@@ -1,4 +1,13 @@
 # core/market_engine_lite.py - Falls TA-Lib Installation nervt
+"""
+Market Engine Lite - TA-Lib-freie Version !! deaktiviert !!
+
+Leichtgewichtige Alternative zur vollständigen market_engine,
+die ohne externe TA-Lib-Abhängigkeit funktioniert. Implementiert
+grundlegende Pattern-Erkennung mit reinem Python/NumPy.
+
+Ideal für schnelle Tests oder Systeme ohne TA-Lib-Installation.
+"""
 import ccxt
 import pandas as pd
 import numpy as np

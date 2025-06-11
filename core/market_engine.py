@@ -1,4 +1,14 @@
 # core/market_engine.py     MARKET ENGINE CORE - Hauptkomponente v3.0
+"""
+Market Engine - Kern des Pattern Pilot Systems
+
+Zentrale Komponente für Börsenanbindung, Marktdaten-Abruf und
+technische Pattern-Erkennung. Implementiert Multi-Exchange-Support
+mit ccxt und professionelle Chartanalyse mit TA-Lib (150+ Indikatoren).
+
+Unterstützt Threading für asynchrone Exchange-Verbindungen,
+Caching von Marktdaten und flexible Pattern-Filterung.
+"""
 import ccxt
 import pandas as pd
 import talib

@@ -1,4 +1,15 @@
 # config/settings.py - ZENTRALE KONFIGURATION - Settings für Pattern Pilot
+"""
+Zentrale Konfiguration für Pattern Pilot
+
+Enthält alle wichtigen Einstellungen für:
+- Exchange-Verbindungen und API-Parameter
+- Chart-Darstellung und Farbschemata
+- Pattern-Konfiguration und visuelles Styling
+- Cache-Einstellungen und Entwicklungsoptionen
+
+Dient als zentrale Steuerung für das gesamte System.
+"""
 import os
 from typing import Dict, List
 
