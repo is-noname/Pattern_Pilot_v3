@@ -45,7 +45,7 @@ UI_CONFIG = {
     'default_symbols': [
         'BTC/USDT', 'ETH/USDT', 'SOL/USDT'
     ],
-    'default_timeframes': ['1m', '5m', '15m', '1h', '4h', '1d', '1w'],
+    'default_timeframes': ['1m', '5m', '15m', '1h', '4h', '1d', '3d', '1w', '1M'],
     'default_directions': ["bullish", "bearish", "support", "resistance", "neutral"],
     'clock_interval': 2000, # 2 Sekunde in Millisekunden
     'exchange_interval': 1000, # Polling-Frequenz: 1000ms
@@ -74,8 +74,15 @@ CHART_CONFIG = {
 }
 # endregion
 
+
+################################################################################
+#
+#                         🧩 PATTERN KONFIGURATION
+#
+#
+################################################################################
 # ==============================================================================
-# region                🧩 PATTERN KONFIGURATION
+# region
 # ==============================================================================
 PATTERN_CONFIG = {
 
@@ -111,11 +118,14 @@ PATTERN_CONFIG = {
         'rsi_overbought',
         'macd_crossover'
     ],
-    
-    # •••••••••••••••••••••••••• 🔧 Custom Pattern Settings 🔧  •••••••••••••••••••••••••• #
+
+    # ==============================================================================
+    #                      🔧 Custom Pattern Settings 🔧
+    # ==============================================================================
+    # •••••••••••••••••••••••••• 🔧hier TIMEFRAME_CONFIGS implementieren 🔧  •••••••••••••••••••••••••• #
     'bollinger_periods': 20,        # Standard-Lookback-Periode für BB-Berechnung
     'rsi_period': 14,               # Lookback-Periode für RSI-Berechnung 14-Perioden RSI ist der Industrie-Standard seit 1978. Overbought >70, Oversold <30
-    'support_resistance_window': 5,
+    'support_resistance_window': 5, # Lokale Extrema-Fenster
     # MA_Cross def
     'ma_crossover_fast': 20,        # Schneller MA für Crossover-Signale
     'ma_crossover_slow': 50,        # Langsamer MA für Trend-Identifikation
