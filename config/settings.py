@@ -24,6 +24,21 @@ EXCHANGE_CONFIG = {
 # endregion
 
 #==============================================================================
+# region               🎨 UI KONFIGURATION
+#==============================================================================
+UI_CONFIG = {
+    'page_title': 'Pattern Pilot v2',
+    'page_icon': '🚀',
+    'layout': 'wide',
+    'sidebar_width': 300,
+    'default_symbols': [
+        'BTC/USDT', 'ETH/USDT', 'SOL/USDT'
+    ],
+    'default_timeframes': ['1m', '5m', '15m', '1h', '4h', '1d', '1w']
+}
+# endregion
+
+#==============================================================================
 # region               📊 CHART KONFIGURATION
 #==============================================================================
 CHART_CONFIG = {
@@ -42,10 +57,12 @@ CHART_CONFIG = {
 # endregion
 
 #==============================================================================
-# region                🎯 PATTERN KONFIGURATION
+# region                🧩 PATTERN KONFIGURATION
 #==============================================================================
 PATTERN_CONFIG = {
-    # Welche Candlestick-Pattern aktivieren
+
+    # •••••••••••••••••••••••••• Pattern Aktiviereung •••••••••••••••••••••••••• #
+    # (aktuell nur Candlestick-Pattern)
     'candlestick_patterns': [
         'doji',
         'hammer',
@@ -77,13 +94,13 @@ PATTERN_CONFIG = {
         'macd_crossover'
     ],
     
-    # Custom Pattern Settings
+    # •••••••••••••••••••••••••• 🔧 Custom Pattern Settings 🔧  •••••••••••••••••••••••••• #
     'bollinger_periods': 20,
     'ma_fast_period': 20,
     'ma_slow_period': 50,
     'rsi_period': 14,
     
-    # Minimum pattern strength to display
+    # Minimum pattern strength to display     <--Filter Panel Default??? nach CHART KONFIGURATION verschieben ???
     'min_pattern_strength': 0.5,
 
     # •••••••••••••••••••••••••• 🎨 Chart Pattern Visualisierung •••••••••••••••••••••••••• #
@@ -126,22 +143,6 @@ CACHE_CONFIG = {
     'ttl_seconds': 300,  # 5 Minuten
     'type': 'memory',    # 'memory' oder 'redis'
     'redis_url': 'redis://localhost:6379/0'
-}
-# endregion
-
-#==============================================================================
-# region               🎨 UI KONFIGURATION
-#==============================================================================
-UI_CONFIG = {
-    'page_title': 'Pattern Pilot v2',
-    'page_icon': '🚀',
-    'layout': 'wide',
-    'sidebar_width': 300,
-    'default_symbols': [
-        'BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'ADA/USDT',
-        'SOL/USDT', 'MATIC/USDT', 'DOT/USDT', 'LINK/USDT'
-    ],
-    'default_timeframes': ['1m', '5m', '15m', '1h', '4h', '1d', '1w']
 }
 # endregion
 
