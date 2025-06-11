@@ -7,6 +7,17 @@ Pattern-Detection und Multi-Exchange-Support. Nutzt Dash für die UI und
 verbindet sich mit der market_engine für Daten und Pattern-Analyse.
 
 Enthält alle UI-Callbacks, Chart-Rendering und Layout-Definitionen.
+
+Features:
+- Interaktive Candlestick-Charts mit Pattern-Overlay
+- Echtzeit Exchange-Status mit Background-Threading
+- Dynamisches Pattern-Filtering
+- Responsive Layout für Desktop-Anwendungen
+
+Technologie-Stack:
+- Dash (Flask + React)
+- Plotly für interaktive Charts
+- market_engine für Exchange-Connection und Pattern-Detection
 """
 import dash
 from dash import dcc, html, Input, Output, callback, dash_table
@@ -23,8 +34,6 @@ from flask import request
 from core.market_engine import market_engine
 from config.settings import PATTERN_CONFIG, CHART_CONFIG
 
-
-
 # Initialize Dash app
 app = dash.Dash(__name__)
 app.title = "Pattern Pilot Pro"
@@ -33,7 +42,15 @@ app.title = "Pattern Pilot Pro"
 # region               📊 CHART GENERATION HELPERS
 #==============================================================================
 def create_loading_chart():
-    """Loading chart während Exchanges starten"""
+    """
+    Erstellt einen Loading-Chart während Exchanges initialisiert werden.
+
+    Zeigt eine benutzerfreundliche Warteanzeige mit "Exchanges werden geladen"
+    Nachricht auf dunklem Hintergrund.
+
+    Returns:
+        go.Figure: Plotly Figure mit Loading-Anzeige
+    """
     fig = go.Figure()
     fig.add_annotation(
         text="⏳ Exchanges werden geladen... Bitte warten",
@@ -58,6 +75,20 @@ def create_loading_chart():
 #==============================================================================
 def get_layout():
     """Terminal Layout"""
+    """
+    Generiert das komplette Dashboard-Layout der Anwendung.
+
+    Erstellt eine strukturierte UI mit:
+    - Header-Bar mit Exchange-Status und Echtzeit-Uhr
+    - Trading-Panel mit Controls, Chart und Pattern-Summary
+    - News-Sidebar für Market-News
+    - Status-Bar mit Marktmetriken
+
+    Initialisiert auch die Background-Thread-Kommunikation und Daten-Stores.
+
+    Returns:
+        html.Div: Das vollständige Dashboard-Layout als Dash HTML-Struktur
+    """
 
     # Get available symbols from your existing engine
     available_symbols = market_engine.get_available_symbols()[:50]
@@ -318,7 +349,18 @@ def get_layout():
 # region               📈 CHART RENDERING & VISUALIZATION
 #==============================================================================
 def create_placeholder_chart():
-    """Placeholder chart for initial load"""
+    """
+    Placeholder chart for initial load
+
+    Erstellt einen leeren Platzhalter-Chart für den initialen App-Zustand.
+
+    Zeigt eine Anleitung "Select symbol and click ANALYZE to view chart"
+    auf dunklem Hintergrund.
+
+    Returns:
+        go.Figure: Plotly Figure mit Platzhalter-Anzeige
+    """
+
     fig = go.Figure()
     fig.add_annotation(
         text="Select symbol and click ANALYZE to view chart",
@@ -339,7 +381,16 @@ def create_placeholder_chart():
 
 
 def create_news_items():
-    """Generate news items (mock data)"""
+    """
+    Generate news items (mock data)
+    Generiert News-Items für die Sidebar (derzeit Mock-Daten).
+
+    Erstellt eine Liste von formatierten News-Elementen mit verschiedenen
+    Prioritäten (high, medium, low) und Zeitstempeln.
+
+    Returns:
+        list: Liste von html.Div Elementen mit News-Einträgen
+    """
     news_data = [
         {"type": "high", "text": "Bitcoin breaks $67k resistance, eyes $70k target", "time": "14:32"},
         {"type": "medium", "text": "Ethereum merge upgrade shows 15% staking yield increase", "time": "13:45"},
@@ -386,7 +437,26 @@ app.layout = get_layout()
      Input("strength-filter", "value")]  # Filter-Input
 )
 def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, directions, min_strength):
-    """Analyze symbol using your existing market engine"""
+    """
+       Hauptanalyse-Callback für Trading-Symbole.
+
+       Wird ausgelöst durch den ANALYZE-Button. Holt OHLCV-Daten vom Market Engine,
+       detektiert Patterns und generiert Chart-Visualisierung mit gefilterten
+       Pattern-Overlays basierend auf Benutzereinstellungen.
+
+       Args:
+           n_clicks (int): Button-Klick-Counter (Trigger)
+           symbol (str): Trading-Pair (z.B. "BTC/USDT")
+           timeframe (str): Zeitrahmen (z.B. "1d", "4h")
+           limit (int): Anzahl der Candles (50-1000)
+           exchange (str): Exchange-Name oder "auto" für Auto-Routing
+           pattern_types (list/str): Liste der zu zeigenden Pattern-Typen oder "all"
+           directions (list): Zu filternde Richtungen (bullish, bearish, etc.)
+           min_strength (float): Minimale Signalstärke (0.0-1.0)
+
+       Returns:
+           tuple: (Chart-Figure, Pattern-Summary, Pattern-Count)
+       """
 
     if not n_clicks:
         return create_placeholder_chart(), html.Div(), 0  # Nullwert für Counter
@@ -447,6 +517,18 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, 
     prevent_initial_call=True
 )
 def shutdown_server(n_clicks):
+    """
+    Beendet den Dash-Server sauber bei [X]-Button-Klick.
+
+    Versucht zuerst die werkzeug.server.shutdown Funktion aufzurufen,
+    oder verwendet os._exit() als Fallback für Produktionsumgebungen.
+
+    Args:
+        n_clicks (int): Button-Klick-Counter
+
+    Returns:
+        str: Leerer String für Dash Output
+    """
     if n_clicks:
         # Server elegant beenden
         func = request.environ.get('werkzeug.server.shutdown')
@@ -455,13 +537,29 @@ def shutdown_server(n_clicks):
             os._exit(0)
         func()
     return ""
-
+# endregion
 
 # ==============================================================================
-#                      create_professional_chart
+# region                     Create Trading Chart
 # ==============================================================================
 def create_professional_chart(df, patterns, symbol, timeframe):
     """Create trading chart"""
+    """
+    Erstellt einen professionellen Trading-Chart mit Pattern-Overlay.
+
+    Generiert einen zweiteiligen Chart mit Candlestick-Daten oben (70%) und
+    Volume-Daten unten (30%). Fügt Pattern-Marker basierend auf erkannten Signalen
+    und deren Stärke hinzu. Verwendet ein dunkles Trading-Terminal-Theme.
+
+    Args:
+        df (pd.DataFrame): OHLCV-Daten im pandas DataFrame
+        patterns (dict): Dictionary mit erkannten Pattern-Signalen
+        symbol (str): Trading-Symbol für Chart-Titel
+        timeframe (str): Zeitrahmen für Chart-Titel
+
+    Returns:
+        plotly.graph_objects.Figure: Vollständiger Trading-Chart
+    """
 
     fig = make_subplots(
         rows=2, cols=1,
@@ -609,6 +707,21 @@ def create_professional_chart(df, patterns, symbol, timeframe):
 
 def create_pattern_summary(patterns, candle_count):
     """Create pattern analysis summary"""
+    """
+    Erstellt eine zusammenfassende Analyse der erkannten Patterns.
+
+    Generiert eine übersichtliche Zusammenfassung mit:
+    - Anzahl der bullish/bearish Signale
+    - Durchschnittliche Signal-Stärke
+    - Gesamtübersicht über erkannte Pattern-Typen
+
+    Args:
+        patterns (dict): Dictionary mit erkannten Pattern-Signalen
+        candle_count (int): Anzahl der analysierten Candles
+
+    Returns:
+        html.Div: Formatiertes Pattern-Summary-Panel
+    """
 
     if not patterns:
         return html.Div([
@@ -653,6 +766,18 @@ def create_pattern_summary(patterns, candle_count):
 
 def create_error_chart(error_message):
     """Create error chart"""
+    """
+    Erstellt einen Error-Chart mit Fehlermeldung.
+
+    Zeigt eine rote Fehlermeldung in der Mitte des Charts an,
+    wenn die Analyse fehlschlägt.
+
+    Args:
+        error_message (str): Anzuzeigende Fehlermeldung
+
+    Returns:
+        go.Figure: Plotly Figure mit Fehlermeldung
+    """
     fig = go.Figure()
     fig.add_annotation(
         text=error_message,
@@ -677,8 +802,18 @@ def create_error_chart(error_message):
     Input("clock-interval", "n_intervals")
 )
 def update_time(n):
-    return datetime.now().strftime("%H:%M:%S UTC")
+    """
+    Aktualisiert die Zeitanzeige in der Header-Bar.
 
+    Wird alle 2 Sekunden ausgelöst und zeigt die aktuelle UTC-Zeit an.
+
+    Args:
+        n (int): Intervall-Counter
+
+    Returns:
+        str: Formatierte aktuelle Zeit im UTC-Format
+    """
+    return datetime.now().strftime("%H:%M:%S UTC")
 
 # Exchange-Status in Echtzeit aktualisieren
 @app.callback(
@@ -687,7 +822,19 @@ def update_time(n):
     Input('exchange-update-interval', 'n_intervals')
 )
 def update_exchange_status(n):
-    """Prüft auf neue Exchange-Updates aus Background-Threads"""
+    """Prüft auf neue Exchange-Updates aus Background-Threads
+    Aktualisiert die Exchange-Status-Anzeigen in Echtzeit.
+
+    Kommuniziert mit den Background-Threads der market_engine und
+    aktualisiert die Exchange-Status-Indikatoren (online/offline/loading).
+
+    Args:
+        n (int): Intervall-Counter
+
+    Returns:
+        list: Liste mit aktualisierten Status-Store-Daten und DOM-Elementen
+              für jeden Exchange-Status-Indikator
+    """
     # Aktuelle Exchange-Informationen abfragen
     exchange_info = market_engine.get_exchange_info()
 
@@ -716,14 +863,23 @@ def update_exchange_status(n):
     # Ersten Output für Store, restliche für Exchange-Indikatoren
     return [exchange_info] + outputs
 
-
-# Exchange-Dropdown dynamisch aktualisieren wenn neue Exchanges bereit
+# Exchange-Dropdown dynamisch aktualisieren, wenn neue Exchanges bereit
 @app.callback(
     Output("exchange-dropdown", "options"),
     Input("exchange-status-store", "data")
 )
 def update_exchange_dropdown(exchange_info):
-    """Aktualisiert Exchange-Dropdown wenn neue Exchanges verfügbar werden"""
+    """
+    Aktualisiert die Exchange-Dropdown-Optionen basierend auf Online-Status.
+
+    Zeigt nur Exchanges an, die erfolgreich verbunden und online sind.
+
+    Args:
+        exchange_info (dict): Aktueller Status aller Exchanges
+
+    Returns:
+        list: Liste von Dropdown-Optionen für verfügbare Exchanges
+    """
     # Nur Online-Exchanges anzeigen
     online_exchanges = [name for name, info in exchange_info.items()
                         if info.get('status') == 'online']
@@ -744,7 +900,18 @@ def update_exchange_dropdown(exchange_info):
     [Input("clock-interval", "n_intervals")]
 )
 def update_market_stats(n):
-    """Aktualisiert Status-Bar-Daten mit echten Werten aus market_engine"""
+    """
+    Aktualisiert die Marktstatistiken in der Status-Bar.
+
+    Wird alle 2 Sekunden ausgelöst und holt aktuelle Marktdaten
+    aus der market_engine.
+
+    Args:
+        n (int): Intervall-Counter
+
+    Returns:
+        list: Liste mit formatierten Werten für alle Status-Bar-Metriken
+    """
     stats = market_engine.get_market_stats()
     return [
         stats['market_cap'],
@@ -756,4 +923,10 @@ def update_market_stats(n):
 # endregion
 
 if __name__ == '__main__':
+    """
+    Startet den Dash-Server für das Pattern Pilot Terminal.
+
+    Konfiguriert für lokalen Zugriff auf Port 8050 mit deaktiviertem
+    Debug-Modus für Produktionsumgebungen.
+    """
     app.run(debug=False, host='127.0.0.1', port=8050)
