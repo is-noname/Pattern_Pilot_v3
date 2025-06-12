@@ -30,6 +30,14 @@ EXCHANGE_CONFIG = {
     'kraken': {
         'rateLimit': 3000,
         'enableRateLimit': True,
+    },
+    'bybit': {
+        'rateLimit': 1000,
+        'enableRateLimit': True,
+    },
+    'okx': {
+        'rateLimit': 1000,
+        'enableRateLimit': True,
     }
 }
 # endregion
@@ -94,6 +102,7 @@ PATTERN_CONFIG = {
         'hanging_man',
         'shooting_star',
         'engulfing_bullish',
+        'engulfing_bearish',
         'morning_star',
         'evening_star',
         'three_white_soldiers',
@@ -138,7 +147,7 @@ PATTERN_CONFIG = {
         # Canlde-Patterns
         'doji': {'symbol': 'circle', 'color': '#117e23', 'size': 3, 'emoji': '🎯'},
         'hammer': {'symbol': 'triangle-up', 'color': '#00ff88', 'size': 4, 'emoji': '🔨'},
-        'engulfing': {'symbol': 'star', 'color': '#ff0080', 'size': 5, 'emoji': '🌟'},
+        'engulfing': {'symbol': 'star', 'direction': {'bullish': {'color': '##ff0080'}, 'bearish': {'color': '#ff4444'}}, 'size': 5, 'emoji': '🌟'},
         'hanging_man': {'symbol': 'triangle-down', 'color': '#ff4444', 'size': 4, 'emoji': '⚠️'},
         'shooting_star': {'symbol': 'star-triangle-up', 'color': '#ff6600', 'size': 4, 'emoji': '⭐'},
         'morning_star': {'symbol': 'star-square', 'color': '#66ff66', 'size': 4, 'emoji': '🌅'},

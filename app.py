@@ -624,7 +624,14 @@ def create_professional_chart(df, patterns, symbol, timeframe):
             direction = signal.get('direction', 'neutral')
             strength = signal.get('strength', 0.5)
 
-            # Color adjustment based on direction
+            # Color adjustment based on directions (from settings.py)
+            # if 'direction' in style and direction in style['direction']:
+            #     # Neue Struktur mit richtungsabhängigen Farben verwenden
+            #     color = style['direction'][direction]['color']
+            # else:
+                # Fallback auf die Standard-Farbe
+           #     color = style['color']
+
             if direction == 'bullish':
                 color = style['color']
             elif direction == 'bearish':

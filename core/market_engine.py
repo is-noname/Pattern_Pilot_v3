@@ -20,7 +20,7 @@ from queue import Queue
 from typing import Dict, List, Optional, Any, Union
 import time  # 'time' hinzufügen
 
-from config.settings import  PATTERN_CONFIG
+from config.settings import  PATTERN_CONFIG, EXCHANGE_CONFIG
 
 #==============================================================================
 # region                🔄 MARKET ENGINE HAUPTKLASSE
@@ -49,13 +49,19 @@ class MarketEngine:
     # •••••••••••••••••••••••••• 🔄 THREAD-MANAGEMENT •••••••••••••••••••••••••• #
     def _start_exchange_threads(self):
         """Startet Exchange-Loading parallel im Hintergrund"""
-        configs = [
-            ('binance', ccxt.binance, {'rateLimit': 1200}),
-            ('coinbase', ccxt.coinbase, {'rateLimit': 1000}),
-            ('kraken', ccxt.kraken, {'rateLimit': 3000}),
-            ('bybit', ccxt.bybit, {'rateLimit': 1000}),
-            ('okx', ccxt.okx, {'rateLimit': 1000}),
-        ]
+        # Configs aus settings.py holen statt hardcoded
+        configs = []
+        for exchange_name, config in EXCHANGE_CONFIG.items():
+            exchange_class = getattr(ccxt, exchange_name)
+            configs.append((exchange_name, exchange_class, config))
+
+        # configs = [
+        #     ('binance', ccxt.binance, {'rateLimit': 1200}),
+        #     ('coinbase', ccxt.coinbase, {'rateLimit': 1000}),
+        #     ('kraken', ccxt.kraken, {'rateLimit': 3000}),
+        #     ('bybit', ccxt.bybit, {'rateLimit': 1000}),
+        #     ('okx', ccxt.okx, {'rateLimit': 1000}),
+        # ]
 
         # Für jeden Exchange initialen "loading" Status setzen
         for name, _, _ in configs:
@@ -185,6 +191,7 @@ class MarketEngine:
             'hanging_man': talib.CDLHANGINGMAN,
             'shooting_star': talib.CDLSHOOTINGSTAR,
             'engulfing_bullish': talib.CDLENGULFING,
+            'engulfing_bearish': talib.CDLENGULFING,
             'morning_star': talib.CDLMORNINGSTAR,
             'evening_star': talib.CDLEVENINGSTAR,
             'three_white_soldiers': talib.CDL3WHITESOLDIERS,
