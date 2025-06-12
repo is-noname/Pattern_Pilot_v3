@@ -113,7 +113,7 @@ PATTERN_CONFIG = {
         # Multi-Candle Patterns (auch implementiert)
         'bollinger_squeeze',  # BB Squeeze
         'ma_crossover',  # MA Crossover
-        'support_resistance'  # S/R Levels
+        'support_resistance',  # S/R Levels
         'rsi_oversold',
         'rsi_overbought',
         'macd_crossover'
@@ -135,12 +135,10 @@ PATTERN_CONFIG = {
 
     # •••••••••••••••••••••••••• 🎨 Chart Pattern Visualisierung •••••••••••••••••••••••••• #
     'pattern_styles': {
+        # Canlde-Patterns
         'doji': {'symbol': 'circle', 'color': '#117e23', 'size': 3, 'emoji': '🎯'},
         'hammer': {'symbol': 'triangle-up', 'color': '#00ff88', 'size': 4, 'emoji': '🔨'},
         'engulfing': {'symbol': 'star', 'color': '#ff0080', 'size': 5, 'emoji': '🌟'},
-        'ma_crossover': {'symbol': 'x', 'color': '#ff00dd', 'size': 6, 'emoji': '💎'},
-        'macd_crossover': {'symbol': 'x-open', 'color': '#ff00dd', 'size': 5, 'emoji': '⚡'},
-        'support_resistance': {'symbol': 'square', 'color': '#aa00ff', 'size': 3, 'emoji': '🔷'},
         'hanging_man': {'symbol': 'triangle-down', 'color': '#ff4444', 'size': 4, 'emoji': '⚠️'},
         'shooting_star': {'symbol': 'star-triangle-up', 'color': '#ff6600', 'size': 4, 'emoji': '⭐'},
         'morning_star': {'symbol': 'star-square', 'color': '#66ff66', 'size': 4, 'emoji': '🌅'},
@@ -158,9 +156,14 @@ PATTERN_CONFIG = {
         'tasuki_gap': {'symbol': 'diamond-tall', 'color': '#66ff66', 'size': 4, 'emoji': '🧩'},
         'breakaway': {'symbol': 'star-diamond', 'color': '#ff6600', 'size': 5, 'emoji': '💥'},
         'doji_star': {'symbol': 'star', 'color': '#ffff00', 'size': 4, 'emoji': '⭐'},
-        # Neue Pattern-Styles hinzufügen:
+        # Multi-Candle Patterns-Styles
+        'support_resistance': {'symbol': 'square', 'color': '#aa00ff', 'size': 3, 'emoji': '🔷'},
+        'ma_crossover': {'symbol': 'x', 'color': '#ff00dd', 'size': 6, 'emoji': '💎'},
+        'macd_crossover': {'symbol': 'x-open', 'color': '#ff00dd', 'size': 5, 'emoji': '⚡'},
         'rsi_oversold': {'symbol': 'triangle-up', 'color': '#00ff00', 'size': 4, 'emoji': '📈'},
         'rsi_overbought': {'symbol': 'triangle-down', 'color': '#ff0000', 'size': 4, 'emoji': '📉'},
+        'bollinger_squeeze': {'symbol': 'diamond-wide', 'color': '#117e23', 'size': 5, 'emoji': '💥'},
+        #Chart-Patterns
     }
 }
 # endregion
