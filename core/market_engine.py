@@ -318,6 +318,14 @@ class MarketEngine:
         
         for i, signal in enumerate(talib_result):
             if signal != 0:  # talib gibt -100, 0, oder 100 zurück
+                # Wenn pattern_name "engulfing" enthält, Namen modifizieren
+                if pattern_name == "engulfing_bullish" and signal < 0:
+                    continue  # Ignoriere bearish Signale
+                elif pattern_name == "engulfing_bearish" and signal > 0:
+                    continue  # Ignoriere bullish Signale
+
+                final_pattern_name = pattern_name
+
                 signals.append({
                     'index': i,
                     'datetime': df['datetime'].iloc[i],
