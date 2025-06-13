@@ -35,7 +35,6 @@ from typing import Dict, List, Optional, Any, Union
 import time  # 'time' hinzufügen
 
 from config.settings import  PATTERN_CONFIG, EXCHANGE_CONFIG
-from patterns.indicator.bb_squeeze import detect_bb_squeeze
 
 #==============================================================================
 # region                🔄 MARKET ENGINE HAUPTKLASSE
@@ -234,6 +233,23 @@ class MarketEngine:
     # region               🎯 PATTERN DETECTION ENGINE
     # ==============================================================================
     def detect_patterns(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """Pattern detection via pattern_manager + TA-Lib"""
+
+        # TA-Lib patterns (existing)
+        ta_patterns = self._detect_technical_patterns(df)
+
+        # Chart patterns via pattern_manager
+        try:
+            from core.patterns.chart_patterns.pattern_manager import pattern_manager
+            chart_patterns = pattern_manager.detect_patterns(df)
+
+            # Merge patterns
+            return {**ta_patterns, **chart_patterns}
+        except ImportError:
+            # Fallback: nur TA-Lib patterns
+            return ta_patterns
+
+    def _detect_technical_patterns(self, df: pd.DataFrame) -> Dict[str, Any]:
         """
         Identifiziert Trading-Patterns im OHLCV-DataFrame.
 
