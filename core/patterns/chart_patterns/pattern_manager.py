@@ -8,7 +8,7 @@ from .pattern_categories import ALL_BULLISH, ALL_BEARISH, ALL_NEUTRAL
 from . import PATTERN_DETECTORS, PATTERN_RENDERERS
 # Config-Helfer importieren
 from . import get_pattern_config
-from config import TIMEFRAME_CONFIGS, PATTERN_CONFIGS
+from config.pattern_settings import TIMEFRAME_CONFIGS, PATTERN_CONFIGS
 
 
 class PatternManager:

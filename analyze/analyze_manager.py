@@ -18,7 +18,7 @@ class AnalyzeManager:
         """Initialisiert den Analyze-Manager mit allen benötigten Komponenten"""
         self.pattern_analyzer = PatternAnalyzer()
         self.conflict_analyzer = TimeframeConflictAnalyzer(["1d", "3d", "1w", "1M"])
-        from core.patterns.chart_patterns.cache.cache_manager import cache_instance
+        from cache.cache_manager import cache_instance
         self.cache = cache_instance
         
     # def _get_api_manager(self):

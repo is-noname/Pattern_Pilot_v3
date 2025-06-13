@@ -35,6 +35,7 @@ from typing import Dict, List, Optional, Any, Union
 import time  # 'time' hinzufügen
 
 from config.settings import  PATTERN_CONFIG, EXCHANGE_CONFIG
+from patterns.indicator.bb_squeeze import detect_bb_squeeze
 
 #==============================================================================
 # region                🔄 MARKET ENGINE HAUPTKLASSE
@@ -324,7 +325,6 @@ class MarketEngine:
             patterns['bollinger_squeeze'] = self._detect_bb_squeeze(
                 close_prices, bb_upper, bb_lower, df
             )
-            
             # Moving Average Crossovers
             ma_fast = talib.SMA(close_prices, PATTERN_CONFIG['ma_crossover_fast'])
             ma_slow = talib.SMA(close_prices, PATTERN_CONFIG['ma_crossover_slow'])

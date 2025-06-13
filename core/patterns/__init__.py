@@ -17,7 +17,7 @@ from .gaps import detect_breakaway_gap, detect_runaway_gap, detect_exhaustion_ga
 from .rounding_patterns import detect_rounding_bottom, detect_rounding_top, render_rounding_bottom, render_rounding_top
 from .v_cup_patterns import detect_v_pattern, detect_cup_and_handle, render_v_pattern, render_cup_and_handle
 from .diamond_patterns import detect_diamond_top, detect_diamond_bottom, render_diamond_top, render_diamond_bottom
-from config import TIMEFRAME_CONFIGS
+from config.pattern_settings import TIMEFRAME_CONFIGS
 from utils.pattern_strength import calculate_pattern_strength
 
 
