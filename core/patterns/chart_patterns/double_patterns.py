@@ -10,12 +10,12 @@ def detect_double_bottom(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from config.pattern_settings import PATTERN_CONFIGS
-        config = PATTERN_CONFIGS("double_bottom", PATTERN_CONFIGS.get("double_bottom", {}), timeframe)
+        from core.patterns import get_pattern_config
+        config = get_pattern_config("double_bottom", PATTERN_CONFIGS.get("double_bottom", {}), timeframe)
 
-    tolerance = config.pattern_settings.get("tolerance", 0.03)
-    lookback_periods = config.pattern_settings.get("lookback_periods", 5)
-    min_pattern_bars = config.pattern_settings.get("min_pattern_bars", 5)
+    tolerance = config.get("tolerance", 0.03)
+    lookback_periods = config.get("lookback_periods", 5)
+    min_pattern_bars = config.get("min_pattern_bars", 5)
 
     if len(df) < lookback_periods * 2 + min_pattern_bars:
         return []  # Nicht genug Daten
@@ -134,7 +134,7 @@ def detect_double_top(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from config.pattern_settings import get_pattern_config
+        from patterns import get_pattern_config
         config = get_pattern_config("double_top", PATTERN_CONFIGS.get("double_top", {}), timeframe)
 
     tolerance = config.get("tolerance", 0.03)
