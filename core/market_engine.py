@@ -169,62 +169,60 @@ class MarketEngine:
             Uses 5-minute caching to optimize API rate limits across exchanges.
         """
         cache_key = f"{symbol}_{timeframe}_{limit}"
-        
+
         # Cache check
         if cache_key in self.cache:
             cached_data, timestamp = self.cache[cache_key]
             if time.time() - timestamp < 300:  # 5min cache
                 print(f"💾 Cache hit: {symbol}")
                 return cached_data
-        
-        # Exchange priority order
-        if exchange and exchange in self.exchanges:
-            # Prüfen ob Exchange online ist
-            if isinstance(self.exchanges[exchange], dict):
-                if self.exchanges[exchange].get('status') != 'online':
-                    exchange = None  # Fallback, wenn Exchange nicht online
-            exchange_order = [exchange] if exchange else []
-        else:
-            # Nur Online-Exchanges verwenden
-            exchange_order = []
 
-            # Fallback-Liste mit verfügbaren Exchanges
+        # Exchange priority order
+        exchange_order = []
+
+        # Specific exchange requested
+        if exchange and exchange in self.exchanges:
+            if not isinstance(self.exchanges[exchange], dict):
+                exchange_order = [exchange]
+
+        # Fallback: Try all online exchanges
         if not exchange_order:
             for ex_name in ['binance', 'coinbase', 'kraken', 'bybit', 'okx']:
-                # Nur Online-Exchanges zur Liste hinzufügen
-                if ex_name in self.exchanges and not isinstance(self.exchanges[ex_name], dict):
+                if (ex_name in self.exchanges and
+                        not isinstance(self.exchanges[ex_name], dict)):
                     exchange_order.append(ex_name)
-                continue
-                
+
+        # Try each exchange until success
+        for ex_name in exchange_order:
             try:
                 exchange_obj = self.exchanges[ex_name]
                 print(f"🔄 Trying {ex_name} for {symbol}...")
-                
+
                 # Fetch OHLCV
                 ohlcv = exchange_obj.fetch_ohlcv(symbol, timeframe, limit=limit)
-                
+
                 if not ohlcv:
-                    return pd.DataFrame()
-                
+                    continue  # Try next exchange
+
                 # Convert to DataFrame
                 df = pd.DataFrame(ohlcv, columns=[
                     'timestamp', 'open', 'high', 'low', 'close', 'volume'
                 ])
-                
+
                 # Convert timestamp to datetime
                 df['datetime'] = pd.to_datetime(df['timestamp'], unit='ms')
                 df = df.sort_values('datetime').reset_index(drop=True)
-                
+
                 # Cache result
                 self.cache[cache_key] = (df, time.time())
-                
+
                 print(f"✅ {ex_name}: {len(df)} candles")
                 return df
-                
+
             except Exception as e:
                 print(f"❌ {ex_name} error: {e}")
-                return pd.DataFrame()
-        
+                continue  # Try next exchange
+
         print(f"❌ No data found for {symbol}")
         return pd.DataFrame()
     # endregion
