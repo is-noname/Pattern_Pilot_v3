@@ -10,7 +10,7 @@ TYPE = "Momentum"
 settings = INDICATOR["bb_squeeze"]
 
 
-def detect(df):
+def detect_bb_squeeze(df, ):
     """Erkennt Bollinger Band Squeeze Pattern
 
     Args:
