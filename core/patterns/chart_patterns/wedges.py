@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from config import PATTERN_CONFIGS
+from config.pattern_settings import PATTERN_CONFIGS
 
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
