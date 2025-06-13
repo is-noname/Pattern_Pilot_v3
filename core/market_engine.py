@@ -6,8 +6,22 @@ Zentrale Komponente für Börsenanbindung, Marktdaten-Abruf und
 technische Pattern-Erkennung. Implementiert Multi-Exchange-Support
 mit ccxt und professionelle Chartanalyse mit TA-Lib (150+ Indikatoren).
 
-Unterstützt Threading für asynchrone Exchange-Verbindungen,
-Caching von Marktdaten und flexible Pattern-Filterung.
+Funktionale Merkmale:
+- Multi-Exchange-Anbindung (130+ Börsen via ccxt)
+- Threading-basierte asynchrone Exchange-Initialisierung
+- Candlestick-Pattern-Erkennung mit TA-Lib
+- Trend-Pattern-Erkennung (Bollinger, MA, Support/Resistance)
+- Flexibles Pattern-Filtersystem nach Typ, Richtung und Stärke
+- Memory-Cache für API-Daten zur Leistungsoptimierung
+
+Technische Implementierung:
+- Singleton-Architektur für globalen Zugriff
+- Thread-sichere API-Interaktion
+- Adaptive Fehlerbehandlung mit Exchange-Failover
+- Standardisierte Signal-Ausgabe für UI-Integration
+
+Autor: Pattern Pilot Team
+Version: 3.0
 """
 import ccxt
 import pandas as pd
@@ -28,6 +42,22 @@ from config.settings import  PATTERN_CONFIG, EXCHANGE_CONFIG
 
 class MarketEngine:
     """
+    Market Engine - Zentrales Backend für Marktdaten und Pattern-Erkennung.
+
+    Implementiert ein vereinheitlichtes Interface für:
+    1. Exchange-Zugriff und -Management über ccxt
+    2. OHLCV-Datenabruf mit automatischem Failover
+    3. Technische Analyse mit 150+ Pattern-Typen
+    4. Marktstatistik-Aggregation
+
+    Die Klasse wird als Singleton implementiert und ist für Multi-Threading
+    optimiert, wobei Exchange-Verbindungen asynchron im Hintergrund aufgebaut
+    werden, während die UI bereits geladen wird.
+
+    Attribute:
+        exchanges (dict): Exchange-Objekte oder Status-Informationen
+        cache (dict): In-Memory-Cache für API-Anfragen
+
     🚀 Ersetzt: api/api_manager.py + patterns/__init__.py + cache/
     
     Nutzt ccxt für Daten und talib für Pattern - Profi-Standard
@@ -77,7 +107,19 @@ class MarketEngine:
             thread.start()
 
     def _load_exchange_thread(self, name, exchange_class, config):
-        """In separatem Thread ausgeführt"""
+        """In separatem Thread ausgeführt
+        Lädt einen Exchange in einem separaten Thread.
+
+        Wird durch _start_exchange_threads für jede Börse aufgerufen.
+        Setzt den Exchange-Status während der Ladezeit auf 'loading',
+        nach erfolgreicher Verbindung auf ein ccxt.Exchange-Objekt
+        oder bei Fehler auf {'status': 'offline', 'error': '...'}.
+
+        Args:
+            name (str): Name des Exchanges (z.B. 'binance')
+            exchange_class (ccxt.Exchange): ccxt Exchange-Klasse
+            config (dict): Exchange-Konfiguration (rate limits, etc.)
+        """
         try:
             print(f"📡 {name}: Loading Exchange...")
             exchange = exchange_class(config)
@@ -101,6 +143,30 @@ class MarketEngine:
         🎯 Ersetzt: Deine ganze api/ Struktur
         
         Holt OHLCV von besten verfügbaren Exchange
+
+        Retrieve OHLCV data from the best available exchange.
+
+        Implements automatic exchange failover and caching for optimal performance
+        in professional trading environments.
+
+        Args:
+            symbol: Trading pair (e.g., "BTC/USDT", "ETH/USD")
+            timeframe: Candlestick interval ("1m", "5m", "1h", "1d", "1w")
+            limit: Number of candlesticks to retrieve (50-1000)
+            exchange: Specific exchange name or None for auto-routing
+
+        Returns:
+            DataFrame with columns: timestamp, open, high, low, close, volume, datetime
+
+        Raises:
+            Exception: When no data is available from any exchange
+
+        Example:
+            >>> df = market_engine.get_ohlcv("BTC/USDT", "1d", 200)
+            >>> print(f"Retrieved {len(df)} candlesticks")
+
+        Note:
+            Uses 5-minute caching to optimize API rate limits across exchanges.
         """
         cache_key = f"{symbol}_{timeframe}_{limit}"
         
@@ -168,6 +234,34 @@ class MarketEngine:
     # ==============================================================================
     def detect_patterns(self, df: pd.DataFrame) -> Dict[str, Any]:
         """
+        Identifiziert Trading-Patterns im OHLCV-DataFrame.
+
+        Nutzt TA-Lib für 61 Candlestick-Patterns sowie eigene Algorithmen
+        für komplexere Muster wie Bollinger Squeezes, Moving Average
+        Crossovers und Support/Resistance-Levels.
+
+        Jedes erkannte Pattern wird mit Metadaten angereichert:
+        - Position (Index, Datum)
+        - Preis beim Signal
+        - Signalstärke (0.0-1.0)
+        - Richtung (bullish, bearish, neutral)
+
+        Args:
+            df (pd.DataFrame): DataFrame mit OHLCV-Daten
+
+        Returns:
+            Dict[str, List[Dict]]: Erkannte Patterns nach Typ gruppiert
+
+        Notes:
+        Startet Exchange-Loading parallel im Hintergrund.
+
+        Initialisiert Daemon-Threads für jede Exchange-Verbindung,
+        um die Benutzeroberfläche responsiv zu halten, während
+        Exchange-Verbindungen aufgebaut werden.
+
+        Threads verwenden die Konfiguration aus settings.py für
+        Rate-Limits und andere Exchange-spezifische Parameter.
+
         🎯 Ersetzt: Deine ganze patterns/ Struktur
         
         Nutzt talib für 150+ professionelle Pattern
@@ -265,14 +359,21 @@ class MarketEngine:
         """
         Dynamischer Pattern-Filter - nimmt ALLE Patterns, auch zukünftige
 
+            Filtert erkannte Patterns nach benutzerdefinierten Kriterien.
+
+        Ermöglicht dynamisches Pattern-Filtering nach:
+        - Minimale Signalstärke (0.0-1.0)
+        - Signal-Richtung (bullish, bearish, neutral, support, resistance)
+        - Pattern-Typen (z.B. 'doji', 'hammer', etc.)
+
         Args:
             patterns: Original Patterns aus detect_patterns()
             min_strength: Minimale Signalstärke (0.0-1.0)
-            directions: Liste von Richtungen ('bullish', 'bearish', 'neutral', 'support', 'resistance')
-            pattern_types: Spezifische Pattern-Typen (wenn None, dann alle)
+            directions: Liste von Richtungen (None = alle)
+            pattern_types: Spezifische Pattern-Typen (None = alle)
 
         Returns:
-            Gefilterte Patterns
+            Dict[str, List]: Gefilterte Patterns
         """
         if not patterns:
             return {}
@@ -313,7 +414,21 @@ class MarketEngine:
     # ==============================================================================
     # ••••••••••••••••••••••••••  Extract Pattern Signals •••••••••••••••••••••••••• #
     def _extract_pattern_signals(self, talib_result, df: pd.DataFrame, pattern_name: str) -> List[Dict]:
-        """Konvertiert talib signals zu readable format"""
+        """
+        Konvertiert TA-Lib Signale in standardisiertes Ausgabeformat.
+
+        Transformiert die numerischen TA-Lib Ergebnisse (0, 100, -100) in
+        strukturierte Signalobjekte mit allen relevanten Metadaten für
+        die weitere Verarbeitung und Visualisierung.
+
+        Args:
+            talib_result: Numpy-Array mit TA-Lib Signalwerten
+            df: DataFrame mit OHLCV-Daten
+            pattern_name: Name des erkannten Pattern-Typs
+
+        Returns:
+            List[Dict]: Liste von strukturierten Signal-Objekten
+        """
         signals = []
         
         for i, signal in enumerate(talib_result):
@@ -339,7 +454,23 @@ class MarketEngine:
 
     # •••••••••••••••••••••••••• Detect BB-Squeeze •••••••••••••••••••••••••• #
     def _detect_bb_squeeze(self, close_prices, bb_upper, bb_lower, df):
-        """Custom Bollinger Band Squeeze detection"""
+        """
+        Custom Bollinger Band Squeeze detection
+
+
+        Identifiziert Phasen niedriger Volatilität, bei denen die
+        Bollinger Bänder sich verengen, was oft auf eine bevorstehende
+        Volatilitätsexplosion hindeutet.
+
+        Args:
+            close_prices: Numpy-Array mit Schlusskursen
+            bb_upper: Oberes Bollinger Band
+            bb_lower: Unteres Bollinger Band
+            df: DataFrame mit OHLCV-Daten
+
+        Returns:
+            List[Dict]: Liste von Squeeze-Signalobjekten
+        """
         signals = []
         
         if len(bb_upper) < 20:
@@ -365,7 +496,22 @@ class MarketEngine:
 
     # •••••••••••••••••••••••••• Detect MA-Crossover •••••••••••••••••••••••••• #
     def _detect_ma_crossover(self, ma_fast, ma_slow, df):
-        """Moving Average Crossover detection"""
+        """
+        Moving Average Crossover detection
+
+        Erkennt Moving Average Crossover Signale.
+
+        Identifiziert Kreuzungen zwischen schnellem und langsamem
+        gleitenden Durchschnitt, was als Trendwechselsignal gilt.
+
+        Args:
+            ma_fast: Schneller gleitender Durchschnitt (Numpy-Array)
+            ma_slow: Langsamer gleitender Durchschnitt (Numpy-Array)
+            df: DataFrame mit OHLCV-Daten
+
+        Returns:
+            List[Dict]: Liste von MA-Crossover-Signalobjekten
+        """
         signals = []
         
         for i in range(1, len(ma_fast)):
@@ -524,7 +670,20 @@ class MarketEngine:
     # region               🔧 UTILITY & HELPER METHODEN
     # ==============================================================================
     def get_available_symbols(self, exchange: str = 'binance') -> List[str]:
-        """Alle verfügbaren Trading-Pairs"""
+        """Alle verfügbaren Trading-Pairs
+
+        Gibt eine Liste verfügbarer Trading-Pairs zurück.
+
+        Holt die verfügbaren Symbole von der angegebenen Exchange
+        oder gibt Standardwerte zurück, wenn die Exchange nicht
+        verfügbar ist.
+
+        Args:
+            exchange (str): Exchange-Name (default: 'binance')
+
+        Returns:
+            List[str]: Liste verfügbarer Trading-Pairs oder Standardwerte
+        """
         default_symbols = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT']  # Sichere Defaults
 
         if exchange not in self.exchanges or isinstance(self.exchanges[exchange], dict):
@@ -538,7 +697,23 @@ class MarketEngine:
             return default_symbols
 
     def get_market_stats(self) -> Dict[str, Any]:
-        """Globale Marktdaten für Status-Bar"""
+        """
+        Globale Marktdaten für Status-Bar
+
+        Aggregiert globale Marktstatistiken für die Status-Bar.
+
+        Sammelt Daten wie:
+        - Marktkapitalisierung
+        - 24h-Handelsvolumen
+        - Fear & Greed Index
+        - BTC-Dominanz
+        - Anzahl aktiver Trading-Pairs
+
+        Implementiert Cache-Mechanismus für Performance-Optimierung.
+
+        Returns:
+            Dict[str, Any]: Aggregierte Marktstatistiken
+        """
         # Cache check
         if 'market_stats' in self.cache:
             cached_data, timestamp = self.cache['market_stats']
@@ -627,7 +802,21 @@ class MarketEngine:
         return stats
 
     def get_exchange_info(self) -> Dict[str, Any]:
-        """Exchange Status und Info"""
+        """
+        Exchange Status und Info
+
+        Liefert Status-Informationen zu allen konfigurierten Exchanges.
+
+        Erstellt ein strukturiertes Dictionary mit Status-Information
+        für jede Exchange, einschließlich:
+        - Online/Offline-Status
+        - Anzahl verfügbarer Markets
+        - Rate-Limit-Konfiguration
+        - Verfügbare Funktionen
+
+        Returns:
+            Dict[str, Any]: Exchange-Status und -Information
+        """
         info = {}
 
         for name, exchange in self.exchanges.items():
@@ -651,5 +840,5 @@ class MarketEngine:
 
 # endregion
 
-# Singleton instance
+# Singleton-Instanz für globalen Zugriff
 market_engine = MarketEngine()

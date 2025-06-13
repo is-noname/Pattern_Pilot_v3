@@ -4,7 +4,7 @@ Zentrale Schnittstelle für alle Analysekomponenten
 Verhindert zirkuläre Importe durch zentrale Koordination
 """
 #from patterns import detect_all_patterns
-from patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH
+from core.patterns.chart_patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH
 from analyze.pattern_analyzer import PatternAnalyzer
 from analyze.timeframe_conflict_analyzer import TimeframeConflictAnalyzer
 
@@ -18,7 +18,7 @@ class AnalyzeManager:
         """Initialisiert den Analyze-Manager mit allen benötigten Komponenten"""
         self.pattern_analyzer = PatternAnalyzer()
         self.conflict_analyzer = TimeframeConflictAnalyzer(["1d", "3d", "1w", "1M"])
-        from cache.cache_manager import cache_instance
+        from core.patterns.chart_patterns.cache.cache_manager import cache_instance
         self.cache = cache_instance
         
     # def _get_api_manager(self):
