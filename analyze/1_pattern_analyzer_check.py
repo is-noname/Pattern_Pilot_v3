@@ -155,7 +155,7 @@ def test_pattern_analyzer():
                 print(f"Durchschnitt bestätigte Patterns: {avg_confirmed:.2f}")
 
         # Pattern-Verteilung nach Kategorien
-        from patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH, ALL_NEUTRAL
+        from core.patterns.chart_patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH, ALL_NEUTRAL
 
         print("\n📊 Pattern-Verteilung:")
         bullish_count = 0

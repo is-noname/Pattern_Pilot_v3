@@ -1,7 +1,7 @@
 # analyze/pattern_analyzer.py
 import pandas as pd
 from typing import Dict, Any, List
-from patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH, ALL_NEUTRAL
+from core.patterns.chart_patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH, ALL_NEUTRAL
 from utils.pattern_strength import calculate_pattern_strength
 from analyze.timeframe_conflict_analyzer import TimeframeConflictAnalyzer
 

@@ -88,7 +88,7 @@ class MultiTimeframeAnalyzer:
         if not results['timeframe_patterns']:
             return "neutral"
 
-        from patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH
+        from core.patterns.chart_patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH
 
         bullish_score = 0
         bearish_score = 0

@@ -1,6 +1,6 @@
 # utils/pattern_strength.py   !!!!! noch aus dem alten pattern pilot. evtl anpasssen!!!!!
 import numpy as np
-from patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH, ALL_NEUTRAL
+from core.patterns.chart_patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH, ALL_NEUTRAL
 
 def calculate_pattern_strength(pattern, pattern_type, df, timeframe, state):
     """
