@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from config import PATTERN_CONFIGS
+from config.pattern_settings import PATTERN_CONFIGS
 
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
@@ -16,7 +16,7 @@ def detect_head_and_shoulders(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from config.pattern_settings import get_pattern_config
         config = get_pattern_config("head_and_shoulders", PATTERN_CONFIGS.get("head_and_shoulders", {}), timeframe)
 
     tolerance = config.get("tolerance", 0.05)
@@ -172,7 +172,7 @@ def detect_inverse_head_and_shoulders(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from config.pattern_settings import get_pattern_config
         config = get_pattern_config("inverse_head_and_shoulders", PATTERN_CONFIGS.get("inverse_head_and_shoulders", {}),
                                     timeframe)
 
