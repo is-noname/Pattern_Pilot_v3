@@ -1,14 +1,20 @@
 # config/settings.py - ZENTRALE KONFIGURATION - Settings für Pattern Pilot
 """
-Zentrale Konfiguration für Pattern Pilot
+Zentrale Konfiguration für Pattern Pilot 3.0
 
-Enthält alle wichtigen Einstellungen für:
-- Exchange-Verbindungen und API-Parameter
-- Chart-Darstellung und Farbschemata
-- Pattern-Konfiguration und visuelles Styling
-- Cache-Einstellungen und Entwicklungsoptionen
+Definiert alle systemweiten Parameter, Grenzwerte und Standardeinstellungen für:
+1. Exchange-Konfiguration: API-Limits, Rate-Limitierung, Sandbox-Modi
+2. UI-Komponenten: Layout, Standardwerte, Aktualisierungsintervalle
+3. Chart-Rendering: Farbpaletten, Dimensionen, Default-Werte
+4. Pattern-Erkennung: Aktivierte Muster, Erkennungsparameter, Visualisierungsattribute
+5. Cache-Verwaltung: Retention-Strategien, TTL-Werte, Backend-Typen
+6. Entwicklungsumgebung: Debug-Flags, Profiling-Settings, Mock-Daten
 
-Dient als zentrale Steuerung für das gesamte System.
+Diese Datei dient als zentraler Kontrollpunkt für systemweites Verhalten
+und sollte bei Änderungen mit besonderer Sorgfalt behandelt werden.
+
+HINWEIS: Umgebungsspezifische Einstellungen werden über Umgebungsvariablen
+gesteuert und in DEV_CONFIG überschrieben.
 """
 import os
 from typing import Dict, List
@@ -17,6 +23,17 @@ from typing import Dict, List
 # ==============================================================================
 # region               📡 EXCHANGE KONFIGURATION
 # ==============================================================================
+"""
+EXCHANGE_CONFIG: Dictionary mit Exchange-spezifischen Konfigurationsparametern
+
+Enthält pro Exchange:
+- rateLimit: Minimale Zeit zwischen API-Anfragen in ms
+- enableRateLimit: Flag für automatische Rate-Limit-Einhaltung
+- sandbox: Optional, aktiviert Testnet/Sandbox für sichere Tests
+
+Beeinflusst direkt das Verhalten des ccxt-Exchange-Objekts bei Initialisierung.
+"""
+
 EXCHANGE_CONFIG = {
     'binance': {
         'rateLimit': 1200,
@@ -45,6 +62,18 @@ EXCHANGE_CONFIG = {
 # ==============================================================================
 # region               🎨 UI KONFIGURATION
 # ==============================================================================
+"""
+UI_CONFIG: UI-spezifische Einstellungen für das Dashboard
+
+Steuert Erscheinungsbild und Standardwerte der Benutzeroberfläche:
+- Titel und Icons
+- Layout-Struktur
+- Standard-Symbole und Zeitrahmen
+- Aktualisierungsintervalle für Live-Daten
+- Filtereinstellungen für Direction/Strength
+
+Direkt von app.py verwendet ohne zusätzliche Transformation.
+"""
 UI_CONFIG = {
     'page_title': 'Holy Panel v3',
     'page_icon': '🚀',
@@ -63,6 +92,17 @@ UI_CONFIG = {
 # ==============================================================================
 # region               📊 CHART KONFIGURATION
 # ==============================================================================
+"""
+CHART_CONFIG: Einstellungen für Chart-Rendering und -Darstellung
+
+Definiert Parameter für Plotly-Charts:
+- Standardwerte für Candle-Anzahl und Zeitrahmen
+- Maximale Candle-Anzahl für Performance-Optimierung
+- Farbschema für Kurselemente
+- Dimensionen und Theme des Charts
+
+Wird von create_professional_chart und verwandten Funktionen verwendet.
+"""
 CHART_CONFIG = {
     'default_candles': 200,
     'max_candles': 1000,
@@ -82,7 +122,6 @@ CHART_CONFIG = {
 }
 # endregion
 
-
 ################################################################################
 #
 #                         🧩 PATTERN KONFIGURATION
@@ -92,6 +131,18 @@ CHART_CONFIG = {
 # ==============================================================================
 # region
 # ==============================================================================
+"""
+PATTERN_CONFIG: Konfiguration für Pattern-Erkennung und -Visualisierung
+
+Umfasst:
+1. candlestick_patterns: Aktivierte Pattern-Typen für Erkennung
+2. Technische Parameter für komplexe Patterns (Perioden, Fenstergrößen)
+3. Visuelle Darstellung (Farben, Symbole, Größen) pro Pattern-Typ
+4. Stärke-Schwellenwerte für Filterung
+
+Kritisch für die Genauigkeit und Zuverlässigkeit der Pattern-Erkennung.
+Beeinflusst direkt, welche Patterns in der UI angezeigt werden.
+"""
 PATTERN_CONFIG = {
 
     # •••••••••••••••••••••••••• Pattern Aktivierung •••••••••••••••••••••••••• #
@@ -181,6 +232,17 @@ PATTERN_CONFIG = {
 # ==============================================================================
 # region              💾 CACHE KONFIGURATION
 # ==============================================================================
+"""
+CACHE_CONFIG: Einstellungen für Daten-Caching
+
+Definiert:
+- Aktivierung/Deaktivierung des Caches
+- Time-to-Live (TTL) für Cache-Einträge in Sekunden
+- Cache-Backend-Typ (Memory, Redis)
+- Verbindungsparameter für externe Cache-Backends
+
+Kritisch für Performance-Optimierung und API-Rate-Limit-Einhaltung.
+"""
 CACHE_CONFIG = {
     'enabled': True,
     'ttl_seconds': 300,  # 5 Minuten
@@ -192,6 +254,17 @@ CACHE_CONFIG = {
 # ==============================================================================
 # region               🔧 DEVELOPMENT SETTINGS
 # ==============================================================================
+"""
+DEV_CONFIG: Entwicklungs- und Debug-Einstellungen
+
+Umfasst:
+- Debug-Modus-Aktivierung (über Umgebungsvariable)
+- Log-Level-Konfiguration
+- Profiling-Optionen
+- Mock-Daten-Aktivierung für Offline-Tests
+
+WICHTIG: Im Produktivbetrieb sollten debug_mode und mock_data deaktiviert sein.
+"""
 DEV_CONFIG = {
     'debug_mode': os.getenv('DEBUG', 'False').lower() == 'true',
     'log_level': os.getenv('LOG_LEVEL', 'INFO'),
@@ -200,6 +273,14 @@ DEV_CONFIG = {
 }
 
 # API Keys (falls Premium-Features benötigt)
+"""
+API_KEYS: API-Schlüssel für Exchange-Verbindungen
+
+Bezieht Schlüssel aus Umgebungsvariablen für sichere Verwaltung.
+Notwendig für bestimmte Exchange-Funktionalitäten und Premium-Features.
+
+SICHERHEITSHINWEIS: API-Schlüssel sollten NIE direkt im Code gespeichert werden.
+"""
 API_KEYS = {
     # Meiste ccxt Exchanges brauchen keine Keys für Public Data
     'binance': {
@@ -214,6 +295,17 @@ API_KEYS = {
 }
 
 # 📱 Mobile Optimierung
+"""
+MOBILE_CONFIG: Mobile-spezifische Optimierungen
+
+Konfiguriert Anpassungen für mobile Geräte:
+- Responsive Darstellung
+- Touch-Optimierungen
+- UI-Vereinfachungen
+- Performance-Optimierungen
+
+Hinweis: Primär für zukünftige mobile Unterstützung vorgesehen.
+"""
 MOBILE_CONFIG = {
     'responsive_charts': True,
     'touch_friendly': True,
@@ -225,15 +317,43 @@ MOBILE_CONFIG = {
 # ==============================================================================
 # region               🔧 UTILITY FUNKTIONEN
 # ==============================================================================
+
 def get_exchange_config(exchange_name: str) -> Dict:
-    """Holt Konfiguration für spezifischen Exchange"""
+    """
+    Extrahiert Konfiguration für einen spezifischen Exchange.
+
+    Gibt die vollständige Konfiguration für den angegebenen Exchange zurück
+    oder ein leeres Dictionary, wenn der Exchange nicht konfiguriert ist.
+
+    Args:
+        exchange_name (str): Name des Exchange (z.B. 'binance', 'kraken')
+
+    Returns:
+        Dict: Exchange-Konfigurationsparameter aus EXCHANGE_CONFIG
+    """
     return EXCHANGE_CONFIG.get(exchange_name, {})
 
 def get_enabled_patterns() -> List[str]:
-    """Gibt Liste der aktivierten Pattern zurück"""
+    """
+    Gibt Liste der aktivierten Pattern zurück
+
+    Extrahiert die aktiven Pattern-Typen aus der PATTERN_CONFIG
+    zur Verwendung in der Pattern-Erkennung und UI-Filterung.
+
+    Returns:
+        List[str]: Liste aller aktivierten Pattern-Namen
+    """
     return PATTERN_CONFIG['candlestick_patterns']
 
 def is_debug_mode() -> bool:
-    """Prüft ob Debug-Modus aktiv"""
+    """
+    Prüft ob Debug-Modus aktiv
+
+    Wertet die Konfiguration in DEV_CONFIG aus, die
+    durch Umgebungsvariablen gesteuert werden kann.
+
+    Returns:
+        bool: True wenn Debug-Modus aktiv, sonst False
+    """
     return DEV_CONFIG['debug_mode']
 # endregion

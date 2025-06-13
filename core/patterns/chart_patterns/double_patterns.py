@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from config import PATTERN_CONFIGS
+from config.pattern_settings import PATTERN_CONFIGS
 
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
@@ -10,7 +10,7 @@ def detect_double_bottom(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from config.pattern_settings import get_pattern_config
         config = get_pattern_config("double_bottom", PATTERN_CONFIGS.get("double_bottom", {}), timeframe)
 
     tolerance = config.get("tolerance", 0.03)
@@ -134,7 +134,7 @@ def detect_double_top(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from config.pattern_settings import get_pattern_config
         config = get_pattern_config("double_top", PATTERN_CONFIGS.get("double_top", {}), timeframe)
 
     tolerance = config.get("tolerance", 0.03)
