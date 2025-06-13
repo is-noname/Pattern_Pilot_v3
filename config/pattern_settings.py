@@ -61,13 +61,6 @@ TIMEFRAME_CONFIGS = {
     #                      1 Day
     # ==============================================================================
     "1d": {
-        # •••••••••••••••••••••••••• Candlestick Patterns •••••••••••••••••••••••••• #
-        # •••••••••••••••••••••••••• Indicator Patterns •••••••••••••••••••••••••• #
-        "macd_cross": {"active": True, "body_size_threshold": 0.05, "min_shadow_ratio": 2.0, "reliability": 6},
-
-        # BB-Breite unter 80% des MA
-        "bb_squeeze": {"active": True, "compression_threshold": 0.8, "reliability": 8},
-
         # •••••••••••••••••••••••••• Chart Patterns •••••••••••••••••••••••••• #
         "double_bottom": {"active": True, "tolerance": 0.03, "lookback_periods": 5, "min_pattern_bars": 5},
         "double_top": {"tolerance": 0.03, "lookback_periods": 5, "min_pattern_bars": 5},
@@ -83,13 +76,6 @@ TIMEFRAME_CONFIGS = {
     #                      3 Days
     # ==============================================================================
     "3d": {
-        # •••••••••••••••••••••••••• Candlestick Patterns •••••••••••••••••••••••••• #
-        "macd_cross": {"active": True, "body_size_threshold": 0.05, "min_shadow_ratio": 2.0, "reliability": 6},
-
-        # •••••••••••••••••••••••••• Indicator Patterns •••••••••••••••••••••••••• #
-        # BB-Breite unter 80% des MA
-        "bb_squeeze": {"active": True, "compression_threshold": 0.8, "reliability": 8},
-
         # •••••••••••••••••••••••••• Chart Patterns •••••••••••••••••••••••••• #
         "double_bottom": {"tolerance": 0.04, "lookback_periods": 4, "min_pattern_bars": 4},
         "double_top": {"tolerance": 0.04, "lookback_periods": 4, "min_pattern_bars": 4},
@@ -105,13 +91,6 @@ TIMEFRAME_CONFIGS = {
     #                      1 Week
     # ==============================================================================
     "1w": {
-        # •••••••••••••••••••••••••• Candlestick Patterns •••••••••••••••••••••••••• #
-        "macd_cross": {"active": True, "body_size_threshold": 0.05, "min_shadow_ratio": 2.0, "reliability": 6},
-
-        # •••••••••••••••••••••••••• Indicator Patterns •••••••••••••••••••••••••• #
-        # BB-Breite unter 80% des MA
-        "bb_squeeze": {"active": True, "compression_threshold": 0.8, "reliability": 8},
-
         # •••••••••••••••••••••••••• Chart Patterns •••••••••••••••••••••••••• #
         "double_bottom": {"tolerance": 0.05, "lookback_periods": 3, "min_pattern_bars": 3},
         "double_top": {"tolerance": 0.05, "lookback_periods": 3, "min_pattern_bars": 3},
@@ -127,12 +106,6 @@ TIMEFRAME_CONFIGS = {
     #                      1 Month
     # ==============================================================================
     "1m": {
-        # •••••••••••••••••••••••••• Candlestick Patterns •••••••••••••••••••••••••• #
-        "macd_cross": {"active": True, "body_size_threshold": 0.05, "min_shadow_ratio": 2.0, "reliability": 6},
-
-        # •••••••••••••••••••••••••• Indicator Patterns •••••••••••••••••••••••••• #
-        # BB-Breite unter 80% des MA
-        "bb_squeeze": {"active": True, "compression_threshold": 0.8, "reliability": 8},
 
         # •••••••••••••••••••••••••• Chart Patterns •••••••••••••••••••••••••• #
         "double_bottom": {"tolerance": 0.07, "lookback_periods": 3, "min_pattern_bars": 3},
