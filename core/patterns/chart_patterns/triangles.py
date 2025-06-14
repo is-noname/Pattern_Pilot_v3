@@ -16,7 +16,7 @@ def detect_ascending_triangle(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("ascending_triangle", PATTERN_CONFIGS.get("ascending_triangle", {}), timeframe)
 
     lookback_periods = config.get("lookback_periods", 5)
@@ -232,7 +232,7 @@ def detect_descending_triangle(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("descending_triangle", PATTERN_CONFIGS.get("descending_triangle", {}), timeframe)
 
     lookback_periods = config.get("lookback_periods", 5)
@@ -449,7 +449,7 @@ def detect_symmetrical_triangle(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("symmetrical_triangle", PATTERN_CONFIGS.get("symmetrical_triangle", {}), timeframe)
 
     lookback_periods = config.get("lookback_periods", 5)

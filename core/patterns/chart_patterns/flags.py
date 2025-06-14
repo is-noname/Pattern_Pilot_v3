@@ -16,7 +16,7 @@ def detect_bullish_flag(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("bullish_flag", PATTERN_CONFIGS.get("bullish_flag", {}), timeframe)
 
     min_pole_bars = config.get("min_pole_bars", 5)
@@ -144,7 +144,7 @@ def detect_bearish_flag(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("bearish_flag", PATTERN_CONFIGS.get("bearish_flag", {}), timeframe)
 
     min_pole_bars = config.get("min_pole_bars", 5)
@@ -274,7 +274,7 @@ def detect_bullish_pennant(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("bullish_pennant", PATTERN_CONFIGS.get("bullish_pennant", {}), timeframe)
 
     min_pole_bars = config.get("min_pole_bars", 5)
@@ -405,7 +405,7 @@ def detect_bearish_pennant(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("bearish_pennant", PATTERN_CONFIGS.get("bearish_pennant", {}), timeframe)
 
     min_pole_bars = config.get("min_pole_bars", 5)

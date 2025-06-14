@@ -17,7 +17,7 @@ def detect_rounding_bottom(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("rounding_bottom", PATTERN_CONFIGS.get("rounding_bottom", {}), timeframe)
 
     min_pattern_bars = config.get("min_pattern_bars", 15)  # Längere Periode für Rundungsmuster
@@ -140,7 +140,7 @@ def detect_rounding_top(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("rounding_top", PATTERN_CONFIGS.get("rounding_top", {}), timeframe)
 
     min_pattern_bars = config.get("min_pattern_bars", 15)  # Längere Periode für Rundungsmuster

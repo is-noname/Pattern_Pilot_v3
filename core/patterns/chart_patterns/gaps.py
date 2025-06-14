@@ -151,7 +151,7 @@ def detect_breakaway_gap(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("breakaway_gap", PATTERN_CONFIGS.get("breakaway_gap", {}), timeframe)
         
     min_gap_size = config.get("min_gap_size", 0.01)  # Mindestgröße des Gaps (1%)
@@ -240,7 +240,7 @@ def detect_runaway_gap(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("runaway_gap", PATTERN_CONFIGS.get("runaway_gap", {}), timeframe)
         
     min_gap_size = config.get("min_gap_size", 0.01)  # Mindestgröße des Gaps (1%)
@@ -340,7 +340,7 @@ def detect_exhaustion_gap(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("exhaustion_gap", PATTERN_CONFIGS.get("exhaustion_gap", {}), timeframe)
         
     min_gap_size = config.get("min_gap_size", 0.01)  # Mindestgröße des Gaps (1%)
@@ -426,7 +426,7 @@ def detect_common_gap(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("common_gap", PATTERN_CONFIGS.get("common_gap", {}), timeframe)
         
     max_gap_size = config.get("max_gap_size", 0.02)  # Maximale Größe (2%)

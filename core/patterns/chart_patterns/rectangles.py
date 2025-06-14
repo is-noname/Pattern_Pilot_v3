@@ -16,7 +16,7 @@ def detect_bullish_rectangle(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("bullish_rectangle", PATTERN_CONFIGS.get("bullish_rectangle", {}), timeframe)
 
     min_pattern_bars = config.get("min_pattern_bars", 10)
@@ -171,7 +171,7 @@ def detect_bearish_rectangle(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("bearish_rectangle", PATTERN_CONFIGS.get("bearish_rectangle", {}), timeframe)
 
     min_pattern_bars = config.get("min_pattern_bars", 10)
