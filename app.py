@@ -917,7 +917,10 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         spikethickness=1,  # Dicke der Linie
         spikecolor="#06fc99",  # Farbe der Linie (Canto Green)
         spikemode="across",  # Geht über den ganzen Chart
-        spikesnap="cursor"  # Folgt genau dem Cursor
+        spikesnap="cursor",  # Folgt genau dem Cursor
+        # Wichtig: Setze explizite Range für die gesamte Datenreihe
+        range = [df['datetime'].min(), df['datetime'].max()],
+        row = 1, col = 1
     )
 
     # Y-Achse mit Fadenkreuz
