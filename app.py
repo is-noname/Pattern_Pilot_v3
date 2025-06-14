@@ -610,7 +610,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
     # •••••••••••••••••••••••••• Candlestick chart •••••••••••••••••••••••••• #
     fig.add_trace(
         go.Candlestick(
-            x=df['datetime'],
+            x=df['datetime'] if 'datetime' in df.columns else df.index,
             open=df['open'],
             high=df['high'],
             low=df['low'],
@@ -918,8 +918,6 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         spikecolor="#06fc99",  # Farbe der Linie (Canto Green)
         spikemode="across",  # Geht über den ganzen Chart
         spikesnap="cursor",  # Folgt genau dem Cursor
-        # Wichtig: Setze explizite Range für die gesamte Datenreihe
-        range = [df['datetime'].min(), df['datetime'].max()],
         row = 1, col = 1
     )
 
