@@ -17,7 +17,7 @@ def detect_v_pattern(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("v_pattern", PATTERN_CONFIGS.get("v_pattern", {}), timeframe)
 
     min_pattern_bars = config.get("min_pattern_bars", 5)
@@ -164,7 +164,7 @@ def detect_cup_and_handle(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("cup_and_handle", PATTERN_CONFIGS.get("cup_and_handle", {}), timeframe)
     
     min_cup_bars = config.get("min_cup_bars", 20)  # Cup sollte länger sein

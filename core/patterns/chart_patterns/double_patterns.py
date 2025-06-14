@@ -136,7 +136,7 @@ def detect_double_top(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("double_top", PATTERN_CONFIGS.get("double_top", {}), timeframe)
 
     tolerance = config.get("tolerance", 0.03)

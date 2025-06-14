@@ -16,7 +16,7 @@ def detect_falling_wedge(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("falling_wedge", PATTERN_CONFIGS.get("falling_wedge", {}), timeframe)
 
     min_pattern_bars = config.get("min_pattern_bars", 10)
@@ -261,7 +261,7 @@ def detect_rising_wedge(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from patterns import get_pattern_config
+        from core.patterns import get_pattern_config
         config = get_pattern_config("rising_wedge", PATTERN_CONFIGS.get("rising_wedge", {}), timeframe)
 
     min_pattern_bars = config.get("min_pattern_bars", 10)
