@@ -518,6 +518,16 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, 
             directions=directions,
             pattern_types=pattern_filter
         )
+        # 🔍 DEBUG: Was ist in filtered_patterns?
+        print(f"🔍 Filtered patterns type: {type(filtered_patterns)}")
+        print(
+            f"🔍 Filtered patterns keys: {list(filtered_patterns.keys()) if isinstance(filtered_patterns, dict) else 'NOT DICT'}")
+        if isinstance(filtered_patterns, dict):
+            for k, v in list(filtered_patterns.items())[:3]:  # Nur erste 3
+                print(f"🔍   {k}: {type(v)} - {len(v) if isinstance(v, list) else 'NOT LIST'}")
+                if isinstance(v, list) and v:
+                    print(f"🔍     First signal: {type(v[0])} - {v[0]}")
+
 
         # Create chart
         fig = create_professional_chart(df, filtered_patterns, symbol, timeframe)
@@ -1047,6 +1057,18 @@ def update_market_stats(n):
     ]
 # endregion
 
+# nervige "127.0.0.1 - - [14/Jun/2025 15:04:03] "POST /_dash-update-component HTTP/1.1" 200 -"-zeile rausfiltern
+import logging
+
+class NoDashUpdateFilter(logging.Filter):
+    def filter(self, record):
+        return "/_dash-update-component" not in record.getMessage()
+
+# Nur diese Route ausblenden
+log = logging.getLogger('werkzeug')
+log.addFilter(NoDashUpdateFilter())
+
+# •••••••••••••••••••••••••• app.run •••••••••••••••••••••••••• #
 if __name__ == '__main__':
     """
     Startet den Dash-Server für das Pattern Pilot Terminal.

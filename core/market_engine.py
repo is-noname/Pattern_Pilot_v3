@@ -392,6 +392,27 @@ class MarketEngine:
         if not patterns:
             return {}
 
+        # ✅ Structure Detection HIER (außerhalb von if not patterns)
+        if 'technical_indicators' in patterns or 'formation_patterns' in patterns:
+            # NEW: Handle nested structure
+            filtered = {}
+            for category, category_patterns in patterns.items():
+                if category_patterns:  # Skip leere categories
+                    category_filtered = self._filter_flat_patterns(
+                        category_patterns, min_strength, directions, pattern_types)
+                    if category_filtered:  # Nur hinzufügen wenn nicht leer
+                        filtered[category] = category_filtered
+            return filtered
+
+            # OLD: Handle flat structure
+            return self._filter_flat_patterns(patterns, min_strength, directions, pattern_types)
+
+    def _filter_flat_patterns(self, patterns: Dict[str, List],
+                              min_strength: float = 0.0,
+                              directions: List[str] = None,
+                              pattern_types: List[str] = None) -> Dict[str, List]:
+        """Helper: Filter flat pattern structure"""
+
         filtered = {}
 
         # 1. Erst nach Pattern-Typen filtern (wenn angegeben)
@@ -400,7 +421,6 @@ class MarketEngine:
 
         # 2. Für jedes Pattern die Signale nach Strength/Direction filtern
         for pattern_name, signals in patterns.items():
-            # Leere Signal-Liste für diesen Pattern-Typ
             filtered_signals = []
 
             for signal in signals:
@@ -420,6 +440,8 @@ class MarketEngine:
                 filtered[pattern_name] = filtered_signals
 
         return filtered
+
+
 
     # endregion
 
