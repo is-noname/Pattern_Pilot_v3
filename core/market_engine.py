@@ -393,19 +393,19 @@ class MarketEngine:
             print("⚠️ Keine Patterns zum Filtern vorhanden")
             return {}  # Leeres Dictionary zurückgeben
 
-        # ✅ Structure Detection HIER (außerhalb von if not patterns)
+        # ✅ Structure Detection: Unterscheide zwischen verschachtelter und flacher Struktur
         if 'technical_indicators' in patterns or 'formation_patterns' in patterns:
             # NEW: Handle nested structure
             filtered = {}
             for category, category_patterns in patterns.items():
-                if category_patterns:  # Skip leere categories
+                if category_patterns and isinstance(category_patterns, dict):  # Zusätzliche Typprüfung
                     category_filtered = self._filter_flat_patterns(
                         category_patterns, min_strength, directions, pattern_types)
                     if category_filtered:  # Nur hinzufügen wenn nicht leer
                         filtered[category] = category_filtered
             return filtered
-
-            # OLD: Handle flat structure
+        else:
+            # Flache Struktur als Fallback behandeln
             return self._filter_flat_patterns(patterns, min_strength, directions, pattern_types)
 
     def _filter_flat_patterns(self, patterns: Dict[str, List],
