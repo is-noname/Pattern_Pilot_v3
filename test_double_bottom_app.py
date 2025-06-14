@@ -6,6 +6,8 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import time
+from datetime import datetime, timedelta
+
 
 
 def wait_for_exchanges():
@@ -72,13 +74,12 @@ def test_with_mock_data():
     np.random.seed(42)  # Reproduzierbare Zufallszahlen
 
     df = pd.DataFrame({
-        'datetime': dates,
         'open': [p + np.random.uniform(-500, 500) for p in base_prices],
         'high': [p + np.random.uniform(200, 1000) for p in base_prices],
         'low': [p - np.random.uniform(200, 1000) for p in base_prices],
         'close': base_prices,
         'volume': [np.random.uniform(1000, 5000) for _ in range(100)]
-    })
+    }, index=dates)  # 🔧 DateTime-Index direkt setzen
 
     print(f"✅ Mock Daten erstellt: {len(df)} Kerzen")
     print(f"   Preisbereich: ${df['close'].min():.0f} - ${df['close'].max():.0f}")

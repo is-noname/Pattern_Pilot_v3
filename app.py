@@ -679,49 +679,78 @@ def create_professional_chart(df, patterns, symbol, timeframe):
 
     print(f"🎨 Adding pattern overlays... Found {len(patterns)} pattern types")
 
-    pattern_count = 0
+    plotly_pattern_count = 0
+    fallback_pattern_count = 0
 
-    for pattern_name, pattern_list in patterns.items():
-        if not pattern_list:  # Skip leere Listen
+    for pattern_name, signals in patterns.items():
+        if not signals:
             continue
 
-        print(f"   Processing {pattern_name}: {len(pattern_list)} patterns")
-
-        for pattern in pattern_list:
+        for signal in signals:
             # Stelle sicher, dass Pattern den type hat
-            if 'type' not in pattern:
-                pattern['type'] = pattern_name
+            if 'type' not in signal:
+                signal['type'] = pattern_name
 
             try:
-                # ✅ DOUBLE BOTTOM/TOP Integration
+                # ✅ PRIORITÄT: Plotly Renderer für unterstützte Pattern-Typen
                 if pattern_name in ['double_bottom', 'double_top']:
                     from core.patterns.chart_patterns.double_patterns import render_pattern_plotly
+                    render_pattern_plotly(fig, df, signal)
+                    plotly_pattern_count += 1
+                    print(f"🎨 Plotly Overlay: {pattern_name}")
+                    continue  # Skip Fallback
 
-                    # Rendere Pattern mit lokalem Dispatcher
-                    render_pattern_plotly(fig, df, pattern)
-                    pattern_count += 1
+                # TODO: Weitere Pattern-Familien hier hinzufügen
+                # elif pattern_name in ['triple_bottom', 'triple_top']:
+                #     from core.patterns.chart_patterns.triple_patterns import render_pattern_plotly
+                #     render_pattern_plotly(fig, df, signal)
+                #     plotly_pattern_count += 1
+                #     continue
 
-                    print(
-                        f"      ✅ Rendered {pattern_name} - P1: {pattern.get('P1')}, P2: {pattern.get('P2')}, Confirmed: {pattern.get('confirmed', False)}")
+            except (ImportError, AttributeError) as e:
+                print(f"⚠️ Plotly Renderer nicht verfügbar für {pattern_name}: {e}")
 
-                # ✅ FALLBACK für andere Pattern-Typen (alte Marker-Methode)
-                else:
-                    # Verwende bestehende Pattern-Marker-Logik für andere Patterns
-                    _add_legacy_pattern_marker(fig, df, pattern, pattern_name)
-                    pattern_count += 1
-                    print(f"      ➤ Legacy marker for {pattern_name}")
+            # ✅ FALLBACK: Alte Marker-basierte Darstellung für alle anderen
+            try:
+                pattern_styles = PATTERN_CONFIG['pattern_styles']
+                style = pattern_styles.get(pattern_name, {
+                    'symbol': 'circle',
+                    'color': '#aa00ff',
+                    'size': 3,
+                    'emoji': '⭐'
+                })
 
-            except ImportError as e:
-                print(f"      ⚠️ Plotly Renderer nicht verfügbar für {pattern_name}: {e}")
-                # Fallback auf alte Marker-Methode
-                _add_legacy_pattern_marker(fig, df, pattern, pattern_name)
+                x_pos = signal.get('index', signal.get('datetime'))
+                y_pos = signal.get('price', signal.get('close'))
+
+                if x_pos is not None and y_pos is not None:
+                    # Fallback auf Index falls datetime nicht gefunden
+                    if x_pos in df.index:
+                        x_pos = df.loc[x_pos, 'datetime']
+                    elif isinstance(x_pos, int) and x_pos < len(df):
+                        x_pos = df['datetime'].iloc[x_pos]
+
+                    fig.add_trace(go.Scatter(
+                        x=[x_pos],
+                        y=[y_pos],
+                        mode='markers',
+                        marker=dict(
+                            color=style['color'],
+                            size=style['size'] * 3,  # Leicht größer für bessere Sichtbarkeit
+                            symbol=style['symbol']
+                        ),
+                        name=pattern_name.replace('_', ' ').title(),
+                        showlegend=False,
+                        hovertemplate=f"<b>{pattern_name}</b><br>" +
+                                      "Price: $%{y:.4f}<br>" +
+                                      f"Strength: {signal.get('strength', 0):.2f}<extra></extra>"
+                    ))
+                    fallback_pattern_count += 1
 
             except Exception as e:
-                print(f"      ❌ Fehler beim Rendern von {pattern_name}: {e}")
-                import traceback
-                traceback.print_exc()
+                print(f"⚠️ Fallback Marker für {pattern_name} fehlgeschlagen: {e}")
 
-    print(f"🎨 {pattern_count} Patterns als Overlays gerendert")
+    print(f"🎨 Pattern Overlays: {plotly_pattern_count} Plotly + {fallback_pattern_count} Fallback")
 
 
 

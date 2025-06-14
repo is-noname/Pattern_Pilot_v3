@@ -283,9 +283,24 @@ def render_double_bottom_plotly(fig, df, pattern):
         pattern: Pattern Dictionary mit P1, P2, neckline, etc.
     """
 
+    # =============================================================
+    # 🔧 FIX: Index-Typ-Detection
+    # =============================================================
+
+    # Automatische X-Koordinaten je nach Index-Typ
+    if isinstance(df.index, pd.RangeIndex):
+        # RangeIndex: Nutze direkte Index-Zahlen
+        x_coords = [pattern['P1'], pattern['P2']]
+    else:
+        # DatetimeIndex: Nutze df.index[position]
+        x_coords = [df.index[pattern['P1']], df.index[pattern['P2']]]
+
+    print(f"🔧 Using x_coords: {x_coords}")
+    # =============================================================
+
     # ✅ Support Points (P1, P2) als grüne Marker
     fig.add_trace(go.Scatter(
-        x=[df.index[pattern['P1']], df.index[pattern['P2']]],
+        x=x_coords,
         y=[df['low'].iloc[pattern['P1']], df['low'].iloc[pattern['P2']]],
         mode='markers',
         marker=dict(
@@ -304,8 +319,8 @@ def render_double_bottom_plotly(fig, df, pattern):
     # ✅ Neckline als gestrichelte horizontale Linie
     fig.add_shape(
         type="line",
-        x0=df.index[pattern['P1']],
-        x1=df.index[pattern['P2']],
+        x0=x_coords[0],
+        x1=x_coords[1],
         y0=pattern['neckline'],
         y1=pattern['neckline'],
         line=dict(
@@ -374,6 +389,17 @@ def render_double_bottom_plotly(fig, df, pattern):
                 bordercolor="lime",
                 font=dict(color="white", size=10)
             )
+
+    # =============================================================
+    # 🔍 DEBUG KOORDINATEN-PROBLEM
+    # =============================================================
+    print(f"🔍 DEBUG Pattern: {pattern}")
+    print(f"🔍 df.index type: {type(df.index)}")
+    print(f"🔍 df.index[:5]: {df.index[:5]}")
+    print(f"🔍 P1={pattern['P1']}, P2={pattern['P2']}")
+    print(f"🔍 df.index[P1]={df.index[pattern['P1']]}")
+    print(f"🔍 df.index[P2]={df.index[pattern['P2']]}")
+    # =============================================================
 
 
 def render_double_top_plotly(fig, df, pattern):
