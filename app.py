@@ -33,10 +33,13 @@ from flask import request
 # Import your existing engine and settings
 from core.market_engine import market_engine
 from config.settings import UI_CONFIG, PATTERN_CONFIG, CHART_CONFIG
+from config.pattern_settings import TIMEFRAME_CONFIGS
 
 # Initialize Dash app
 app = dash.Dash(__name__)
-app.title = "Pattern Pilot Pro"
+app.title = "Holy Dashboard 3.1"
+
+
 
 #==============================================================================
 # region               📊 CHART GENERATION HELPERS
@@ -144,6 +147,27 @@ def get_layout():
     )
 
     # •••••••••••••••••••••••••• 📉 Main Panel Components •••••••••••••••••••••••••• #
+
+    chart_patterns = set()
+    for timeframe_config in TIMEFRAME_CONFIGS.values():
+        chart_patterns.update(timeframe_config.keys())
+
+    # Kombinierte Pattern-Optionen #
+    pattern_options = [{"label": "All Patterns", "value": "all"}]
+
+    # Candlestick Patterns mit Icon
+    pattern_options += [
+        {"label": f"📊 {name.replace('_', ' ').title()}", "value": name}
+        for name in PATTERN_CONFIG['candlestick_patterns']
+    ]
+
+    # Chart Patterns mit Icon
+    pattern_options += [
+        {"label": f"📈 {name.replace('_', ' ').title()}", "value": name}
+        for name in sorted(chart_patterns)
+    ]
+
+
     trading_panel = html.Div([
         # •••••••••••••••••••••••••• Controls Row •••••••••••••••••••••••••• #
         html.Div([
@@ -236,14 +260,10 @@ def get_layout():
         html.Div([
             html.Div([
                 html.Div("Pattern Filter", className="control-label"),
+
                 dcc.Dropdown(
                     id="pattern-type-filter",
-                    options=[
-                                {"label": "All Patterns", "value": "all"}
-                            ] + [
-                                {"label": name.replace('_', ' ').title(), "value": name}
-                                for name in PATTERN_CONFIG['candlestick_patterns']
-                            ],
+                    options=pattern_options,  # <-- Nutze kombinierte Liste
                     value="all",
                     clearable=False,
                     multi=True,
