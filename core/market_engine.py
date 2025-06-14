@@ -366,14 +366,12 @@ class MarketEngine:
     # ==============================================================================
     # region               Pattern UI Filter
     # ==============================================================================
-    def filter_patterns(self, patterns: Dict[str, List],
+    def filter_patterns(self, patterns: Dict[str, Any],
                         min_strength: float = 0.0,
                         directions: List[str] = None,
-                        pattern_types: List[str] = None) -> Dict[str, List]:
+                        pattern_types: List[str] = None) -> Dict[str, Any]:
         """
-        Dynamischer Pattern-Filter - nimmt ALLE Patterns, auch zukünftige
-
-            Filtert erkannte Patterns nach benutzerdefinierten Kriterien.
+        Robustes Pattern-Filtering für market_engine.py
 
         Ermöglicht dynamisches Pattern-Filtering nach:
         - Minimale Signalstärke (0.0-1.0)
@@ -387,61 +385,132 @@ class MarketEngine:
             pattern_types: Spezifische Pattern-Typen (None = alle)
 
         Returns:
-            Dict[str, List]: Gefilterte Patterns
+            Dict[str, Any]: Gefilterte Patterns
         """
-        if not patterns or not isinstance(patterns, dict) or len(patterns) == 0:
-            print("⚠️ Keine Patterns zum Filtern vorhanden")
-            return {}  # Leeres Dictionary zurückgeben
+        # Grundlegende Validierung
+        if patterns is None:
+            print("⚠️ Keine Patterns zum Filtern vorhanden (None)")
+            return {}
 
-        # ✅ Structure Detection: Unterscheide zwischen verschachtelter und flacher Struktur
+        if not isinstance(patterns, dict):
+            print(f"⚠️ Patterns ist kein Dictionary, sondern {type(patterns)}")
+            return {}
+
+        if len(patterns) == 0:
+            print("⚠️ Leeres Pattern-Dictionary")
+            return {}
+
+        # Debug
+        print(
+            f"🔍 Filter mit params: min_strength={min_strength}, directions={directions}, pattern_types={pattern_types}")
+        print(f"🔍 Patterns Typ: {type(patterns)}, Keys: {list(patterns.keys())}")
+
+        # Spezialfall: 'all' in pattern_types
+        if pattern_types and 'all' in pattern_types:
+            pattern_types = None  # Alle Patterns verwenden
+
+        # Verschachtelte Struktur erkennen
         if 'technical_indicators' in patterns or 'formation_patterns' in patterns:
-            # NEW: Handle nested structure
+            print("🔍 Verschachtelte Pattern-Struktur erkannt")
+            # Verschachtelte Struktur (neue API)
             filtered = {}
+
             for category, category_patterns in patterns.items():
-                if category_patterns and isinstance(category_patterns, dict):  # Zusätzliche Typprüfung
-                    category_filtered = self._filter_flat_patterns(
-                        category_patterns, min_strength, directions, pattern_types)
-                    if category_filtered:  # Nur hinzufügen wenn nicht leer
-                        filtered[category] = category_filtered
+                if not isinstance(category_patterns, dict):
+                    print(f"⚠️ Kategorie {category} ist kein Dictionary, sondern {type(category_patterns)}")
+                    continue
+
+                if len(category_patterns) == 0:
+                    print(f"⚠️ Kategorie {category} ist leer")
+                    continue
+
+                print(f"🔍 Filtere Kategorie {category} mit {len(category_patterns)} Pattern-Typen")
+                category_filtered = self._filter_flat_patterns(
+                    category_patterns, min_strength, directions, pattern_types)
+
+                if category_filtered and len(category_filtered) > 0:
+                    filtered[category] = category_filtered
+                    print(f"✅ {len(category_filtered)} Pattern-Typen in {category} nach Filter")
+                else:
+                    print(f"⚠️ Keine Patterns in {category} nach Filter")
+
             return filtered
         else:
-            # Flache Struktur als Fallback behandeln
+            # Flache Struktur (Legacy-API)
+            print("🔍 Flache Pattern-Struktur erkannt")
             return self._filter_flat_patterns(patterns, min_strength, directions, pattern_types)
 
     def _filter_flat_patterns(self, patterns: Dict[str, List],
                               min_strength: float = 0.0,
                               directions: List[str] = None,
                               pattern_types: List[str] = None) -> Dict[str, List]:
-        """Helper: Filter flat pattern structure"""
+        """
+        Robuster Helper für Pattern-Filtering mit verbesserten Typprüfungen
+
+        Args:
+            patterns: Original Patterns Dictionary (flache Struktur)
+            min_strength: Minimale Signalstärke (0.0-1.0)
+            directions: Liste von Richtungen (None = alle)
+            pattern_types: Spezifische Pattern-Typen (None = alle)
+
+        Returns:
+            Dict[str, List]: Gefilterte Patterns
+        """
+        # Grundlegende Validierung
+        if not isinstance(patterns, dict):
+            print(f"⚠️ _filter_flat_patterns: patterns ist kein Dictionary, sondern {type(patterns)}")
+            return {}
 
         filtered = {}
 
-        # 1. Erst nach Pattern-Typen filtern (wenn angegeben)
-        if pattern_types:
+        # 1. Nach Pattern-Typen filtern (wenn angegeben)
+        if pattern_types and pattern_types != ['all']:
             patterns = {k: v for k, v in patterns.items() if k in pattern_types}
+            print(f"🔍 Nach Pattern-Typen gefiltert: {list(patterns.keys())}")
 
-        # 2. Für jedes Pattern die Signale nach Strength/Direction filtern
+        # 2. Durch jedes Pattern iterieren
         for pattern_name, signals in patterns.items():
+            # 2.1 Typprüfung für signals
+            if not isinstance(signals, list):
+                print(f"⚠️ Signals für {pattern_name} ist keine Liste, sondern {type(signals)}")
+                # Spezialfall: Wenn es ein String ist, in eine Liste packen
+                if isinstance(signals, str):
+                    print(f"🔄 Konvertiere String zu Liste für {pattern_name}")
+                    signals = [signals]
+                else:
+                    continue  # Andere Typen überspringen
+
+            # 2.2 Leere Liste abfangen
+            if len(signals) == 0:
+                print(f"⚠️ Keine Signals für {pattern_name}")
+                continue
+
+            # 2.3 Durch jedes Signal iterieren und filtern
             filtered_signals = []
-
             for signal in signals:
-                # Sicherstellen, dass signal ein Dictionary ist
+                # Typprüfung für jedes Signal
                 if not isinstance(signal, dict):
-                    print(f"⚠️ Ungültiges Signal-Format: {type(signal)} statt Dict bei {pattern_name}")
+                    print(f"⚠️ Signal für {pattern_name} ist kein Dict, sondern {type(signal)}")
                     continue
 
-                # Strength-Filter anwenden
-                if signal.get('strength', 0) < min_strength:
-                    continue
+                # Stärke-Filter anwenden (falls vorhanden)
+                if min_strength > 0:
+                    # Sichere Variante mit get und Defaultwert
+                    strength = signal.get('strength', 0)
+                    if strength < min_strength:
+                        continue
 
-                # Direction-Filter anwenden (wenn angegeben)
-                if directions and signal.get('direction') not in directions:
-                    continue
+                # Richtungs-Filter anwenden (falls angegeben)
+                if directions:
+                    # Sichere Variante mit get und Defaultwert
+                    direction = signal.get('direction', 'neutral')
+                    if direction not in directions:
+                        continue
 
                 # Signal hat alle Filter bestanden
                 filtered_signals.append(signal)
 
-            # Nur Pattern-Typen mit Signalen behalten
+            # Nur Pattern-Typen mit übrig gebliebenen Signalen hinzufügen
             if filtered_signals:
                 filtered[pattern_name] = filtered_signals
 
