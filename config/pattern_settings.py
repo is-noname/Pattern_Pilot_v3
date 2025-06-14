@@ -61,6 +61,8 @@ TIMEFRAME_CONFIGS = {
     #                      1 Day
     # ==============================================================================
     "1d": {
+"doji": {
+        "active": True, "body_size_threshold": 0.05, "min_shadow_ratio": 2.0, "reliability": 6},
         # •••••••••••••••••••••••••• Chart Patterns •••••••••••••••••••••••••• #
         "double_bottom": {"active": True, "tolerance": 0.03, "lookback_periods": 5, "min_pattern_bars": 5},
         "double_top": {"tolerance": 0.03, "lookback_periods": 5, "min_pattern_bars": 5},

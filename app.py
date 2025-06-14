@@ -615,7 +615,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
             high=df['high'],
             low=df['low'],
             close=df['close'],
-            name="",
+            name="Price",
             increasing_line_color='#06fc99',
             decreasing_line_color='#f44336',
             increasing_fillcolor='#06fc99',
@@ -666,6 +666,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
                         flat_patterns[pattern_name] = signal_list
                     else:
                         print(f"⚠️ Unexpected signal_list type for {pattern_name}: {type(signal_list)}")
+                        continue
     else:
         # FLAT STRUCTURE - use as is
         flat_patterns = patterns
@@ -673,7 +674,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
     print(f"📊 Flattened patterns: {len(flat_patterns)} pattern types")
 
     # Jetzt über die flache Struktur iterieren
-    for pattern_name, signals in patterns.items():
+    for pattern_name, signals in flat_patterns.items():
         if not signals:
             continue
 
