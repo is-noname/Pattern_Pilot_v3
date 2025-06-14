@@ -643,12 +643,41 @@ def create_professional_chart(df, patterns, symbol, timeframe):
     # 🎯 Enhanced Pattern Overlays with unique icons
     pattern_styles = PATTERN_CONFIG['pattern_styles']
 
+
+    # ================================================================================
+    # 🎨 PATTERN OVERLAYS mit lokalen Plotly Dispatchers
+    # ================================================================================
+
     pattern_legend_added = set()  # Track which patterns are in legend
 
+    # Debug: Pattern structure prüfen
+    print(f"📊 Pattern structure: {list(patterns.keys()) if patterns else 'None'}")
+
+    # Flatten nested structure für Chart rendering
+    flat_patterns = {}
+
+    # Check ob nested structure (technical_indicators, formation_patterns)
+    if 'technical_indicators' in patterns or 'formation_patterns' in patterns:
+        # NESTED STRUCTURE - flatten it
+        for category, category_patterns in patterns.items():
+            if isinstance(category_patterns, dict):
+                for pattern_name, signal_list in category_patterns.items():
+                    if isinstance(signal_list, list):
+                        flat_patterns[pattern_name] = signal_list
+                    else:
+                        print(f"⚠️ Unexpected signal_list type for {pattern_name}: {type(signal_list)}")
+    else:
+        # FLAT STRUCTURE - use as is
+        flat_patterns = patterns
+
+    print(f"📊 Flattened patterns: {len(flat_patterns)} pattern types")
+
+    # Jetzt über die flache Struktur iterieren
     for pattern_name, signals in patterns.items():
         if not signals:
             continue
 
+        # Get pattern style
         style = pattern_styles.get(pattern_name, {
             'symbol': 'circle',
             'color': '#ffffff',
@@ -657,29 +686,23 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         })
 
         for i, signal in enumerate(signals):
+            # Sicherstellen dass signal ein Dict ist
+            if not isinstance(signal, dict):
+                print(f"⚠️ Signal is not dict for {pattern_name}: {type(signal)}")
+                continue
+
             direction = signal.get('direction', 'neutral')
             strength = signal.get('strength', 0.5)
 
-            # Color adjustment based on directions (from settings.py)
-            # if 'direction' in style and direction in style['direction']:
-            #     # Neue Struktur mit richtungsabhängigen Farben verwenden
-            #     color = style['direction'][direction]['color']
-            # else:
-                # Fallback auf die Standard-Farbe
-           #     color = style['color']
-
+            # Color based on direction
             if direction == 'bullish':
-                color = style['color']
+                color = style.get('color', '#4CAF50')
             elif direction == 'bearish':
-                color = style['color']
-            elif direction == 'resistance':
-                color = style['color']
-            elif direction == 'support':
-                color = style['color']
+                color = style.get('color', '#f44336')
             else:
-                color = style['color']
+                color = style.get('color', '#ffffff')
 
-            # Show legend only for first occurrence of each pattern
+            # Show legend only for first occurrence
             show_legend = pattern_name not in pattern_legend_added
             if show_legend:
                 pattern_legend_added.add(pattern_name)
@@ -691,27 +714,24 @@ def create_professional_chart(df, patterns, symbol, timeframe):
                     y=[signal['price']* 1.1],  # 👈 Pattern Symbol über Kerze (1.005 Standard)
                     mode='markers',
                     marker=dict(
-                        symbol=style['symbol'],
+                        symbol=style.get('symbol', 'circle'),
                         size=style['size'] + (strength * 8),  # Size based on strength
                         color=color,
                         line=dict(width=1, color='white'),
                         opacity=0.8 + (strength * 0.2)
                     ),
-                    name=f"{style['emoji']} {pattern_name.replace('_', ' ').title()}",
-                    hovertemplate=f"<b>{style['emoji']} {pattern_name.replace('_', ' ').title()}</b><br>" +
-                                  f"Direction: {direction}<br>" +
-                                  f"Strength: {strength:.2f}<br>" +
-                                  f"Price: ${signal['price']:.4f}<br>" +
-                                  f"Time: %{{x}}<extra></extra>",
+                    name=f"{style.get('emoji', '📊')} {pattern_name}",
+                    legendgroup=pattern_name,
                     showlegend=show_legend,
-                    legendgroup=pattern_name
-                ),
-                row=1, col=1
+                    hovertemplate=(
+                            f"<b>{pattern_name}</b><br>" +
+                            f"Price: %{{y:.4f}}<br>" +
+                            f"Strength: {strength:.2f}<br>" +
+                            f"Direction: {direction}<br>" +
+                            "<extra></extra>"
+                    )
+                )
             )
-
-    # ================================================================================
-    # 🎨 PATTERN OVERLAYS mit lokalen Plotly Dispatchers
-    # ================================================================================
 
     print(f"🎨 Adding pattern overlays... Found {len(patterns)} pattern types")
 

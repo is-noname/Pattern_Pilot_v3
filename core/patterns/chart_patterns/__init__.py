@@ -1,25 +1,125 @@
 # patterns/__init__.py - FIXED VERSION
 import pandas as pd
-from core.patterns.chart_patterns.double_patterns import detect_double_bottom, detect_double_top, render_double_bottom, render_double_top
-from core.patterns.chart_patterns.head_shoulders import detect_head_and_shoulders, detect_inverse_head_and_shoulders, render_head_and_shoulders, \
+from .double_patterns import detect_double_bottom, detect_double_top, render_double_bottom, render_double_top
+from .head_shoulders import detect_head_and_shoulders, detect_inverse_head_and_shoulders, render_head_and_shoulders, \
     render_inverse_head_and_shoulders
-from core.patterns.chart_patterns.triple_patterns import detect_triple_top, detect_triple_bottom, render_triple_top, render_triple_bottom
-from core.patterns.chart_patterns.triangles import detect_ascending_triangle, detect_descending_triangle, detect_symmetrical_triangle, \
+from .triple_patterns import detect_triple_top, detect_triple_bottom, render_triple_top, render_triple_bottom
+from .triangles import detect_ascending_triangle, detect_descending_triangle, detect_symmetrical_triangle, \
     render_ascending_triangle, render_descending_triangle, render_symmetrical_triangle
-from core.patterns.chart_patterns.flags import detect_bullish_flag, detect_bearish_flag, detect_bullish_pennant, detect_bearish_pennant, \
+from .flags import detect_bullish_flag, detect_bearish_flag, detect_bullish_pennant, detect_bearish_pennant, \
     render_bullish_flag, render_bearish_flag, render_bullish_pennant, render_bearish_pennant
-from core.patterns.chart_patterns.wedges import detect_falling_wedge, detect_rising_wedge, render_falling_wedge, render_rising_wedge
-from core.patterns.chart_patterns.rectangles import detect_bullish_rectangle, detect_bearish_rectangle, render_bullish_rectangle, \
+from .wedges import detect_falling_wedge, detect_rising_wedge, render_falling_wedge, render_rising_wedge
+from .rectangles import detect_bullish_rectangle, detect_bearish_rectangle, render_bullish_rectangle, \
     render_bearish_rectangle
-from core.patterns.chart_patterns.channels import detect_upward_channel, detect_downward_channel, render_upward_channel, render_downward_channel
-from core.patterns.chart_patterns.gaps import detect_breakaway_gap, detect_runaway_gap, detect_exhaustion_gap, detect_common_gap, render_common_gap, \
+from .channels import detect_upward_channel, detect_downward_channel, render_upward_channel, render_downward_channel
+from .gaps import detect_breakaway_gap, detect_runaway_gap, detect_exhaustion_gap, detect_common_gap, render_common_gap, \
     render_exhaustion_gap, render_runaway_gap, render_breakaway_gap
-from core.patterns.chart_patterns.rounding_patterns import detect_rounding_bottom, detect_rounding_top, render_rounding_bottom, render_rounding_top
-from core.patterns.chart_patterns.v_cup_patterns import detect_v_pattern, detect_cup_and_handle, render_v_pattern, render_cup_and_handle
-from core.patterns.chart_patterns.diamond_patterns import detect_diamond_top, detect_diamond_bottom, render_diamond_top, render_diamond_bottom
+from .rounding_patterns import detect_rounding_bottom, detect_rounding_top, render_rounding_bottom, render_rounding_top
+from .v_cup_patterns import detect_v_pattern, detect_cup_and_handle, render_v_pattern, render_cup_and_handle
+from .diamond_patterns import detect_diamond_top, detect_diamond_bottom, render_diamond_top, render_diamond_bottom
 from config.pattern_settings import TIMEFRAME_CONFIGS
 from utils.pattern_strength import calculate_pattern_strength
 
+
+# ================================================================================
+# 🎯 PLOTLY RENDERER REGISTRY
+# ================================================================================
+
+def render_pattern_plotly(fig, df, pattern):
+    """
+    Zentrale Dispatch-Funktion für Plotly Pattern Rendering.
+    Ruft die passende lokale render_pattern_plotly basierend auf pattern type.
+    """
+    pattern_type = pattern.get('type', '')
+
+    # Dynamischer Import basierend auf Pattern-Typ
+    try:
+        # Pattern-zu-Modul Mapping
+        MODULE_MAP = {
+            # Double Patterns
+            'double_bottom': 'double_patterns',
+            'double_top': 'double_patterns',
+
+            # Triple Patterns
+            'triple_bottom': 'triple_patterns',
+            'triple_top': 'triple_patterns',
+
+            # Head & Shoulders
+            'head_and_shoulders': 'head_shoulders',
+            'inverse_head_and_shoulders': 'head_shoulders',
+
+            # Triangles
+            'ascending_triangle': 'triangles',
+            'descending_triangle': 'triangles',
+            'symmetrical_triangle': 'triangles',
+
+            # Flags & Pennants
+            'bullish_flag': 'flags',
+            'bearish_flag': 'flags',
+            'bullish_pennant': 'flags',
+            'bearish_pennant': 'flags',
+
+            # Wedges
+            'falling_wedge': 'wedges',
+            'rising_wedge': 'wedges',
+
+            # Rectangles
+            'bullish_rectangle': 'rectangles',
+            'bearish_rectangle': 'rectangles',
+
+            # Channels
+            'upward_channel': 'channels',
+            'downward_channel': 'channels',
+
+            # Rounding Patterns
+            'rounding_bottom': 'rounding_patterns',
+            'rounding_top': 'rounding_patterns',
+
+            # V & Cup Patterns
+            'v_pattern': 'v_cup_patterns',
+            'cup_and_handle': 'v_cup_patterns',
+
+            # Diamond Patterns
+            'diamond_top': 'diamond_patterns',
+            'diamond_bottom': 'diamond_patterns',
+
+            # Gaps
+            'breakaway_gap': 'gaps',
+            'runaway_gap': 'gaps',
+            'exhaustion_gap': 'gaps',
+            'common_gap': 'gaps'
+        }
+
+        # Finde das richtige Modul
+        if pattern_type not in MODULE_MAP:
+            print(f"⚠️ No module mapping for pattern type: {pattern_type}")
+            return False
+
+        module_name = MODULE_MAP[pattern_type]
+
+        # Importiere das Modul
+        module = __import__(
+            f'core.patterns.chart_patterns.{module_name}',
+            fromlist=['render_pattern_plotly']
+        )
+
+        # Hole die lokale render_pattern_plotly Funktion
+        if hasattr(module, 'render_pattern_plotly'):
+            render_func = getattr(module, 'render_pattern_plotly')
+            render_func(fig, df, pattern)
+            return True
+        else:
+            print(f"⚠️ No render_pattern_plotly in {module_name}")
+            return False
+
+    except Exception as e:
+        print(f"⚠️ Error rendering {pattern_type}: {e}")
+        return False
+
+
+# ================================================================================
+# 🎯 PATTERN DETECTION EXPORTS
+# ================================================================================
 
 def get_pattern_config(pattern_name, config=None, timeframe="1d"):
     """Holt timeframe-spezifische Konfiguration für ein Muster"""
