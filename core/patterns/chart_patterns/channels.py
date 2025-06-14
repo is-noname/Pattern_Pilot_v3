@@ -507,7 +507,7 @@ def render_downward_channel(ax, df, pattern):
                 bbox=dict(facecolor='red', alpha=0.3))
 
 
-def render_channels_pattern(ax, df, pattern):
+def render_pattern(ax, df, pattern):
     """
     Rendert ein Pattern basierend auf seinem Typ
     """
@@ -535,7 +535,7 @@ def render_downward_channel_plotly(fig, df, pattern):
     pass
 
 
-def render_channels_pattern_plotly(fig, df, pattern):
+def render_pattern_plotly(fig, df, pattern):
     """
     Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
     """

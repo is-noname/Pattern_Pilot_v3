@@ -716,7 +716,7 @@ def render_common_gap(ax, df, pattern):
                 bbox=dict(facecolor=bg_color, alpha=0.3))
 
 
-def render_gaps_pattern(ax, df, pattern):
+def render_pattern(ax, df, pattern):
     """
     Rendert ein Gap-Pattern basierend auf seinem Typ
     """
@@ -757,7 +757,7 @@ def render_common_gap_plotly(fig, df, pattern):
     # ... Implementierung ...
     pass
 
-def render_channels_pattern_plotly(fig, df, pattern):
+def render_pattern_plotly(fig, df, pattern):
     """
     Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
     """

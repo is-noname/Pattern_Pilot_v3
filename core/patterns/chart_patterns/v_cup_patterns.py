@@ -437,7 +437,7 @@ def render_cup_and_handle_plotly(fig, df, pattern):
     pass
 
 
-def render_v_cup_pattern_plotly(fig, df, pattern):
+def render_pattern_plotly(fig, df, pattern):
     """
     Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
     """

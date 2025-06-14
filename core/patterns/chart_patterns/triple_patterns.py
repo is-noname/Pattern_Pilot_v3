@@ -348,7 +348,7 @@ def render_triple_top_plotly(fig, df, pattern):
     # ... [Code hier] ...
     pass
 
-def render_triple_pattern_plotly(fig, df, pattern):
+def render_pattern_plotly(fig, df, pattern):
     """
     Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
     """

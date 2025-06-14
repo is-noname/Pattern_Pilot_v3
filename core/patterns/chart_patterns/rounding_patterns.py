@@ -425,7 +425,7 @@ def render_rounding_top_plotly(fig, df, pattern):
     pass
 
 
-def render_rounding_pattern_plotly(fig, df, pattern):
+def render_pattern_plotly(fig, df, pattern):
     """
     Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
     """
