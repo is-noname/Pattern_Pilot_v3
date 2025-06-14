@@ -389,8 +389,9 @@ class MarketEngine:
         Returns:
             Dict[str, List]: Gefilterte Patterns
         """
-        if not patterns:
-            return {}
+        if not patterns or not isinstance(patterns, dict) or len(patterns) == 0:
+            print("⚠️ Keine Patterns zum Filtern vorhanden")
+            return {}  # Leeres Dictionary zurückgeben
 
         # ✅ Structure Detection HIER (außerhalb von if not patterns)
         if 'technical_indicators' in patterns or 'formation_patterns' in patterns:
@@ -424,6 +425,11 @@ class MarketEngine:
             filtered_signals = []
 
             for signal in signals:
+                # Sicherstellen, dass signal ein Dictionary ist
+                if not isinstance(signal, dict):
+                    print(f"⚠️ Ungültiges Signal-Format: {type(signal)} statt Dict bei {pattern_name}")
+                    continue
+
                 # Strength-Filter anwenden
                 if signal.get('strength', 0) < min_strength:
                     continue

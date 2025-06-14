@@ -138,6 +138,9 @@ class MarketEngine:
             return {}
 
         filtered = {}
+        print(f"DEBUG: patterns type: {type(patterns)}")
+        if isinstance(patterns, str):
+            print(f"DEBUG: patterns is string: {patterns}")
 
         # 1. Erst nach Pattern-Typen filtern (wenn angegeben)
         if pattern_types:
@@ -165,7 +168,9 @@ class MarketEngine:
                 filtered[pattern_name] = filtered_signals
 
         return filtered
-
+        print(f"DEBUG: filtered: {type(filtered)}")
+        if isinstance(filtered, str):
+            print(f"DEBUG: filtered is string: {filtered}")
     # ==============================================================================
     #                      _detect_doji
     #==============================================================================
