@@ -500,7 +500,11 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, 
             ), 0  # Nullwert für Counter
 
         # Detect patterns using your existing engine
-        patterns = market_engine.detect_patterns(df)
+        #patterns = market_engine.detect_patterns(df)
+        result = analysis_pipeline.analyze_symbol(symbol, timeframe, limit)
+        patterns = result['patterns'] if isinstance(result, dict) else {}
+        print(f"🔍 Result type: {type(result)}")
+        print(f"🔍 Result: {result}")
 
         # •••••••••••••••••••••••••• Filter patterns •••••••••••••••••••••••••• #
         if pattern_types != "all":
