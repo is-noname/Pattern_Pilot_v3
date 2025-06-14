@@ -734,51 +734,126 @@ def create_professional_chart(df, patterns, symbol, timeframe):
                 )
             )
 
-    print(f"🎨 Adding pattern overlays... Found {len(patterns)} pattern types")
+        # ================================================================================
+        # 🎨 PATTERN OVERLAYS - Eine Schleife für alles
+        # ================================================================================
 
-    pattern_count = 0
+        pattern_legend_added = set()
 
-    for pattern_name, pattern_list in patterns.items():
-        if not pattern_list:  # Skip leere Listen
-            continue
+        # Debug: Pattern structure prüfen
+        print(f"📊 Pattern structure: {list(patterns.keys()) if patterns else 'None'}")
 
-        print(f"   Processing {pattern_name}: {len(pattern_list)} patterns")
+        # Flatten nested structure für Chart rendering
+        flat_patterns = {}
 
-        for pattern in pattern_list:
-            # Stelle sicher, dass Pattern den type hat
-            if 'type' not in pattern:
-                pattern['type'] = pattern_name
+        # Check ob nested structure (technical_indicators, formation_patterns)
+        if 'technical_indicators' in patterns or 'formation_patterns' in patterns:
+            # NESTED STRUCTURE - flatten it
+            for category, category_patterns in patterns.items():
+                if isinstance(category_patterns, dict):
+                    for pattern_name, signal_list in category_patterns.items():
+                        if isinstance(signal_list, list):
+                            flat_patterns[pattern_name] = signal_list
+                        else:
+                            print(f"⚠️ Unexpected signal_list type for {pattern_name}: {type(signal_list)}")
+        else:
+            # FLAT STRUCTURE - use as is
+            flat_patterns = patterns
 
-            try:
-                # ✅ DOUBLE BOTTOM/TOP Integration
-                if pattern_name in ['double_bottom', 'double_top']:
+        print(f"📊 Flattened patterns: {len(flat_patterns)} pattern types")
+        print(f"🎨 Processing patterns for overlays...")
+
+        pattern_count = 0
+
+        # EINE Schleife für ALLE Pattern (Marker + Overlays)
+        for pattern_name, signals in flat_patterns.items():
+            if not signals:
+                continue
+
+            print(f"   Processing {pattern_name}: {len(signals)} patterns")
+
+            # ================================================================================
+            # 1️⃣ PLOTLY OVERLAYS für formation_patterns (double_bottom, etc.)
+            # ================================================================================
+            if pattern_name in ['double_bottom', 'double_top']:
+                try:
                     from core.patterns.chart_patterns.double_patterns import render_pattern_plotly
 
-                    # Rendere Pattern mit lokalem Dispatcher
-                    render_pattern_plotly(fig, df, pattern)
-                    pattern_count += 1
+                    for pattern in signals:
+                        if 'type' not in pattern:
+                            pattern['type'] = pattern_name
 
-                    print(
-                        f"      ✅ Rendered {pattern_name} - P1: {pattern.get('P1')}, P2: {pattern.get('P2')}, Confirmed: {pattern.get('confirmed', False)}")
+                        render_pattern_plotly(fig, df, pattern)
+                        pattern_count += 1
 
-                # ✅ FALLBACK für andere Pattern-Typen (alte Marker-Methode)
+                    print(f"      ✅ Rendered {len(signals)} {pattern_name} overlays")
+                    continue  # Skip marker für diese patterns
+
+                except Exception as e:
+                    print(f"      ⚠️ Could not render {pattern_name} overlay: {e}")
+                    # Fallback zu Standard Marker unten
+
+            # ================================================================================
+            # 2️⃣ STANDARD MARKER für alle anderen patterns
+            # ================================================================================
+            # Get pattern style
+            style = pattern_styles.get(pattern_name, {
+                'symbol': 'circle',
+                'color': '#ffffff',
+                'size': 12,
+                'emoji': '📊'
+            })
+
+            for i, signal in enumerate(signals):
+                # Sicherstellen dass signal ein Dict ist
+                if not isinstance(signal, dict):
+                    print(f"⚠️ Signal is not dict for {pattern_name}: {type(signal)}")
+                    continue
+
+                direction = signal.get('direction', 'neutral')
+                strength = signal.get('strength', 0.5)
+
+                # Color based on direction
+                if direction == 'bullish':
+                    color = style.get('color', '#4CAF50')
+                elif direction == 'bearish':
+                    color = style.get('color', '#f44336')
                 else:
-                    # Verwende bestehende Pattern-Marker-Logik für andere Patterns
-                    _add_legacy_pattern_marker(fig, df, pattern, pattern_name)
-                    pattern_count += 1
-                    print(f"      ➤ Legacy marker for {pattern_name}")
+                    color = style.get('color', '#ffffff')
 
-            except ImportError as e:
-                print(f"      ⚠️ Plotly Renderer nicht verfügbar für {pattern_name}: {e}")
-                # Fallback auf alte Marker-Methode
-                _add_legacy_pattern_marker(fig, df, pattern, pattern_name)
+                # Show legend only for first occurrence
+                show_legend = pattern_name not in pattern_legend_added
+                if show_legend:
+                    pattern_legend_added.add(pattern_name)
 
-            except Exception as e:
-                print(f"      ❌ Fehler beim Rendern von {pattern_name}: {e}")
-                import traceback
-                traceback.print_exc()
+                # Enhanced pattern marker
+                fig.add_trace(
+                    go.Scatter(
+                        x=[signal['datetime']],
+                        y=[signal['price'] * 1.1],  # Pattern Symbol über Kerze
+                        mode='markers',
+                        marker=dict(
+                            symbol=style.get('symbol', 'circle'),
+                            size=style['size'] + (strength * 8),  # Size based on strength
+                            color=color,
+                            line=dict(width=1, color='white'),
+                            opacity=0.8 + (strength * 0.2)
+                        ),
+                        name=f"{style.get('emoji', '📊')} {pattern_name}",
+                        legendgroup=pattern_name,
+                        showlegend=show_legend,
+                        hovertemplate=(
+                                f"<b>{pattern_name}</b><br>" +
+                                f"Price: %{{y:.4f}}<br>" +
+                                f"Strength: {strength:.2f}<br>" +
+                                f"Direction: {direction}<br>" +
+                                "<extra></extra>"
+                        )
+                    )
+                )
+                pattern_count += 1
 
-    print(f"🎨 {pattern_count} Patterns als Overlays gerendert")
+        print(f"🎨 {pattern_count} total patterns rendered (overlays + markers)")
 
 
 
