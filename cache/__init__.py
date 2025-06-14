@@ -2,7 +2,7 @@
 """
 Cache-System für Krypto-OHLCV-Daten
 """
-import self as self
+#import self as self
 
 from .cache_manager import CryptoDataCache, cache_instance
 

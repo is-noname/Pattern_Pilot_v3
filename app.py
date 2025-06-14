@@ -32,6 +32,7 @@ from flask import request
 
 # Import your existing engine and settings
 from core.market_engine import market_engine
+from core.analysis_pipeline import analysis_pipeline
 from config.settings import UI_CONFIG, PATTERN_CONFIG, CHART_CONFIG
 from config.pattern_settings import TIMEFRAME_CONFIGS
 
@@ -521,7 +522,8 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, 
         summary = create_pattern_summary(filtered_patterns, len(df))
 
         # Total Patterns = all filtered patterns
-        total_patterns = sum(len(signals) for signals in filtered_patterns.values())
+        #total_patterns = sum(len(signals) for signals in filtered_patterns.values())
+        total_patterns = analysis_pipeline.get_pattern_count(symbol, timeframe)
 
         return fig, summary, total_patterns
 
