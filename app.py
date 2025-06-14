@@ -1001,10 +1001,28 @@ def create_pattern_summary(patterns, candle_count):
                    style={"color": "#666"})
         ], className="pattern-summary")
 
+    # Flatten nested structure für konsistente Verarbeitung
+    flat_patterns = {}
+
+    # Check ob nested structure (technical_indicators, formation_patterns)
+    if 'technical_indicators' in patterns or 'formation_patterns' in patterns:
+        # NESTED STRUCTURE - flatten it
+        for category, category_patterns in patterns.items():
+            if isinstance(category_patterns, dict):
+                for pattern_name, signal_list in category_patterns.items():
+                    if isinstance(signal_list, list):
+                        flat_patterns[pattern_name] = signal_list
+    else:
+        # FLAT STRUCTURE - use as is
+        flat_patterns = patterns
+
+
+
     # Calculate statistics
     all_signals = []
-    for signals in patterns.values():
-        all_signals.extend(signals)
+    for pattern_name, signals in flat_patterns.items():
+        if isinstance(signals, list):
+            all_signals.extend(signals)
 
     if not all_signals:
         return html.Div([
