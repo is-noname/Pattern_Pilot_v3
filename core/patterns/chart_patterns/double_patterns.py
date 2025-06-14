@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from config.pattern_settings import PATTERN_CONFIGS
+import plotly.graph_objects as go
+
 
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
@@ -265,3 +267,196 @@ def render_pattern(ax, df, pattern):
         render_double_top(ax, df, pattern)
     else:
         print(f"Unbekannter Pattern-Typ: {pattern_type}")
+
+
+# ================================================================================
+# 🔹 RENDER FÜR PLOTLY CHARTS
+# ================================================================================
+
+def render_double_bottom_plotly(fig, df, pattern):
+    """
+    Plotly Version des Double Bottom Pattern Renderers
+
+    Args:
+        fig: Plotly Figure Objekt
+        df: DataFrame mit OHLCV Daten
+        pattern: Pattern Dictionary mit P1, P2, neckline, etc.
+    """
+
+    # ✅ Support Points (P1, P2) als grüne Marker
+    fig.add_trace(go.Scatter(
+        x=[df.index[pattern['P1']], df.index[pattern['P2']]],
+        y=[df['low'].iloc[pattern['P1']], df['low'].iloc[pattern['P2']]],
+        mode='markers',
+        marker=dict(
+            color='lime',
+            size=12,
+            symbol='circle',
+            line=dict(width=2, color='white')
+        ),
+        name='Double Bottom Support',
+        showlegend=False,
+        hovertemplate="<b>Support Point</b><br>" +
+                      "Price: $%{y:.4f}<br>" +
+                      "Index: %{x}<extra></extra>"
+    ))
+
+    # ✅ Neckline als gestrichelte horizontale Linie
+    fig.add_shape(
+        type="line",
+        x0=df.index[pattern['P1']],
+        x1=df.index[pattern['P2']],
+        y0=pattern['neckline'],
+        y1=pattern['neckline'],
+        line=dict(
+            color="red",
+            width=2,
+            dash="dash"
+        )
+    )
+
+    # ✅ Neckline Label
+    fig.add_annotation(
+        x=df.index[pattern['P2']],
+        y=pattern['neckline'],
+        text=f"Neckline: ${pattern['neckline']:.4f}",
+        showarrow=True,
+        arrowhead=2,
+        arrowcolor="red",
+        bgcolor="rgba(255,0,0,0.8)",
+        bordercolor="red",
+        font=dict(color="white", size=10)
+    )
+
+    # ✅ Breakout Point (falls bestätigt)
+    if pattern.get('confirmed') and pattern.get('breakout_idx') is not None:
+        fig.add_trace(go.Scatter(
+            x=[df.index[pattern['breakout_idx']]],
+            y=[df['close'].iloc[pattern['breakout_idx']]],
+            mode='markers',
+            marker=dict(
+                color='lime',
+                size=15,
+                symbol='triangle-up',
+                line=dict(width=2, color='white')
+            ),
+            name='Breakout',
+            showlegend=False,
+            hovertemplate="<b>Breakout Point</b><br>" +
+                          "Price: $%{y:.4f}<br>" +
+                          "Confirmed: Yes<extra></extra>"
+        ))
+
+        # ✅ Target Line (Kursziel)
+        if pattern.get('target') is not None:
+            fig.add_shape(
+                type="line",
+                x0=df.index[pattern['breakout_idx']],
+                x1=df.index[-1],  # Bis zum Ende des Charts
+                y0=pattern['target'],
+                y1=pattern['target'],
+                line=dict(
+                    color="lime",
+                    width=2,
+                    dash="dot"
+                )
+            )
+
+            # Target Label
+            fig.add_annotation(
+                x=df.index[-1],
+                y=pattern['target'],
+                text=f"Target: ${pattern['target']:.4f}",
+                showarrow=True,
+                arrowhead=2,
+                arrowcolor="lime",
+                bgcolor="rgba(0,255,0,0.8)",
+                bordercolor="lime",
+                font=dict(color="white", size=10)
+            )
+
+
+def render_double_top_plotly(fig, df, pattern):
+    """Plotly Version des Double Top Pattern Renderers"""
+
+    # ✅ Resistance Points (P1, P2) als rote Marker
+    fig.add_trace(go.Scatter(
+        x=[df.index[pattern['P1']], df.index[pattern['P2']]],
+        y=[df['high'].iloc[pattern['P1']], df['high'].iloc[pattern['P2']]],
+        mode='markers',
+        marker=dict(
+            color='red',
+            size=12,
+            symbol='circle',
+            line=dict(width=2, color='white')
+        ),
+        name='Double Top Resistance',
+        showlegend=False,
+        hovertemplate="<b>Resistance Point</b><br>" +
+                      "Price: $%{y:.4f}<br>" +
+                      "Index: %{x}<extra></extra>"
+    ))
+
+    # ✅ Neckline als gestrichelte horizontale Linie
+    fig.add_shape(
+        type="line",
+        x0=df.index[pattern['P1']],
+        x1=df.index[pattern['P2']],
+        y0=pattern['neckline'],
+        y1=pattern['neckline'],
+        line=dict(
+            color="lime",
+            width=2,
+            dash="dash"
+        )
+    )
+
+    # ✅ Breakout Point (falls bestätigt)
+    if pattern.get('confirmed') and pattern.get('breakout_idx') is not None:
+        fig.add_trace(go.Scatter(
+            x=[df.index[pattern['breakout_idx']]],
+            y=[df['close'].iloc[pattern['breakout_idx']]],
+            mode='markers',
+            marker=dict(
+                color='red',
+                size=15,
+                symbol='triangle-down',
+                line=dict(width=2, color='white')
+            ),
+            name='Breakdown',
+            showlegend=False,
+            hovertemplate="<b>Breakdown Point</b><br>" +
+                          "Price: $%{y:.4f}<br>" +
+                          "Confirmed: Yes<extra></extra>"
+        ))
+
+
+def render_pattern_plotly(fig, df, pattern):
+    """
+    Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
+    """
+    pattern_type = pattern.get("type", "")
+
+    if pattern_type == "double_bottom":
+        render_double_bottom_plotly(fig, df, pattern)
+    elif pattern_type == "double_top":
+        render_double_top_plotly(fig, df, pattern)
+    else:
+        print(f"Unbekannter Pattern-Typ für Double-Patterns (Plotly): {pattern_type}")
+
+
+# ================================================================================
+# 🎯 USAGE EXAMPLES
+# ================================================================================
+
+"""
+# Interactive Test (matplotlib):
+patterns = detect_double_bottom(df)
+for pattern in patterns:
+    render_pattern(ax, df, pattern)  # Automatisch double_bottom
+
+# App.py (plotly):
+patterns = detect_double_bottom(df)
+for pattern in patterns:
+    render_pattern_plotly(fig, df, pattern)  # Automatisch double_bottom
+"""
