@@ -5,6 +5,9 @@ from config.pattern_settings import PATTERN_CONFIGS
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
 
+# ==============================================================================
+#                      DETECT ROUNDING PATTERNS
+# ==============================================================================
 def detect_rounding_bottom(df, config=None, timeframe="1d"):
     """
     Erkennt Rounding Bottom (Cup) Muster (bullishes Umkehrmuster)
@@ -250,6 +253,10 @@ def detect_rounding_top(df, config=None, timeframe="1d"):
     return patterns
 
 
+# ==============================================================================
+#                      RENDER ROUNDING PATTERNS IN MATPLOTLIB
+# ==============================================================================
+
 def render_rounding_bottom(ax, df, pattern):
     """
     Zeichnet ein Rounding Bottom Pattern mit einer glatten Kurve
@@ -402,3 +409,32 @@ def render_pattern(ax, df, pattern):
         render_rounding_top(ax, df, pattern)
     else:
         print(f"Unbekannter Pattern-Typ für Rounding-Patterns: {pattern_type}")
+
+# ==============================================================================
+#                      RENDER ROUNDING PATTERNS IN PLOTLY
+# ==============================================================================
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_rounding_bottom_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_rounding_top_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+
+def render_rounding_pattern_plotly(fig, df, pattern):
+    """
+    Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
+    """
+    pattern_type = pattern.get("type", "")
+
+    if pattern_type == "rounding_bottom":
+        render_rounding_bottom_plotly(fig, df, pattern)
+    elif pattern_type == "rounding_top":
+        render_rounding_top_plotly(fig, df, pattern)
+    # ... weitere Pattern-Typen in dieser Datei ...
+    else:
+        print(f"Unbekannter Pattern-Typ für DATEI_NAME (Plotly): {pattern_type}")

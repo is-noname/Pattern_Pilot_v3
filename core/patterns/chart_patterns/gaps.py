@@ -5,6 +5,9 @@ from config.pattern_settings import PATTERN_CONFIGS
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
 
+# ==============================================================================
+#                      DETECT GAPS
+# ==============================================================================
 def _identify_gaps(df):
     """
     Identifiziert alle Gaps (Kurslücken) in den Preisdaten.
@@ -487,6 +490,10 @@ def detect_common_gap(df, config=None, timeframe="1d"):
     return common_gaps
 
 
+# ==============================================================================
+#                      RENDER GAPS IN MATPLOTLIB
+# ==============================================================================
+
 def render_breakaway_gap(ax, df, pattern):
     """
     Zeichnet ein Breakaway Gap auf die Achse
@@ -725,3 +732,45 @@ def render_gaps_pattern(ax, df, pattern):
         render_common_gap(ax, df, pattern)
     else:
         print(f"Unbekannter Pattern-Typ für Gaps: {pattern_type}")
+
+# ==============================================================================
+#                      RENDER GAPS IN PLOTLY
+# ==============================================================================
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_breakaway_gap_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_runaway_gap_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_exhaustion_gap_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_common_gap_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+def render_channels_pattern_plotly(fig, df, pattern):
+    """
+    Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
+    """
+    pattern_type = pattern.get("type", "")
+
+    if pattern_type == "breakaway_gap":
+        render_breakaway_gap_plotly(fig, df, pattern)
+    elif pattern_type == "runaway_gap":
+        render_runaway_gap_plotly(fig, df, pattern)
+    elif pattern_type == "exhaustion_gap":
+        render_exhaustion_gap_plotly(fig, df, pattern)
+    elif pattern_type == "common_gap":
+        render_common_gap_plotly(fig, df, pattern)
+    # ... weitere Pattern-Typen in dieser Datei ...
+    else:
+        print(f"Unbekannter Pattern-Typ für DATEI_NAME (Plotly): {pattern_type}")

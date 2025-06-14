@@ -1,10 +1,13 @@
 #import pandas as pd
 import numpy as np
 from config.pattern_settings import PATTERN_CONFIGS
+import plotly.graph_objects as go
 
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
-
+# ==============================================================================
+#                      DETECT TRIPLE PATTERNS
+# ==============================================================================
 def detect_triple_top(df, config=None, timeframe="1d"):
     """
     Erkennt Triple-Top-Muster (bearishes Umkehrmuster)
@@ -224,7 +227,9 @@ def detect_triple_bottom(df, config=None, timeframe="1d"):
             
     return patterns
 
-
+# ==============================================================================
+#                      RENDER TRIPLE PATTERNS MATPLOTLIB
+# ==============================================================================
 def render_triple_top(ax, df, pattern):
     """
     Zeichnet ein Triple Top Muster auf die Achse
@@ -329,3 +334,29 @@ def render_pattern(ax, df, pattern):
         render_triple_bottom(ax, df, pattern)
     else:
         print(f"Unbekannter Pattern-Typ für Triple-Patterns: {pattern_type}")
+
+# ==============================================================================
+#                      RENDER TRIPLE PATTERNS PLOTLY
+# ==============================================================================
+def render_triple_bottom_plotly(fig, df, pattern):
+    """Plotly Version des Triple Bottom Pattern Renderers"""
+    # ... [Code hier] ...
+    pass
+
+def render_triple_top_plotly(fig, df, pattern):
+    """Plotly Version des Triple Top Pattern Renderers"""
+    # ... [Code hier] ...
+    pass
+
+def render_triple_pattern_plotly(fig, df, pattern):
+    """
+    Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
+    """
+    pattern_type = pattern.get("type", "")
+
+    if pattern_type == "triple_top":
+        render_triple_top_plotly(fig, df, pattern)
+    elif pattern_type == "triple_bottom":
+        render_triple_bottom_plotly(fig, df, pattern)
+    else:
+        print(f"Unbekannter Pattern-Typ für Triple-Patterns (Plotly): {pattern_type}")

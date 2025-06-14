@@ -5,6 +5,9 @@ from config.pattern_settings import PATTERN_CONFIGS
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
 
+# ==============================================================================
+#                      DETECT V / CUP PATTERNS
+# ==============================================================================
 def detect_v_pattern(df, config=None, timeframe="1d"):
     """
     Erkennt V-Muster (Spike) - eine scharfe, schnelle Umkehr
@@ -280,6 +283,9 @@ def detect_cup_and_handle(df, config=None, timeframe="1d"):
     return patterns
 
 
+# ==============================================================================
+#                      RENDER V / CUP PATTERNS IN MATPLOTLIB
+# ==============================================================================
 def render_v_pattern(ax, df, pattern):
     """
     Zeichnet ein V-Pattern auf die Achse
@@ -415,3 +421,32 @@ def render_v_cup_pattern(ax, df, pattern):
         render_cup_and_handle(ax, df, pattern)
     else:
         print(f"Unbekannter Pattern-Typ für V/Cup: {pattern_type}")
+
+# ==============================================================================
+#                      RENDER V / CUP PATTERNS IN PLOTLY
+# ==============================================================================
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_v_pattern_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_cup_and_handle_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+
+def render_v_cup_pattern_plotly(fig, df, pattern):
+    """
+    Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
+    """
+    pattern_type = pattern.get("type", "")
+
+    if pattern_type == "v_pattern":
+        render_v_pattern_plotly(fig, df, pattern)
+    elif pattern_type == "cup_and_handle":
+        render_cup_and_handle_plotly(fig, df, pattern)
+    # ... weitere Pattern-Typen in dieser Datei ...
+    else:
+        print(f"Unbekannter Pattern-Typ für DATEI_NAME (Plotly): {pattern_type}")

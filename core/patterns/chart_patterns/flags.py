@@ -5,6 +5,10 @@ from config.pattern_settings import PATTERN_CONFIGS
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
 
+# ==============================================================================
+#                      DETECT FLAGS
+# ==============================================================================
+
 def detect_bullish_flag(df, config=None, timeframe="1d"):
     """
     Erkennt bullische Flaggen (Fortsetzungsmuster nach Aufwärtstrend)
@@ -525,6 +529,10 @@ def detect_bearish_pennant(df, config=None, timeframe="1d"):
     return patterns
 
 
+# ==============================================================================
+#                      RENDER FLAGS IN MATPLOTLIB
+# ==============================================================================
+
 def render_bullish_flag(ax, df, pattern):
     """
     Zeichnet ein bullisches Flaggen-Muster auf die Achse
@@ -751,3 +759,45 @@ def render_pattern(ax, df, pattern):
         render_bearish_pennant(ax, df, pattern)
     else:
         print(f"Unbekannter Pattern-Typ für Flags: {pattern_type}")
+
+
+# ==============================================================================
+#                      RENDER FLAGS IN MATPLOTLIB
+# ==============================================================================
+
+def render_bullish_flag_plotly(fig, df, pattern):
+    """Plotly Version des Bullish Flag Pattern Renderers"""
+    # ... [Code hier] ...
+    pass
+
+def render_bearish_flag_plotly(fig, df, pattern):
+    """Plotly Version des Bearish Flag Pattern Renderers"""
+    # ... [Code hier] ...
+    pass
+
+def render_bullish_pennant_plotly(fig, df, pattern):
+    """Plotly Version des Bullish Pennant Pattern Renderers"""
+    # ... [Code hier] ...
+    pass
+
+def render_bearish_pennant_plotly(fig, df, pattern):
+    """Plotly Version des Bearish Pennant Pattern Renderers"""
+    # ... [Code hier] ...
+    pass
+
+def render_flags_pattern_plotly(fig, df, pattern):
+    """
+    Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
+    """
+    pattern_type = pattern.get("type", "")
+
+    if pattern_type == "bullish_flag":
+        render_bullish_flag_plotly(fig, df, pattern)
+    elif pattern_type == "bearish_flag":
+        render_bearish_flag_plotly(fig, df, pattern)
+    elif pattern_type == "bullish_pennant":
+        render_bullish_pennant_plotly(fig, df, pattern)
+    elif pattern_type == "bearish_pennant":
+        render_bearish_pennant_plotly(fig, df, pattern)
+    else:
+        print(f"Unbekannter Pattern-Typ für Flags (Plotly): {pattern_type}")

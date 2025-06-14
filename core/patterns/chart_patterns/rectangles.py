@@ -5,6 +5,9 @@ from config.pattern_settings import PATTERN_CONFIGS
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
 
+# ==============================================================================
+#                      DETECT RECTANGLES
+# ==============================================================================
 def detect_bullish_rectangle(df, config=None, timeframe="1d"):
     """
     Erkennt bullische Rechtecke (Fortsetzungsmuster im Aufwärtstrend)
@@ -315,6 +318,9 @@ def detect_bearish_rectangle(df, config=None, timeframe="1d"):
     return patterns
 
 
+# ==============================================================================
+#                      RENDER RECTANGLES IN MATPLOTLIB
+# ==============================================================================
 def render_bullish_rectangle(ax, df, pattern):
     """
     Zeichnet ein bullisches Rechteck auf die Achse
@@ -441,3 +447,32 @@ def render_pattern(ax, df, pattern):
         render_bearish_rectangle(ax, df, pattern)
     else:
         print(f"Unbekannter Pattern-Typ für Rectangles: {pattern_type}")
+
+# ==============================================================================
+#                      RENDER RECTANGLES IN PLOTLY
+# ==============================================================================
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_bullish_rectangle_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_bearish_rectangle_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+
+def render_rectangles_pattern_plotly(fig, df, pattern):
+    """
+    Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
+    """
+    pattern_type = pattern.get("type", "")
+
+    if pattern_type == "bullish_rectangle":
+        render_bullish_rectangle_plotly(fig, df, pattern)
+    elif pattern_type == "bearish_rectangle":
+        render_bearish_rectangle_plotly(fig, df, pattern)
+    # ... weitere Pattern-Typen in dieser Datei ...
+    else:
+        print(f"Unbekannter Pattern-Typ für DATEI_NAME (Plotly): {pattern_type}")

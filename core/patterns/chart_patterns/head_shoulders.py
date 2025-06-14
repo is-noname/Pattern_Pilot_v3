@@ -5,6 +5,9 @@ from config.pattern_settings import PATTERN_CONFIGS
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
 
+# ==============================================================================
+#                      DETECT (INVERSE) HEAD 6 SHOULDERS
+# ==============================================================================
 def detect_head_and_shoulders(df, config=None, timeframe="1d"):
     """
     Erkennt Kopf-Schulter-Formationen (bearishes Umkehrmuster)
@@ -114,57 +117,10 @@ def detect_head_and_shoulders(df, config=None, timeframe="1d"):
     return patterns
 
 
-def render_head_and_shoulders(ax, df, pattern):
-    """
-    Zeichnet eine Head and Shoulders Formation auf die Achse
-    """
-    # Kopf und Schultern zeichnen
-    ax.scatter(pattern['left_shoulder'], df['high'].iloc[pattern['left_shoulder']],
-              color='red', s=100, marker='o')
-    ax.scatter(pattern['head'], df['high'].iloc[pattern['head']],
-              color='red', s=100, marker='o')
-    ax.scatter(pattern['right_shoulder'], df['high'].iloc[pattern['right_shoulder']],
-              color='red', s=100, marker='o')
-
-    # Nackenlinie zeichnen (kann geneigt sein)
-    x_range = range(pattern['left_trough'], pattern['right_trough'] + 1)
-    neckline_y = [pattern['neckline_intercept'] + pattern['neckline_slope'] * x for x in x_range]
-    ax.plot(x_range, neckline_y, 'r--', linewidth=2, alpha=0.7)
-
-    # Ausbruchspunkt
-    if pattern['confirmed'] and pattern['breakout_idx'] is not None:
-        ax.scatter(pattern['breakout_idx'], df['close'].iloc[pattern['breakout_idx']],
-                  color='white', s=80, marker='v')
-        
-        # Kursziel, falls verfügbar
-        if pattern['target'] is not None:
-            # Gepunktete Linie zum Kursziel
-            target_y = pattern['target']
-            ax.axhline(y=target_y, color='red', linestyle=':', alpha=0.5, 
-                       xmin=pattern['breakout_idx'] / len(df), xmax=1.0)
-
-    # NEU: Stärke-Indikator anzeigen
-    if 'strength' in pattern and SHOW_STRENGTH_IN_CHART:
-        strength = pattern['strength']
-
-        # Position für Stärke-Anzeige (unter dem Kopf)
-        text_pos_x = pattern['head']
-        text_pos_y = df['high'].iloc[pattern['head']] * 0.97
-
-        # Größe und Transparenz je nach Stärke
-        text_size = 8 + int(strength * 4)  # 8-12pt je nach Stärke
-        text_alpha = 0.5 + (strength * 0.5)  # 0.5-1.0 Transparenz
-
-        # Stärke als Text anzeigen
-        ax.text(text_pos_x, text_pos_y, f"Stärke: {strength:.2f}", ha='center', va='center',
-                fontsize=text_size, alpha=text_alpha, color='white',
-                bbox=dict(facecolor='red', alpha=0.3))
-
-
 def detect_inverse_head_and_shoulders(df, config=None, timeframe="1d"):
     """
     Erkennt inverse Kopf-Schulter-Formationen (bullishes Umkehrmuster)
-    
+
     Eigenschaften:
     - Drei Tiefs, wobei das mittlere (Kopf) tiefer ist als die beiden äußeren (Schultern)
     - Signal für eine Trendumkehr von Abwärts nach Aufwärts
@@ -270,6 +226,55 @@ def detect_inverse_head_and_shoulders(df, config=None, timeframe="1d"):
 
     return patterns
 
+# ==============================================================================
+#                      RENDER H&S IN MATPLOTLIB
+# ==============================================================================
+def render_head_and_shoulders(ax, df, pattern):
+    """
+    Zeichnet eine Head and Shoulders Formation auf die Achse
+    """
+    # Kopf und Schultern zeichnen
+    ax.scatter(pattern['left_shoulder'], df['high'].iloc[pattern['left_shoulder']],
+              color='red', s=100, marker='o')
+    ax.scatter(pattern['head'], df['high'].iloc[pattern['head']],
+              color='red', s=100, marker='o')
+    ax.scatter(pattern['right_shoulder'], df['high'].iloc[pattern['right_shoulder']],
+              color='red', s=100, marker='o')
+
+    # Nackenlinie zeichnen (kann geneigt sein)
+    x_range = range(pattern['left_trough'], pattern['right_trough'] + 1)
+    neckline_y = [pattern['neckline_intercept'] + pattern['neckline_slope'] * x for x in x_range]
+    ax.plot(x_range, neckline_y, 'r--', linewidth=2, alpha=0.7)
+
+    # Ausbruchspunkt
+    if pattern['confirmed'] and pattern['breakout_idx'] is not None:
+        ax.scatter(pattern['breakout_idx'], df['close'].iloc[pattern['breakout_idx']],
+                  color='white', s=80, marker='v')
+
+        # Kursziel, falls verfügbar
+        if pattern['target'] is not None:
+            # Gepunktete Linie zum Kursziel
+            target_y = pattern['target']
+            ax.axhline(y=target_y, color='red', linestyle=':', alpha=0.5,
+                       xmin=pattern['breakout_idx'] / len(df), xmax=1.0)
+
+    # NEU: Stärke-Indikator anzeigen
+    if 'strength' in pattern and SHOW_STRENGTH_IN_CHART:
+        strength = pattern['strength']
+
+        # Position für Stärke-Anzeige (unter dem Kopf)
+        text_pos_x = pattern['head']
+        text_pos_y = df['high'].iloc[pattern['head']] * 0.97
+
+        # Größe und Transparenz je nach Stärke
+        text_size = 8 + int(strength * 4)  # 8-12pt je nach Stärke
+        text_alpha = 0.5 + (strength * 0.5)  # 0.5-1.0 Transparenz
+
+        # Stärke als Text anzeigen
+        ax.text(text_pos_x, text_pos_y, f"Stärke: {strength:.2f}", ha='center', va='center',
+                fontsize=text_size, alpha=text_alpha, color='white',
+                bbox=dict(facecolor='red', alpha=0.3))
+
 
 def render_inverse_head_and_shoulders(ax, df, pattern):
     """
@@ -277,11 +282,11 @@ def render_inverse_head_and_shoulders(ax, df, pattern):
     """
     # Kopf und Schultern zeichnen (in diesem Fall die Tiefs)
     ax.scatter(pattern['left_shoulder'], df['low'].iloc[pattern['left_shoulder']],
-              color='lime', s=100, marker='o')
+               color='lime', s=100, marker='o')
     ax.scatter(pattern['head'], df['low'].iloc[pattern['head']],
-              color='lime', s=100, marker='o')
+               color='lime', s=100, marker='o')
     ax.scatter(pattern['right_shoulder'], df['low'].iloc[pattern['right_shoulder']],
-              color='lime', s=100, marker='o')
+               color='lime', s=100, marker='o')
 
     # Nackenlinie zeichnen (kann geneigt sein)
     x_range = range(pattern['left_peak'], pattern['right_peak'] + 1)
@@ -291,13 +296,13 @@ def render_inverse_head_and_shoulders(ax, df, pattern):
     # Ausbruchspunkt
     if pattern['confirmed'] and pattern['breakout_idx'] is not None:
         ax.scatter(pattern['breakout_idx'], df['close'].iloc[pattern['breakout_idx']],
-                  color='lime', s=80, marker='^')
-        
+                   color='lime', s=80, marker='^')
+
         # Kursziel, falls verfügbar
         if pattern['target'] is not None:
             # Gepunktete Linie zum Kursziel
             target_y = pattern['target']
-            ax.axhline(y=target_y, color='lime', linestyle=':', alpha=0.5, 
+            ax.axhline(y=target_y, color='lime', linestyle=':', alpha=0.5,
                        xmin=pattern['breakout_idx'] / len(df), xmax=1.0)
 
     # NEU: Stärke-Indikator anzeigen
@@ -330,3 +335,33 @@ def render_pattern(ax, df, pattern):
         render_inverse_head_and_shoulders(ax, df, pattern)
     else:
         print(f"Unbekannter Pattern-Typ: {pattern_type}")
+# ==============================================================================
+#                      RENDER H&S IN PLOTLY
+# ==============================================================================
+def render_head_and_shoulders_plotly(fig, df, pattern):
+    """Plotly Version des Head and Shoulders Pattern Renderers"""
+    # ... [Code hier] ...
+    pass
+
+
+def render_inverse_head_and_shoulders_plotly(fig, df, pattern):
+    """Plotly Version des Inverse Head and Shoulders Pattern Renderers"""
+    # ... [Code hier] ...
+    pass
+
+
+def render_pattern_plotly(fig, df, pattern):
+    """
+    Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
+    """
+    pattern_type = pattern.get("type", "")
+
+    if pattern_type == "head_and_shoulders":
+        render_head_and_shoulders_plotly(fig, df, pattern)
+    elif pattern_type == "inverse_head_and_shoulders":
+        render_inverse_head_and_shoulders_plotly(fig, df, pattern)
+    else:
+        print(f"Unbekannter Pattern-Typ für Head-Shoulders (Plotly): {pattern_type}")
+
+
+

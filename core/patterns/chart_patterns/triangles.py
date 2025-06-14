@@ -1,9 +1,15 @@
 import pandas as pd
 import numpy as np
+from werkzeug.debug.tbtools import HEADER
+
 from config.pattern_settings import PATTERN_CONFIGS
 
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
+
+# ==============================================================================
+#                      DETECT TRIANGLES
+# ==============================================================================
 
 def detect_ascending_triangle(df, config=None, timeframe="1d"):
     """
@@ -160,71 +166,10 @@ def detect_ascending_triangle(df, config=None, timeframe="1d"):
     return patterns
 
 
-def render_ascending_triangle(ax, df, pattern):
-    """
-    Zeichnet ein aufsteigendes Dreieck auf die Achse
-    """
-    # Dreieck zeichnen
-    start_idx = pattern['start_idx']
-    end_idx = pattern['end_idx']
-
-    # Horizontale Widerstandslinie
-    ax.axhline(y=pattern['resistance_level'], color='r', linestyle='--', alpha=0.7,
-               xmin=start_idx / len(df), xmax=end_idx / len(df))
-
-    # Aufsteigende Unterstützungslinie
-    x_range = range(start_idx, end_idx + 1)
-    support_y = [pattern['support_intercept'] + pattern['support_slope'] * x for x in x_range]
-    ax.plot(x_range, support_y, 'g-', linewidth=2, alpha=0.7)
-
-    # Berührungspunkte
-    if 'support_points' in pattern:
-        for point in pattern['support_points']:
-            point_idx = point[0]
-            point_val = point[1]
-            ax.scatter(point_idx, point_val, color='green', s=60, marker='o', alpha=0.8)
-
-    if 'resistance_points' in pattern:
-        for point in pattern['resistance_points']:
-            point_idx = point[0]
-            point_val = point[1]
-            ax.scatter(point_idx, point_val, color='red', s=60, marker='o', alpha=0.8)
-
-    # Ausbruchspunkt
-    if pattern['confirmed'] and pattern['breakout_idx'] is not None:
-        ax.scatter(pattern['breakout_idx'], df['close'].iloc[pattern['breakout_idx']],
-                   color='lime', s=80, marker='^')
-        
-        # Kursziel anzeigen
-        if pattern['target'] is not None:
-            # Gepunktete Linie zum Kursziel
-            target_y = pattern['target']
-            ax.axhline(y=target_y, color='lime', linestyle=':', alpha=0.5,
-                       xmin=pattern['breakout_idx'] / len(df), xmax=1.0)
-
-        # NEU: Stärke-Indikator anzeigen
-    if 'strength' in pattern and SHOW_STRENGTH_IN_CHART:
-        strength = pattern['strength']
-
-        # Position für Stärke-Anzeige (Mitte des Dreiecks)
-        text_pos_x = (start_idx + end_idx) // 2
-        text_pos_y = (pattern['resistance_level'] + pattern['support_intercept'] +
-                      pattern['support_slope'] * text_pos_x) / 2
-
-        # Größe und Transparenz je nach Stärke
-        text_size = 8 + int(strength * 4)
-        text_alpha = 0.5 + (strength * 0.5)
-
-        # Stärke als Text anzeigen
-        ax.text(text_pos_x, text_pos_y, f"Stärke: {strength:.2f}", ha='center', va='center',
-                fontsize=text_size, alpha=text_alpha, color='white',
-                bbox=dict(facecolor='green', alpha=0.3))
-
-
 def detect_descending_triangle(df, config=None, timeframe="1d"):
     """
     Erkennt absteigende Dreiecke (bearishes Fortsetzungsmuster)
-    
+
     Eigenschaften:
     - Horizontale Unterstützungslinie (unten)
     - Absteigende Widerstandslinie (oben)
@@ -376,71 +321,10 @@ def detect_descending_triangle(df, config=None, timeframe="1d"):
     return patterns
 
 
-def render_descending_triangle(ax, df, pattern):
-    """
-    Zeichnet ein absteigendes Dreieck auf die Achse
-    """
-    # Dreieck zeichnen
-    start_idx = pattern['start_idx']
-    end_idx = pattern['end_idx']
-
-    # Horizontale Unterstützungslinie
-    ax.axhline(y=pattern['support_level'], color='g', linestyle='--', alpha=0.7,
-               xmin=start_idx / len(df), xmax=end_idx / len(df))
-
-    # Absteigende Widerstandslinie
-    x_range = range(start_idx, end_idx + 1)
-    resistance_y = [pattern['resistance_intercept'] + pattern['resistance_slope'] * x for x in x_range]
-    ax.plot(x_range, resistance_y, 'r-', linewidth=2, alpha=0.7)
-
-    # Berührungspunkte
-    if 'resistance_points' in pattern:
-        for point in pattern['resistance_points']:
-            point_idx = point[0]
-            point_val = point[1]
-            ax.scatter(point_idx, point_val, color='red', s=60, marker='o', alpha=0.8)
-
-    if 'support_points' in pattern:
-        for point in pattern['support_points']:
-            point_idx = point[0]
-            point_val = point[1]
-            ax.scatter(point_idx, point_val, color='green', s=60, marker='o', alpha=0.8)
-
-    # Ausbruchspunkt
-    if pattern['confirmed'] and pattern['breakout_idx'] is not None:
-        ax.scatter(pattern['breakout_idx'], df['close'].iloc[pattern['breakout_idx']],
-                   color='red', s=80, marker='v')
-        
-        # Kursziel anzeigen
-        if pattern['target'] is not None:
-            # Gepunktete Linie zum Kursziel
-            target_y = pattern['target']
-            ax.axhline(y=target_y, color='red', linestyle=':', alpha=0.5,
-                       xmin=pattern['breakout_idx'] / len(df), xmax=1.0)
-
-    # NEU: Stärke-Indikator anzeigen
-    if 'strength' in pattern and SHOW_STRENGTH_IN_CHART:
-        strength = pattern['strength']
-
-        # Position für Stärke-Anzeige (Mitte des Dreiecks)
-        text_pos_x = (start_idx + end_idx) // 2
-        mid_y = (pattern['support_level'] + pattern['resistance_intercept'] +
-                 pattern['resistance_slope'] * text_pos_x) / 2
-
-        # Größe und Transparenz je nach Stärke
-        text_size = 8 + int(strength * 4)
-        text_alpha = 0.5 + (strength * 0.5)
-
-        # Stärke als Text anzeigen
-        ax.text(text_pos_x, mid_y, f"Stärke: {strength:.2f}", ha='center', va='center',
-                fontsize=text_size, alpha=text_alpha, color='white',
-                bbox=dict(facecolor='red', alpha=0.3))
-
-
 def detect_symmetrical_triangle(df, config=None, timeframe="1d"):
     """
     Erkennt symmetrische Dreiecke (neutrales Fortsetzungsmuster)
-    
+
     Eigenschaften:
     - Fallende Widerstandslinie (oben)
     - Steigende Unterstützungslinie (unten)
@@ -544,7 +428,8 @@ def detect_symmetrical_triangle(df, config=None, timeframe="1d"):
             sum_y_res = sum(resistance_y)
             sum_xy_res = sum(x_i * y_i for x_i, y_i in zip(resistance_x, resistance_y))
             sum_xx_res = sum(x_i * x_i for x_i in resistance_x)
-            resistance_slope = (n_res * sum_xy_res - sum_x_res * sum_y_res) / (n_res * sum_xx_res - sum_x_res * sum_x_res)
+            resistance_slope = (n_res * sum_xy_res - sum_x_res * sum_y_res) / (
+                        n_res * sum_xx_res - sum_x_res * sum_x_res)
             resistance_intercept = (sum_y_res - resistance_slope * sum_x_res) / n_res
 
             # Unterstützungslinie
@@ -603,7 +488,7 @@ def detect_symmetrical_triangle(df, config=None, timeframe="1d"):
             if confirmed:
                 # Höhe des Dreiecks am Startpunkt
                 start_height = (resistance_slope * i + resistance_intercept) - (support_slope * i + support_intercept)
-                
+
                 if breakout_direction == "up":
                     # Kursziel bei Ausbruch nach oben: Ausbruchspunkt + Höhe
                     target = df['close'].iloc[breakout_idx] + start_height
@@ -629,6 +514,132 @@ def detect_symmetrical_triangle(df, config=None, timeframe="1d"):
             })
 
     return patterns
+
+
+# ==============================================================================
+#                      RENDER TRIANGLES IN MATPLOTLIB
+# ==============================================================================
+
+def render_ascending_triangle(ax, df, pattern):
+    """
+    Zeichnet ein aufsteigendes Dreieck auf die Achse
+    """
+    # Dreieck zeichnen
+    start_idx = pattern['start_idx']
+    end_idx = pattern['end_idx']
+
+    # Horizontale Widerstandslinie
+    ax.axhline(y=pattern['resistance_level'], color='r', linestyle='--', alpha=0.7,
+               xmin=start_idx / len(df), xmax=end_idx / len(df))
+
+    # Aufsteigende Unterstützungslinie
+    x_range = range(start_idx, end_idx + 1)
+    support_y = [pattern['support_intercept'] + pattern['support_slope'] * x for x in x_range]
+    ax.plot(x_range, support_y, 'g-', linewidth=2, alpha=0.7)
+
+    # Berührungspunkte
+    if 'support_points' in pattern:
+        for point in pattern['support_points']:
+            point_idx = point[0]
+            point_val = point[1]
+            ax.scatter(point_idx, point_val, color='green', s=60, marker='o', alpha=0.8)
+
+    if 'resistance_points' in pattern:
+        for point in pattern['resistance_points']:
+            point_idx = point[0]
+            point_val = point[1]
+            ax.scatter(point_idx, point_val, color='red', s=60, marker='o', alpha=0.8)
+
+    # Ausbruchspunkt
+    if pattern['confirmed'] and pattern['breakout_idx'] is not None:
+        ax.scatter(pattern['breakout_idx'], df['close'].iloc[pattern['breakout_idx']],
+                   color='lime', s=80, marker='^')
+        
+        # Kursziel anzeigen
+        if pattern['target'] is not None:
+            # Gepunktete Linie zum Kursziel
+            target_y = pattern['target']
+            ax.axhline(y=target_y, color='lime', linestyle=':', alpha=0.5,
+                       xmin=pattern['breakout_idx'] / len(df), xmax=1.0)
+
+        # NEU: Stärke-Indikator anzeigen
+    if 'strength' in pattern and SHOW_STRENGTH_IN_CHART:
+        strength = pattern['strength']
+
+        # Position für Stärke-Anzeige (Mitte des Dreiecks)
+        text_pos_x = (start_idx + end_idx) // 2
+        text_pos_y = (pattern['resistance_level'] + pattern['support_intercept'] +
+                      pattern['support_slope'] * text_pos_x) / 2
+
+        # Größe und Transparenz je nach Stärke
+        text_size = 8 + int(strength * 4)
+        text_alpha = 0.5 + (strength * 0.5)
+
+        # Stärke als Text anzeigen
+        ax.text(text_pos_x, text_pos_y, f"Stärke: {strength:.2f}", ha='center', va='center',
+                fontsize=text_size, alpha=text_alpha, color='white',
+                bbox=dict(facecolor='green', alpha=0.3))
+
+
+def render_descending_triangle(ax, df, pattern):
+    """
+    Zeichnet ein absteigendes Dreieck auf die Achse
+    """
+    # Dreieck zeichnen
+    start_idx = pattern['start_idx']
+    end_idx = pattern['end_idx']
+
+    # Horizontale Unterstützungslinie
+    ax.axhline(y=pattern['support_level'], color='g', linestyle='--', alpha=0.7,
+               xmin=start_idx / len(df), xmax=end_idx / len(df))
+
+    # Absteigende Widerstandslinie
+    x_range = range(start_idx, end_idx + 1)
+    resistance_y = [pattern['resistance_intercept'] + pattern['resistance_slope'] * x for x in x_range]
+    ax.plot(x_range, resistance_y, 'r-', linewidth=2, alpha=0.7)
+
+    # Berührungspunkte
+    if 'resistance_points' in pattern:
+        for point in pattern['resistance_points']:
+            point_idx = point[0]
+            point_val = point[1]
+            ax.scatter(point_idx, point_val, color='red', s=60, marker='o', alpha=0.8)
+
+    if 'support_points' in pattern:
+        for point in pattern['support_points']:
+            point_idx = point[0]
+            point_val = point[1]
+            ax.scatter(point_idx, point_val, color='green', s=60, marker='o', alpha=0.8)
+
+    # Ausbruchspunkt
+    if pattern['confirmed'] and pattern['breakout_idx'] is not None:
+        ax.scatter(pattern['breakout_idx'], df['close'].iloc[pattern['breakout_idx']],
+                   color='red', s=80, marker='v')
+        
+        # Kursziel anzeigen
+        if pattern['target'] is not None:
+            # Gepunktete Linie zum Kursziel
+            target_y = pattern['target']
+            ax.axhline(y=target_y, color='red', linestyle=':', alpha=0.5,
+                       xmin=pattern['breakout_idx'] / len(df), xmax=1.0)
+
+    # NEU: Stärke-Indikator anzeigen
+    if 'strength' in pattern and SHOW_STRENGTH_IN_CHART:
+        strength = pattern['strength']
+
+        # Position für Stärke-Anzeige (Mitte des Dreiecks)
+        text_pos_x = (start_idx + end_idx) // 2
+        mid_y = (pattern['support_level'] + pattern['resistance_intercept'] +
+                 pattern['resistance_slope'] * text_pos_x) / 2
+
+        # Größe und Transparenz je nach Stärke
+        text_size = 8 + int(strength * 4)
+        text_alpha = 0.5 + (strength * 0.5)
+
+        # Stärke als Text anzeigen
+        ax.text(text_pos_x, mid_y, f"Stärke: {strength:.2f}", ha='center', va='center',
+                fontsize=text_size, alpha=text_alpha, color='white',
+                bbox=dict(facecolor='red', alpha=0.3))
 
 
 def render_symmetrical_triangle(ax, df, pattern):
@@ -698,3 +709,40 @@ def render_symmetrical_triangle(ax, df, pattern):
         ax.text(text_pos_x, text_pos_y, f"Stärke: {strength:.2f}", ha='center', va='center',
                 fontsize=text_size, alpha=text_alpha, color='white',
                 bbox=dict(facecolor=bg_color, alpha=0.3))
+
+# DEF REMDER PATTERN FEHLT ODERß
+
+
+# ==============================================================================
+#                      RENDER TRIANGLES IN PLOTLY
+# ==============================================================================
+
+def render_ascending_triangle_plotly(fig, df, pattern):
+    """Plotly Version des Ascending Triangle Pattern Renderers"""
+    # ... [Code hier] ...
+    pass
+
+def render_descending_triangle_plotly(fig, df, pattern):
+    """Plotly Version des Descending Triangle Pattern Renderers"""
+    # ... [Code hier] ...
+    pass
+
+def render_symmetrical_triangle_plotly(fig, df, pattern):
+    """Plotly Version des Symmetrical Triangle Pattern Renderers"""
+    # ... [Code hier] ...
+    pass
+
+def render_triangles_pattern_plotly(fig, df, pattern):
+    """
+    Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
+    """
+    pattern_type = pattern.get("type", "")
+
+    if pattern_type == "ascending_triangle":
+        render_ascending_triangle_plotly(fig, df, pattern)
+    elif pattern_type == "descending_triangle":
+        render_descending_triangle_plotly(fig, df, pattern)
+    elif pattern_type == "symmetrical_triangle":
+        render_symmetrical_triangle_plotly(fig, df, pattern)
+    else:
+        print(f"Unbekannter Pattern-Typ für Triangles (Plotly): {pattern_type}")

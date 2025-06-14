@@ -5,6 +5,10 @@ from config.pattern_settings import PATTERN_CONFIGS
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
 
+# ==============================================================================
+#                      DETECT WEDGES
+# ==============================================================================
+
 def detect_falling_wedge(df, config=None, timeframe="1d"):
     """
     Erkennt fallende Keile (bullishes Umkehrmuster in Abwärtstrend)
@@ -173,81 +177,6 @@ def detect_falling_wedge(df, config=None, timeframe="1d"):
         return patterns[:3]
 
     return patterns
-
-
-def render_falling_wedge(ax, df, pattern):
-    """
-    Zeichnet einen fallenden Keil auf die Achse
-    """
-    start_idx = pattern['start_idx']
-    end_idx = pattern['end_idx']
-
-    # X-Bereich für die Linien
-    x_range = range(start_idx, end_idx + 1)
-
-    # Obere und untere Trendlinie
-    if 'upper_slope' in pattern and 'upper_intercept' in pattern:
-        # Berechne die y-Werte für jede Linie
-        # Muss angepasst werden, wenn die Indizes im DataFrame nicht fortlaufend sind
-        upper_y = []
-        lower_y = []
-
-        # Indizes in DataFrame-Positionen konvertieren
-        for x in x_range:
-            idx_pos = df.index.get_loc(x) if x in df.index else x
-            # Obere Linie
-            upper_y.append(pattern['upper_intercept'] + pattern['upper_slope'] * idx_pos)
-            # Untere Linie
-            lower_y.append(pattern['lower_intercept'] + pattern['lower_slope'] * idx_pos)
-
-        # Zeichne die Linien
-        ax.plot(x_range, upper_y, color='#DC143C', linewidth=1, alpha=0.5)
-        ax.plot(x_range, lower_y, color='#2E8B57', linewidth=1, alpha=0.5)
-
-        # Zeichne auch Berührungspunkte, falls vorhanden
-        if 'upper_points' in pattern:
-            for point in pattern['upper_points']:
-                point_idx = point[0]
-                point_val = point[1]
-                ax.scatter(point_idx, point_val, color='#DC143C', s=60, marker='o', alpha=0.8)
-
-        if 'lower_points' in pattern:
-            for point in pattern['lower_points']:
-                point_idx = point[0]
-                point_val = point[1]
-                ax.scatter(point_idx, point_val, color='#2E8B57', s=60, marker='o', alpha=0.8)
-
-        # Zeichne Ausbruchspunkt
-        if pattern['confirmed'] and pattern['breakout_idx'] is not None:
-            ax.scatter(pattern['breakout_idx'], df['close'].iloc[pattern['breakout_idx']],
-                    color='lime', s=80, marker='^')
-            
-            # Kursziel anzeigen
-            if pattern['target'] is not None:
-                # Gepunktete Linie zum Kursziel
-                target_y = pattern['target']
-                ax.axhline(y=target_y, color='lime', linestyle=':', alpha=0.5,
-                          xmin=pattern['breakout_idx'] / len(df), xmax=1.0)
-
-        # NEU: Stärke-Indikator anzeigen
-        if 'strength' in pattern and SHOW_STRENGTH_IN_CHART:
-            strength = pattern['strength']
-
-            # Position für Stärke-Anzeige (Mitte des Keils)
-            text_pos_x = (start_idx + end_idx) // 2
-            idx_pos = df.index.get_loc(text_pos_x) if text_pos_x in df.index else text_pos_x
-            upper_mid = pattern['upper_intercept'] + pattern['upper_slope'] * idx_pos
-            lower_mid = pattern['lower_intercept'] + pattern['lower_slope'] * idx_pos
-            text_pos_y = (upper_mid + lower_mid) / 2
-
-            # Größe und Transparenz je nach Stärke
-            text_size = 8 + int(strength * 4)
-            text_alpha = 0.5 + (strength * 0.5)
-
-            # Stärke als Text anzeigen
-            ax.text(text_pos_x, text_pos_y, f"Stärke: {strength:.2f}", ha='center', va='center',
-                    fontsize=text_size, alpha=text_alpha, color='white',
-                    bbox=dict(facecolor='green', alpha=0.3))
 
 
 def detect_rising_wedge(df, config=None, timeframe="1d"):
@@ -421,6 +350,85 @@ def detect_rising_wedge(df, config=None, timeframe="1d"):
     return patterns
 
 
+# ==============================================================================
+#                      RENDER WEDGES IN MATPLOTLIB
+# ==============================================================================
+
+def render_falling_wedge(ax, df, pattern):
+    """
+    Zeichnet einen fallenden Keil auf die Achse
+    """
+    start_idx = pattern['start_idx']
+    end_idx = pattern['end_idx']
+
+    # X-Bereich für die Linien
+    x_range = range(start_idx, end_idx + 1)
+
+    # Obere und untere Trendlinie
+    if 'upper_slope' in pattern and 'upper_intercept' in pattern:
+        # Berechne die y-Werte für jede Linie
+        # Muss angepasst werden, wenn die Indizes im DataFrame nicht fortlaufend sind
+        upper_y = []
+        lower_y = []
+
+        # Indizes in DataFrame-Positionen konvertieren
+        for x in x_range:
+            idx_pos = df.index.get_loc(x) if x in df.index else x
+            # Obere Linie
+            upper_y.append(pattern['upper_intercept'] + pattern['upper_slope'] * idx_pos)
+            # Untere Linie
+            lower_y.append(pattern['lower_intercept'] + pattern['lower_slope'] * idx_pos)
+
+        # Zeichne die Linien
+        ax.plot(x_range, upper_y, color='#DC143C', linewidth=1, alpha=0.5)
+        ax.plot(x_range, lower_y, color='#2E8B57', linewidth=1, alpha=0.5)
+
+        # Zeichne auch Berührungspunkte, falls vorhanden
+        if 'upper_points' in pattern:
+            for point in pattern['upper_points']:
+                point_idx = point[0]
+                point_val = point[1]
+                ax.scatter(point_idx, point_val, color='#DC143C', s=60, marker='o', alpha=0.8)
+
+        if 'lower_points' in pattern:
+            for point in pattern['lower_points']:
+                point_idx = point[0]
+                point_val = point[1]
+                ax.scatter(point_idx, point_val, color='#2E8B57', s=60, marker='o', alpha=0.8)
+
+        # Zeichne Ausbruchspunkt
+        if pattern['confirmed'] and pattern['breakout_idx'] is not None:
+            ax.scatter(pattern['breakout_idx'], df['close'].iloc[pattern['breakout_idx']],
+                       color='lime', s=80, marker='^')
+
+            # Kursziel anzeigen
+            if pattern['target'] is not None:
+                # Gepunktete Linie zum Kursziel
+                target_y = pattern['target']
+                ax.axhline(y=target_y, color='lime', linestyle=':', alpha=0.5,
+                           xmin=pattern['breakout_idx'] / len(df), xmax=1.0)
+
+        # NEU: Stärke-Indikator anzeigen
+        if 'strength' in pattern and SHOW_STRENGTH_IN_CHART:
+            strength = pattern['strength']
+
+            # Position für Stärke-Anzeige (Mitte des Keils)
+            text_pos_x = (start_idx + end_idx) // 2
+            idx_pos = df.index.get_loc(text_pos_x) if text_pos_x in df.index else text_pos_x
+            upper_mid = pattern['upper_intercept'] + pattern['upper_slope'] * idx_pos
+            lower_mid = pattern['lower_intercept'] + pattern['lower_slope'] * idx_pos
+            text_pos_y = (upper_mid + lower_mid) / 2
+
+            # Größe und Transparenz je nach Stärke
+            text_size = 8 + int(strength * 4)
+            text_alpha = 0.5 + (strength * 0.5)
+
+            # Stärke als Text anzeigen
+            ax.text(text_pos_x, text_pos_y, f"Stärke: {strength:.2f}", ha='center', va='center',
+                    fontsize=text_size, alpha=text_alpha, color='white',
+                    bbox=dict(facecolor='green', alpha=0.3))
+
+
 def render_rising_wedge(ax, df, pattern):
     """
     Zeichnet einen steigenden Keil auf die Achse
@@ -465,14 +473,14 @@ def render_rising_wedge(ax, df, pattern):
         # Ausbruchspunkt
         if pattern['confirmed'] and pattern['breakout_idx'] is not None:
             ax.scatter(pattern['breakout_idx'], df['close'].iloc[pattern['breakout_idx']],
-                    color='red', s=80, marker='v')
-            
+                       color='red', s=80, marker='v')
+
             # Kursziel anzeigen
             if pattern['target'] is not None:
                 # Gepunktete Linie zum Kursziel
                 target_y = pattern['target']
                 ax.axhline(y=target_y, color='red', linestyle=':', alpha=0.5,
-                          xmin=pattern['breakout_idx'] / len(df), xmax=1.0)
+                           xmin=pattern['breakout_idx'] / len(df), xmax=1.0)
 
     # NEU: Stärke-Indikator anzeigen
     if 'strength' in pattern and SHOW_STRENGTH_IN_CHART:
@@ -494,6 +502,7 @@ def render_rising_wedge(ax, df, pattern):
                 fontsize=text_size, alpha=text_alpha, color='white',
                 bbox=dict(facecolor='red', alpha=0.3))
 
+
 def render_wedges(ax, df, pattern):
     """
     Rendert ein V- oder Cup-Pattern basierend auf seinem Typ
@@ -506,3 +515,32 @@ def render_wedges(ax, df, pattern):
         detect_rising_wedge(ax, df, pattern)
     else:
         print(f"Unbekannter Pattern-Typ für Wedges: {pattern_type}")
+
+# ==============================================================================
+#                      RENDER WEDGES IN PLOTLY
+# ==============================================================================
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_falling_wedge_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_rising_wedge_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+
+def render_wedges_pattern_plotly(fig, df, pattern):
+    """
+    Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
+    """
+    pattern_type = pattern.get("type", "")
+
+    if pattern_type == "falling_wedge":
+        render_falling_wedge_plotly(fig, df, pattern)
+    elif pattern_type == "rising_wedge":
+        render_rising_wedge_plotly(fig, df, pattern)
+    # ... weitere Pattern-Typen in dieser Datei ...
+    else:
+        print(f"Unbekannter Pattern-Typ für DATEI_NAME (Plotly): {pattern_type}")

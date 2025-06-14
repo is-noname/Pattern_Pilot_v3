@@ -5,7 +5,9 @@ from config.pattern_settings import PATTERN_CONFIGS
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
 
-
+# ==============================================================================
+#                      DETECT DIAMOND PATTERNS
+# ==============================================================================
 def detect_diamond_top(df, config=None, timeframe="1d"):
     """
     Erkennt Diamond-Top-Muster (bearishes Umkehrmuster)
@@ -300,6 +302,10 @@ def detect_diamond_bottom(df, config=None, timeframe="1d"):
     return patterns
 
 
+# ==============================================================================
+#                      RENDER DIAMOND PATTERNS IN MATPLOTLIB
+# ==============================================================================
+
 def render_diamond_top(ax, df, pattern):
     """
     Zeichnet ein Diamond Top Pattern auf die Achse
@@ -426,3 +432,32 @@ def render_diamond_pattern(ax, df, pattern):
         render_diamond_bottom(ax, df, pattern)
     else:
         print(f"Unbekannter Pattern-Typ für Diamond: {pattern_type}")
+
+# ==============================================================================
+#                      RENDER DIAMOND IN PLOTLY
+# ==============================================================================
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_diamond_top_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+# Pattern-spezifische Plotly Renderer definieren...
+def render_diamond_bottom_plotly(fig, df, pattern):
+    # ... Implementierung ...
+    pass
+
+
+def render_diamond_pattern_plotly(fig, df, pattern):
+    """
+    Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
+    """
+    pattern_type = pattern.get("type", "")
+
+    if pattern_type == "diamond_top":
+        render_diamond_top_plotly(fig, df, pattern)
+    elif pattern_type == "diamond_bottom":
+        render_diamond_bottom_plotly(fig, df, pattern)
+    # ... weitere Pattern-Typen in dieser Datei ...
+    else:
+        print(f"Unbekannter Pattern-Typ für DATEI_NAME (Plotly): {pattern_type}")

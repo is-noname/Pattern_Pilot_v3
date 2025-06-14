@@ -641,7 +641,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
 
     # Add pattern markers
     # 🎯 Enhanced Pattern Overlays with unique icons
-    pattern_styles = PATTERN_CONFIG['pattern_styles']
+    pattern_styles = PATTERN_CONFIG.get('pattern_styles', {})
 
 
     # ================================================================================
@@ -672,11 +672,44 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         flat_patterns = patterns
 
     print(f"📊 Flattened patterns: {len(flat_patterns)} pattern types")
+    pattern_count = 0
 
     # Jetzt über die flache Struktur iterieren
     for pattern_name, signals in flat_patterns.items():
         if not signals:
             continue
+
+        print(f"   Processing {pattern_name}: {len(signals)} patterns")
+
+        # =====================================================================
+        # 1️⃣ SPECIAL HANDLING: Double Patterns
+        # =====================================================================
+        if pattern_name in ['double_bottom', 'double_top']:
+            try:
+                from core.patterns.chart_patterns.double_patterns import render_pattern_plotly
+
+                for pattern in signals:
+                    # Stelle sicher, dass pattern ein Dictionary ist
+                    if not isinstance(pattern, dict):
+                        print(f"⚠️ Pattern is not dict for {pattern_name}: {type(pattern)}")
+                        continue
+
+                    if 'type' not in pattern:
+                        pattern['type'] = pattern_name
+
+                    render_pattern_plotly(fig, df, pattern)
+                    pattern_count += 1
+
+                print(f"      ✅ Rendered {len(signals)} {pattern_name} overlays")
+                continue  # Skip standard marker für diese patterns
+
+            except Exception as e:
+                print(f"      ⚠️ Could not render {pattern_name} overlay: {e}")
+                # Fallback zu Standard Marker unten
+
+        # =====================================================================
+        # 2️⃣ STANDARD MARKER für alle anderen patterns
+        # =====================================================================
 
         # Get pattern style
         style = pattern_styles.get(pattern_name, {
@@ -804,56 +837,63 @@ def create_professional_chart(df, patterns, symbol, timeframe):
                 'emoji': '📊'
             })
 
+
+
             for i, signal in enumerate(signals):
                 # Sicherstellen dass signal ein Dict ist
                 if not isinstance(signal, dict):
                     print(f"⚠️ Signal is not dict for {pattern_name}: {type(signal)}")
                     continue
 
+                # Ab hier ist signal garantiert ein Dictionary
                 direction = signal.get('direction', 'neutral')
                 strength = signal.get('strength', 0.5)
 
-                # Color based on direction
+                # Farbe basierend auf Direction
+                color = style.get('color', '#ffffff')
                 if direction == 'bullish':
-                    color = style.get('color', '#4CAF50')
+                    color = '#4CAF50'  # Grün
                 elif direction == 'bearish':
-                    color = style.get('color', '#f44336')
-                else:
-                    color = style.get('color', '#ffffff')
+                    color = '#f44336'  # Rot
 
-                # Show legend only for first occurrence
+                # Nur den ersten Eintrag in die Legende
                 show_legend = pattern_name not in pattern_legend_added
                 if show_legend:
                     pattern_legend_added.add(pattern_name)
 
-                # Enhanced pattern marker
-                fig.add_trace(
-                    go.Scatter(
-                        x=[signal['datetime']],
-                        y=[signal['price'] * 1.1],  # Pattern Symbol über Kerze
-                        mode='markers',
-                        marker=dict(
-                            symbol=style.get('symbol', 'circle'),
-                            size=style['size'] + (strength * 8),  # Size based on strength
-                            color=color,
-                            line=dict(width=1, color='white'),
-                            opacity=0.8 + (strength * 0.2)
-                        ),
-                        name=f"{style.get('emoji', '📊')} {pattern_name}",
-                        legendgroup=pattern_name,
-                        showlegend=show_legend,
-                        hovertemplate=(
-                                f"<b>{pattern_name}</b><br>" +
-                                f"Price: %{{y:.4f}}<br>" +
-                                f"Strength: {strength:.2f}<br>" +
-                                f"Direction: {direction}<br>" +
-                                "<extra></extra>"
-                        )
-                    )
-                )
+                # Emoji + Pattern Name für Hover
+                emoji = style.get('emoji', '📊')
+                hover_text = f"{emoji} {pattern_name.replace('_', ' ').title()}"
+                if 'price' in signal:
+                    hover_text += f" ({signal['price']:.2f})"
+
+                # Signal Index und Größe
+                idx = signal.get('index', 0)
+                if idx >= len(df):
+                    print(f"⚠️ Signal index {idx} out of bounds for dataframe with {len(df)} rows")
+                    continue
+
+                size = int(style.get('size', 10) * (0.5 + strength))
+
+                # Add marker at pattern position
+                fig.add_trace(go.Scatter(
+                    x=[df.index[idx]],
+                    y=[signal.get('price', df['close'].iloc[idx]) * 1.01],  # Leicht über Kerze
+                    mode='markers',
+                    marker=dict(
+                        color=color,
+                        size=size,
+                        symbol=style.get('symbol', 'circle')
+                    ),
+                    name=pattern_name.replace('_', ' ').title(),
+                    text=hover_text,
+                    hoverinfo='text',
+                    showlegend=show_legend
+                ), row=1, col=1)
+
                 pattern_count += 1
 
-        print(f"🎨 {pattern_count} total patterns rendered (overlays + markers)")
+            print(f"📊 Added {pattern_count} pattern markers to chart")
 
 
 
