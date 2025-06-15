@@ -195,7 +195,7 @@ PATTERN_CONFIG = {
 
     # •••••••••••••••••••••••••• 🎨 Chart Pattern Visualisierung •••••••••••••••••••••••••• #
     'pattern_styles': {
-        # Canlde-Patterns
+        # Candle-Patterns
         'doji': {'symbol': 'circle', 'color': '#117e23', 'size': 3, 'emoji': '🎯'},
         'hammer': {'symbol': 'triangle-up', 'color': '#00ff88', 'size': 4, 'emoji': '🔨'},
         'engulfing_bullish': {'symbol': 'star', 'color': '#ff0080', 'size': 5, 'emoji': '🌟'},
@@ -224,7 +224,7 @@ PATTERN_CONFIG = {
         'rsi_oversold': {'symbol': 'triangle-up', 'color': '#00ff00', 'size': 4, 'emoji': '📈'},
         'rsi_overbought': {'symbol': 'triangle-down', 'color': '#ff0000', 'size': 4, 'emoji': '📉'},
         'bollinger_squeeze': {'symbol': 'diamond-wide', 'color': '#117e23', 'size': 5, 'emoji': '💥'},
-        #Chart-Patterns
+        #Formation-Patterns
     }
 }
 # endregion
