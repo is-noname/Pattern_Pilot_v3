@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import os
 
 
+# •••••••••••••••••••••••••• Preisformatierung für Anzeige •••••••••••••••••••••••••• #
 def format_price(price, decimals=None):
     """
     Formatiert Preise für die Anzeige
@@ -38,6 +39,7 @@ def format_price(price, decimals=None):
     return f"{price:,.{decimals}f}"
 
 
+# •••••••••••••••••••••••••• CALC: Prozentuale Änderung  •••••••••••••••••••••••••• #
 def calculate_percent_change(current, previous):
     """Berechnet prozentuale Änderung"""
     if previous == 0:
@@ -45,6 +47,7 @@ def calculate_percent_change(current, previous):
     return ((current - previous) / previous) * 100
 
 
+# •••••••••••••••••••••••••• PROOF: Ist String ein ültiges Datum? •••••••••••••••••••••••••• #
 def is_valid_date_format(date_str):
     """Überprüft, ob der String ein gültiges Datum ist"""
     try:
@@ -59,6 +62,7 @@ def is_valid_date_format(date_str):
         return False
 
 
+# •••••••••••••••••••••••••• OPTIONAL: Erstellt ein Ausgabeverzeichnis •••••••••••••••••••••••••• #
 def create_output_dir(dirname="output"):
     """Erstellt ein Ausgabeverzeichnis, falls es nicht existiert"""
     if not os.path.exists(dirname):
@@ -66,41 +70,65 @@ def create_output_dir(dirname="output"):
     return dirname
 
 
+# •••••••••••••••••••••••••• RESAMPLE: OHLCV-Daten auf einen anderen Zeitraum •••••••••••••••••••••••••• #
 def resample_ohlcv(df, interval='1D'):
     """
-    Resampled OHLCV-Daten auf einen anderen Zeitraum
+    Resamples OHLCV-Daten auf einen anderen Zeitraum - DATETIME CLEANUP
 
     Args:
-        df: DataFrame mit OHLCV-Daten und 'date' Spalte
+        df: DataFrame mit OHLCV-Daten und 'datetime' Spalte
         interval: Ziel-Intervall ('1D', '1W', '1M', etc.)
-    """
-    # Stelle sicher, dass es einen Index gibt
-    if not isinstance(df.index, pd.DatetimeIndex):
-        df = df.set_index('date')
 
-    resampled = df.resample(interval).agg({
+    Returns:
+        DataFrame mit resampled Daten, 'datetime' als Spalte beibehalten
+    """
+    # Ensure datetime column exists
+    if 'datetime' not in df.columns:
+        raise ValueError("DataFrame muss 'datetime' column haben")
+
+    # Work with datetime as column throughout - NO INDEX SWITCHING
+    df_copy = df.copy()
+
+    # Ensure datetime is proper type
+    df_copy['datetime'] = pd.to_datetime(df_copy['datetime'])
+
+    # Sort by datetime
+    df_copy = df_copy.sort_values('datetime')
+
+    # Set datetime as index temporarily for resampling ONLY
+    df_indexed = df_copy.set_index('datetime')
+
+    # Resample operations
+    resampled = df_indexed.resample(interval).agg({
         'open': 'first',
         'high': 'max',
         'low': 'min',
         'close': 'last',
-        'volume': 'sum' if 'volume' in df.columns else None
+        'volume': 'sum' if 'volume' in df.columns else 'first'
     })
 
-    return resampled.reset_index()
+    # Immediately reset index back to column
+    result = resampled.reset_index()
+
+    # Drop NaN rows that might result from resampling
+    result = result.dropna(subset=['open', 'high', 'low', 'close'])
+
+    return result
 
 
+# •••••••••••••••••••••••••• NORMALIZE: OHLCV-Daten in Standardformat •••••••••••••••••••••••••• #
 def normalize_ohlcv_data(df):
     """
-    Normalisiert OHLCV-Daten in ein Standardformat
+    Normalisiert OHLCV-Daten in Standardformat - DATETIME CLEANUP
 
     Args:
         df: DataFrame mit Preisdaten
 
     Returns:
-        Normalisiertes DataFrame mit 'date', 'open', 'high', 'low', 'close', 'volume'
+        Normalisiertes DataFrame mit 'datetime', 'open', 'high', 'low', 'close', 'volume'
     """
     # Prüfen, ob die nötigen Spalten vorhanden sind
-    required_columns = ['date', 'open', 'high', 'low', 'close']
+    required_columns = ['datetime', 'open', 'high', 'low', 'close']
 
     # Spaltenübereinstimmung prüfen (case-insensitive)
     df_columns_lower = [col.lower() for col in df.columns]
@@ -117,6 +145,11 @@ def normalize_ohlcv_data(df):
                     mapping[req_col] = col
                     found = True
                     break
+                # Special case: 'date' → 'datetime' mapping
+                elif col.lower() == 'date' and req_col == 'datetime':
+                    mapping[req_col] = col
+                    found = True
+                    break
 
             if not found and req_col != 'volume':  # Volumen ist optional
                 raise ValueError(f"Erforderliche Spalte '{req_col}' fehlt im DataFrame")
@@ -125,9 +158,9 @@ def normalize_ohlcv_data(df):
     if mapping and any(k != v for k, v in mapping.items()):
         df = df.rename(columns=mapping)
 
-    # Stelle sicher, dass date ein datetime ist
-    if not pd.api.types.is_datetime64_any_dtype(df['date']):
-        df['date'] = pd.to_datetime(df['date'])
+    # Stelle sicher, dass datetime ein datetime ist
+    if not pd.api.types.is_datetime64_any_dtype(df['datetime']):
+        df['datetime'] = pd.to_datetime(df['datetime'])
 
     # Stelle sicher, dass numerische Spalten auch wirklich numerisch sind
     numeric_columns = ['open', 'high', 'low', 'close']

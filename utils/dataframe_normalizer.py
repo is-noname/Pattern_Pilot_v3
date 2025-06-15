@@ -1,4 +1,4 @@
-# utils/dataframe_normalizer.py - NEUE DATEI
+# utils/dataframe_normalizer.py - DATETIME CLEANUP VERSION
 import pandas as pd
 from typing import Dict, Any, Optional
 
@@ -30,7 +30,7 @@ from typing import Dict, Any, Optional
 # 🔄 Gemeinsamer Kern:
 # Beide Pfade verwenden die gleiche Grundlogik zur Normalisierung:
 # - Integer-Index (0,1,2,...) für iloc-Zugriff
-# - 'date' als Spalte für Zeitreferenz
+# - 'datetime' als Spalte für Zeitreferenz (GEÄNDERT von 'date')
 # - Sortierung nach Zeit
 # - Numerische OHLCV-Spalten
 # - Entfernung von NaN-Werten in wichtigen Spalten
@@ -46,33 +46,36 @@ from typing import Dict, Any, Optional
 
 def normalize_dataframe_for_patterns(df, verbose=False):
     """
-    Zentrale Normalisierungsfunktion für technische Pattern-Erkennung
+    Zentrale Normalisierungsfunktion für technische Pattern-Erkennung - DATETIME VERSION
 
     Stellt sicher:
     1. Integer-Index (0,1,2,...) für iloc-Zugriff
-    2. 'date' als Spalte für Zeitreferenz
+    2. 'datetime' als Spalte für Zeitreferenz
     3. Sortierung nach Zeit
     4. Numerische OHLCV-Spalten
     5. Keine NaN-Werte in wichtigen Spalten
-
-
     """
     if df.empty:
         return df
 
     working_df = df.copy()
 
-    # 1. DatetimeIndex zu 'date' Column + Integer-Index
+    # 1. DatetimeIndex zu 'datetime' Column + Integer-Index
     if isinstance(working_df.index, pd.DatetimeIndex):
-        if 'date' not in working_df.columns:
-            working_df['date'] = working_df.index
+        if 'datetime' not in working_df.columns:
+            working_df['datetime'] = working_df.index
         working_df = working_df.reset_index(drop=True)
-        if verbose: print("🔧 DatetimeIndex → Integer-Index + date Column")
+        if verbose: print("🔧 DatetimeIndex → Integer-Index + datetime Column")
+
+    # Handle legacy 'date' column → 'datetime'
+    if 'date' in working_df.columns and 'datetime' not in working_df.columns:
+        working_df = working_df.rename(columns={'date': 'datetime'})
+        if verbose: print("🔧 Legacy 'date' → 'datetime' column")
 
     # 2. Datetime-Format und Sortierung sicherstellen
-    if 'date' in working_df.columns:
-        working_df['date'] = pd.to_datetime(working_df['date'], errors='coerce')
-        working_df = working_df.sort_values('date').reset_index(drop=True)
+    if 'datetime' in working_df.columns:
+        working_df['datetime'] = pd.to_datetime(working_df['datetime'], errors='coerce')
+        working_df = working_df.sort_values('datetime').reset_index(drop=True)
 
     # 3. Numerische Spalten sicherstellen
     numeric_cols = ['open', 'high', 'low', 'close', 'volume']

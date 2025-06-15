@@ -30,90 +30,17 @@ def render_pattern_plotly(fig, df, pattern):
     Zentrale Dispatch-Funktion für Plotly Pattern Rendering.
     Ruft die passende lokale render_pattern_plotly basierend auf pattern type.
     """
-    pattern_type = pattern.get('type', '')
+    pattern_type = pattern.get('type', 'unknown')
 
-    # Dynamischer Import basierend auf Pattern-Typ
-    try:
-        # Pattern-zu-Modul Mapping
-        MODULE_MAP = {
-            # Double Patterns
-            'double_bottom': 'double_patterns',
-            'double_top': 'double_patterns',
-
-            # Triple Patterns
-            'triple_bottom': 'triple_patterns',
-            'triple_top': 'triple_patterns',
-
-            # Head & Shoulders
-            'head_and_shoulders': 'head_shoulders',
-            'inverse_head_and_shoulders': 'head_shoulders',
-
-            # Triangles
-            'ascending_triangle': 'triangles',
-            'descending_triangle': 'triangles',
-            'symmetrical_triangle': 'triangles',
-
-            # Flags & Pennants
-            'bullish_flag': 'flags',
-            'bearish_flag': 'flags',
-            'bullish_pennant': 'flags',
-            'bearish_pennant': 'flags',
-
-            # Wedges
-            'falling_wedge': 'wedges',
-            'rising_wedge': 'wedges',
-
-            # Rectangles
-            'bullish_rectangle': 'rectangles',
-            'bearish_rectangle': 'rectangles',
-
-            # Channels
-            'upward_channel': 'channels',
-            'downward_channel': 'channels',
-
-            # Rounding Patterns
-            'rounding_bottom': 'rounding_patterns',
-            'rounding_top': 'rounding_patterns',
-
-            # V & Cup Patterns
-            'v_pattern': 'v_cup_patterns',
-            'cup_and_handle': 'v_cup_patterns',
-
-            # Diamond Patterns
-            'diamond_top': 'diamond_patterns',
-            'diamond_bottom': 'diamond_patterns',
-
-            # Gaps
-            'breakaway_gap': 'gaps',
-            'runaway_gap': 'gaps',
-            'exhaustion_gap': 'gaps',
-            'common_gap': 'gaps'
-        }
-
-        # Finde das richtige Modul
-        if pattern_type not in MODULE_MAP:
-            print(f"⚠️ No module mapping for pattern type: {pattern_type}")
+    if pattern_type in PATTERN_RENDERERS:
+        try:
+            renderer = PATTERN_RENDERERS[pattern_type]
+            return renderer(fig, df, pattern)
+        except Exception as e:
+            print(f"❌ Pattern Renderer Fehler für {pattern_type}: {e}")
             return False
-
-        module_name = MODULE_MAP[pattern_type]
-
-        # Importiere das Modul
-        module = __import__(
-            f'core.patterns.chart_patterns.{module_name}',
-            fromlist=['render_pattern_plotly']
-        )
-
-        # Hole die lokale render_pattern_plotly Funktion
-        if hasattr(module, 'render_pattern_plotly'):
-            render_func = getattr(module, 'render_pattern_plotly')
-            render_func(fig, df, pattern)
-            return True
-        else:
-            print(f"⚠️ No render_pattern_plotly in {module_name}")
-            return False
-
-    except Exception as e:
-        print(f"⚠️ Error rendering {pattern_type}: {e}")
+    else:
+        print(f"⚠️ Kein Renderer für Pattern-Typ: {pattern_type}")
         return False
 
 
@@ -198,11 +125,11 @@ PATTERN_RENDERERS = {
 
 def detect_all_patterns(df, timeframe="1d", state=None):
     """
-    🔧 FIXED: Führt alle Mustererkennungen aus mit korrektem Index-Management
+    🔧 DATETIME CLEANUP: Führt alle Mustererkennungen aus mit datetime standard
 
     Pattern-Detektoren erwarten:
     - Integer-Index (0,1,2,3...) für iloc-Zugriff
-    - 'date' Column für Zeitinformationen
+    - 'datetime' Column für Zeitinformationen (GEÄNDERT von 'date')
     """
     print(f"🔍 Pattern Detection für {len(df)} Datenpunkte ({timeframe})")
 
@@ -221,39 +148,21 @@ def detect_all_patterns(df, timeframe="1d", state=None):
     results = {}
     successful_patterns = 0
 
-    for pattern_name, detector_func in PATTERN_DETECTORS.items():
+    for pattern_name, detector in PATTERN_DETECTORS.items():
         try:
-            # Timeframe-spezifische Konfiguration
-            config = get_pattern_config(pattern_name, None, timeframe)
+            # Pattern-spezifische Konfiguration laden
+            config = TIMEFRAME_CONFIGS.get(timeframe, {}).get(pattern_name, {})
 
-            # Pattern Detection mit sicherem DataFrame
-            patterns = detector_func(working_df, config, timeframe)
-
-            # Stärke berechnen falls State verfügbar
-            if state is not None and patterns:
-                for pattern in patterns:
-                    try:
-                        pattern['strength'] = calculate_pattern_strength(
-                            pattern, pattern_name, working_df, timeframe, state
-                        )
-                    except Exception as e:
-                        print(f"⚠️ Stärkeberechnung für {pattern_name} fehlgeschlagen: {e}")
-                        pattern['strength'] = 0.5  # Fallback
-
-            results[pattern_name] = patterns
-
-            if patterns:
-                successful_patterns += len(patterns)
-                print(f"✅ {pattern_name}: {len(patterns)} Muster gefunden")
-
+            if config:  # Nur wenn Konfiguration existiert
+                patterns = detector(working_df, config)
+                if patterns:
+                    results[pattern_name] = patterns
+                    successful_patterns += 1
+                    print(f"✅ {pattern_name}: {len(patterns)} gefunden")
         except Exception as e:
-            print(f"❌ Fehler bei {pattern_name}: {e}")
-            import traceback
-            traceback.print_exc()
-            results[pattern_name] = []
+            print(f"❌ Pattern Detection Fehler ({pattern_name}): {e}")
 
-    print(
-        f"🎯 Pattern Detection abgeschlossen: {successful_patterns} Muster in {len([r for r in results.values() if r])} Kategorien")
+    print(f"📊 Pattern Detection abgeschlossen: {successful_patterns} Pattern-Typen erkannt")
     return results
 
 
@@ -280,21 +189,27 @@ def prepare_dataframe_for_patterns(df):
     - Bei Daten aus API-Responses IMMER api_manager.normalize_for_patterns()
       verwenden, um Metadaten-Struktur zu erhalten!
 
-    @param df: DataFrame mit OHLCV-Daten
-    @return: Für Pattern-Erkennung optimiertes DataFrame
+    @param df: df mit 'datetime' column
+    @return: Integer-Index + 'datetime' column
     """
     from utils.dataframe_normalizer import normalize_dataframe_for_patterns
     return normalize_dataframe_for_patterns(df, verbose=True)
 
 
-# Debug-Funktion
+# Debug-Funktion - DATETIME CLEANUP
 def debug_dataframe_structure(df, context=""):
-    """Debug-Hilfe für DataFrame-Struktur"""
+    """Debug-Hilfe für DataFrame-Struktur - DATETIME VERSION"""
     print(f"\n🔍 DataFrame Debug ({context}):")
     print(f"  Shape: {df.shape}")
     print(f"  Index Type: {type(df.index)}")
     print(f"  Index Range: {df.index[0] if len(df) > 0 else 'N/A'} bis {df.index[-1] if len(df) > 0 else 'N/A'}")
     print(f"  Columns: {df.columns.tolist()}")
-    if 'date' in df.columns:
+
+    # GEÄNDERT: Prüft auf 'datetime' statt 'date'
+    if 'datetime' in df.columns:
+        print(f"  Datetime Range: {df['datetime'].min()} bis {df['datetime'].max()}")
+    elif 'date' in df.columns:
+        print(f"  ⚠️ OLD: 'date' column found - should be 'datetime'")
         print(f"  Date Range: {df['date'].min()} bis {df['date'].max()}")
+
     print(f"  Memory: {df.memory_usage(deep=True).sum() / 1024:.1f} KB")
