@@ -705,6 +705,9 @@ def create_professional_chart(df, patterns, symbol, timeframe):
                 module = __import__(module_path, fromlist=['render_pattern_plotly'])
                 render_function = getattr(module, 'render_pattern_plotly')
 
+                # Debug: Check if function exists
+                print(f"✅ Found render function for {pattern_name}")
+
                 # Rendere alle Patterns dieses Typs
                 for pattern in signals:
                     if not isinstance(pattern, dict):
