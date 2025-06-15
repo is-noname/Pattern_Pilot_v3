@@ -174,10 +174,10 @@ class AnalysisPipeline:
                     print(f"⚠️  Analysis aggregation failed: {e}")
 
             # 5. Result Compilation
-            all_patterns = {}
-            all_patterns.update(technical_patterns)
-            if formation_patterns:
-                all_patterns.update(formation_patterns)
+            all_patterns = {
+                'technical_indicators': technical_patterns,
+                'formation_patterns': formation_patterns
+            }
 
             result = {
                 'symbol': symbol,

@@ -946,18 +946,18 @@ def create_pattern_summary(patterns, candle_count):
         html.Div: Formatiertes Pattern-Summary-Panel
     """
 
+    # Calculate statistics - EINFACH
+    all_signals = []
+    for pattern_name, signals in patterns.items():
+        if isinstance(signals, list):
+            all_signals.extend(signals)
+
     if not patterns:
         return html.Div([
             html.H4("Pattern Analysis"),
             html.P(f"No significant patterns detected in {candle_count} candles.",
                    style={"color": "#666"})
         ], className="pattern-summary")
-
-        # Calculate statistics - EINFACH
-        all_signals = []
-        for pattern_name, signals in patterns.items():
-            if isinstance(signals, list):
-                all_signals.extend(signals)
 
 
     if not all_signals:
