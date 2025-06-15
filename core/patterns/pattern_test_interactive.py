@@ -18,7 +18,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.join(current_dir, '..', '..')
 sys.path.append(project_root)
 
-from core.patterns.chart_patterns import PATTERN_DETECTORS, PATTERN_RENDERERS
+from core.patterns.formation_patterns import PATTERN_DETECTORS, PATTERN_RENDERERS
 
 
 # •••••••••••••••••••••••••• Pattern-Specific Test Data Generators •••••••••••••••••••••••••• #
@@ -296,7 +296,7 @@ def test_single_pattern(pattern_name):
     print(f"✅ {len(test_data)} Datenpunkte erstellt")
     
     # 2. DataFrame für Pattern Detection vorbereiten
-    from core.patterns.chart_patterns import prepare_dataframe_for_patterns
+    from core.patterns.formation_patterns import prepare_dataframe_for_patterns
     prepared_data = prepare_dataframe_for_patterns(test_data)
     
     # 3. Pattern Detection

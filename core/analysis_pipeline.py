@@ -78,7 +78,7 @@ class AnalysisPipeline:
         """Lazy loading pattern_manager mit Error Handling"""
         if self._pattern_manager is None:
             try:
-                from core.patterns.chart_patterns.pattern_manager import pattern_manager
+                from core.patterns.formation_patterns.pattern_manager import pattern_manager
                 self._pattern_manager = pattern_manager
                 print("✅ pattern_manager loaded successfully")
             except ImportError as e:

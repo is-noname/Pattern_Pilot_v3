@@ -34,8 +34,9 @@ from utils.helpers import prepare_patterns_for_chart
 # Import your existing engine and settings
 from core.market_engine import market_engine
 from core.analysis_pipeline import analysis_pipeline
-from config.settings import UI_CONFIG, PATTERN_CONFIG, CHART_CONFIG
-from config.pattern_settings import TIMEFRAME_CONFIGS
+from core.patterns.formation_patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH, ALL_NEUTRAL
+from config.settings import UI_CONFIG, PATTERN_CONFIG, CHART_CONFIG, get_enabled_patterns
+from config.pattern_settings import PATTERN_CONFIGS, TIMEFRAME_CONFIGS
 
 # Initialize Dash app
 app = dash.Dash(__name__)
@@ -150,9 +151,9 @@ def get_layout():
 
     # •••••••••••••••••••••••••• 📉 Main Panel Components •••••••••••••••••••••••••• #
 
-    chart_patterns = set()
+    formation_patterns = set()
     for timeframe_config in TIMEFRAME_CONFIGS.values():
-        chart_patterns.update(timeframe_config.keys())
+        formation_patterns.update(timeframe_config.keys())
 
     # Kombinierte Pattern-Optionen #
     pattern_options = [{"label": "All Patterns", "value": "all"}]
@@ -166,7 +167,7 @@ def get_layout():
     # Chart Patterns mit Icon
     pattern_options += [
         {"label": f"📈 {name.replace('_', ' ').title()}", "value": name}
-        for name in sorted(chart_patterns)
+        for name in sorted(formation_patterns)
     ]
 
 
@@ -703,7 +704,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         # =====================================================================
         if pattern_name in ['double_bottom', 'double_top']:
             try:
-                from core.patterns.chart_patterns.double_patterns import render_pattern_plotly
+                from core.patterns.formation_patterns.double_patterns import render_pattern_plotly
 
                 for pattern in signals:
                     # Stelle sicher, dass pattern ein Dictionary ist
@@ -785,24 +786,24 @@ def create_professional_chart(df, patterns, symbol, timeframe):
             )
 
         # ✅ Helper Call hier einfügen
-        chart_patterns = prepare_patterns_for_chart(patterns, df)
+        prepared_chart_data = prepare_patterns_for_chart(patterns, df)
 
         # ================================================================================
         # 🎨 PATTERN OVERLAYS - eine Schleife für alles
         # ================================================================================
 
         pattern_count = 0
-        chart_patterns = ['double_bottom', 'double_top', 'head_and_shoulders', 'inverse_head_and_shoulders',
-                          'triple_bottom', 'triple_top', 'ascending_triangle', 'descending_triangle']
+
+        FORMATION_PATTERN_TYPES = ALL_BULLISH + ALL_BEARISH + ALL_NEUTRAL
 
         for pattern_name, signals in patterns.items():
             if not signals:
                 continue
 
             # Chart Patterns: Use global dispatcher
-            if pattern_name in chart_patterns:
+            if pattern_name in FORMATION_PATTERN_TYPES:
                 try:
-                    from core.patterns.chart_patterns import render_pattern_plotly
+                    from core.patterns.formation_patterns import render_pattern_plotly
                     for signal in signals:
                         if 'type' not in signal:
                             signal['type'] = pattern_name

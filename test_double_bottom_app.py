@@ -231,7 +231,7 @@ def create_and_save_chart(df, patterns, title, filename_prefix):
 
             try:
                 # Import und render Double Pattern
-                from core.patterns.chart_patterns.double_patterns import render_pattern_plotly
+                from core.patterns.formation_patterns.double_patterns import render_pattern_plotly
 
                 render_pattern_plotly(fig, df, pattern)
                 pattern_count += 1

@@ -89,7 +89,7 @@ def debug_pattern_detection(df):
         print(f"\n   Test {i}: tolerance={config['tolerance']}, lookback={config['lookback_periods']}")
 
         try:
-            from core.patterns.chart_patterns.double_patterns import detect_double_bottom
+            from core.patterns.formation_patterns.double_patterns import detect_double_bottom
 
             patterns = detect_double_bottom(df, config=config)
 
@@ -258,14 +258,14 @@ def test_dispatchers(df, patterns):
 
     # Matplotlib Test
     try:
-        from core.patterns.chart_patterns.double_patterns import render_pattern
+        from core.patterns.formation_patterns.double_patterns import render_pattern
         print("✅ Matplotlib Dispatcher verfügbar")
     except ImportError as e:
         print(f"❌ Matplotlib Dispatcher fehlt: {e}")
 
     # Plotly Test
     try:
-        from core.patterns.chart_patterns.double_patterns import render_pattern_plotly
+        from core.patterns.formation_patterns.double_patterns import render_pattern_plotly
         print("✅ Plotly Dispatcher verfügbar")
 
         # Quick Plotly Test
@@ -284,7 +284,7 @@ def check_detection_function():
     """Prüfe die Detection Function selbst"""
 
     try:
-        from core.patterns.chart_patterns.double_patterns import detect_double_bottom
+        from core.patterns.formation_patterns.double_patterns import detect_double_bottom
         print("✅ detect_double_bottom importierbar")
 
         # Teste mit minimalen Daten

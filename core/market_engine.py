@@ -248,11 +248,11 @@ class MarketEngine:
 
         # Chart patterns via pattern_manager
         try:
-            from core.patterns.chart_patterns.pattern_manager import pattern_manager
-            chart_patterns = pattern_manager.detect_patterns(df)
+            from core.patterns.formation_patterns.pattern_manager import pattern_manager
+            formation_patterns = pattern_manager.detect_patterns(df)
 
             # Merge patterns
-            return {**ta_patterns, **chart_patterns}
+            return {**ta_patterns, **formation_patterns}
         except ImportError:
             # Fallback: nur TA-Lib patterns
             return ta_patterns

@@ -23,7 +23,7 @@ Configuration
 Pattern Detection
 -----------------
 
-.. automodule:: core.patterns.chart_patterns.double_patterns
+.. automodule:: core.patterns.formation_patterns.double_patterns
    :members:
    :undoc-members:
    :show-inheritance:

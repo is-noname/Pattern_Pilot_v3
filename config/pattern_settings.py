@@ -54,7 +54,9 @@ INDICATOR = {
 # ==============================================================================
 #                      Pattern Multi Timeframe Pattern Configs
 # ==============================================================================
-
+'''
+Pattern Detection Configs per timeframe
+'''
 # Multi Timeframe Pattern Configs: neu importiert ist in Implementierungsvorbereitung
 TIMEFRAME_CONFIGS = {
     # ==============================================================================

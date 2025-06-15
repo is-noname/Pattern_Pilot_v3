@@ -1,22 +1,22 @@
 # patterns/__init__.py - FIXED VERSION
 import pandas as pd
-from core.patterns.chart_patterns.double_patterns import detect_double_bottom, detect_double_top, render_double_bottom, render_double_top
-from core.patterns.chart_patterns.head_shoulders import detect_head_and_shoulders, detect_inverse_head_and_shoulders, render_head_and_shoulders, \
+from core.patterns.formation_patterns.double_patterns import detect_double_bottom, detect_double_top, render_double_bottom, render_double_top
+from core.patterns.formation_patterns.head_shoulders import detect_head_and_shoulders, detect_inverse_head_and_shoulders, render_head_and_shoulders, \
     render_inverse_head_and_shoulders
-from core.patterns.chart_patterns.triple_patterns import detect_triple_top, detect_triple_bottom, render_triple_top, render_triple_bottom
-from core.patterns.chart_patterns.triangles import detect_ascending_triangle, detect_descending_triangle, detect_symmetrical_triangle, \
+from core.patterns.formation_patterns.triple_patterns import detect_triple_top, detect_triple_bottom, render_triple_top, render_triple_bottom
+from core.patterns.formation_patterns.triangles import detect_ascending_triangle, detect_descending_triangle, detect_symmetrical_triangle, \
     render_ascending_triangle, render_descending_triangle, render_symmetrical_triangle
-from core.patterns.chart_patterns.flags import detect_bullish_flag, detect_bearish_flag, detect_bullish_pennant, detect_bearish_pennant, \
+from core.patterns.formation_patterns.flags import detect_bullish_flag, detect_bearish_flag, detect_bullish_pennant, detect_bearish_pennant, \
     render_bullish_flag, render_bearish_flag, render_bullish_pennant, render_bearish_pennant
-from core.patterns.chart_patterns.wedges import detect_falling_wedge, detect_rising_wedge, render_falling_wedge, render_rising_wedge
-from core.patterns.chart_patterns.rectangles import detect_bullish_rectangle, detect_bearish_rectangle, render_bullish_rectangle, \
+from core.patterns.formation_patterns.wedges import detect_falling_wedge, detect_rising_wedge, render_falling_wedge, render_rising_wedge
+from core.patterns.formation_patterns.rectangles import detect_bullish_rectangle, detect_bearish_rectangle, render_bullish_rectangle, \
     render_bearish_rectangle
-from core.patterns.chart_patterns.channels import detect_upward_channel, detect_downward_channel, render_upward_channel, render_downward_channel
-from core.patterns.chart_patterns.gaps import detect_breakaway_gap, detect_runaway_gap, detect_exhaustion_gap, detect_common_gap, render_common_gap, \
+from core.patterns.formation_patterns.channels import detect_upward_channel, detect_downward_channel, render_upward_channel, render_downward_channel
+from core.patterns.formation_patterns.gaps import detect_breakaway_gap, detect_runaway_gap, detect_exhaustion_gap, detect_common_gap, render_common_gap, \
     render_exhaustion_gap, render_runaway_gap, render_breakaway_gap
-from core.patterns.chart_patterns.rounding_patterns import detect_rounding_bottom, detect_rounding_top, render_rounding_bottom, render_rounding_top
-from core.patterns.chart_patterns.v_cup_patterns import detect_v_pattern, detect_cup_and_handle, render_v_pattern, render_cup_and_handle
-from core.patterns.chart_patterns.diamond_patterns import detect_diamond_top, detect_diamond_bottom, render_diamond_top, render_diamond_bottom
+from core.patterns.formation_patterns.rounding_patterns import detect_rounding_bottom, detect_rounding_top, render_rounding_bottom, render_rounding_top
+from core.patterns.formation_patterns.v_cup_patterns import detect_v_pattern, detect_cup_and_handle, render_v_pattern, render_cup_and_handle
+from core.patterns.formation_patterns.diamond_patterns import detect_diamond_top, detect_diamond_bottom, render_diamond_top, render_diamond_bottom
 from config.pattern_settings import TIMEFRAME_CONFIGS
 from utils.pattern_strength import calculate_pattern_strength
 

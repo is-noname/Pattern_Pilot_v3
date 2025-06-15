@@ -49,7 +49,7 @@ def create_test_data():
 
 
 # Nur das Minimum importieren, was wir brauchen
-from core.patterns.chart_patterns. double_patterns import detect_double_bottom
+from core.patterns.formation_patterns. double_patterns import detect_double_bottom
 
 
 # Simplified Pattern Manager Class für Test
