@@ -1,4 +1,4 @@
-# cache/cache_manager.py - THREAD-SAFE VERSION
+# cache/cache_manager.py - DATETIME CLEANUP VERSION
 import os
 import sqlite3
 import pandas as pd
@@ -9,7 +9,7 @@ from utils.logger import logger
 
 
 class CryptoDataCache:
-    """Thread-safe SQLite Cache"""
+    """Thread-safe SQLite Cache mit datetime standard"""
     _instance = None  # Singleton-Instanz
 
     def __new__(cls, *args, **kwargs):
@@ -45,59 +45,95 @@ class CryptoDataCache:
         return self._local.conn
 
     def _init_db_schema(self):
-        """Einmalige Schema-Initialisierung"""
+        """Einmalige Schema-Initialisierung - DATETIME STANDARD"""
         # Temporäre Verbindung nur für Schema-Setup
         with sqlite3.connect(self.db_path) as conn:
             # Assets-Tabelle
             conn.execute('''
-            CREATE TABLE IF NOT EXISTS assets (
-                asset_id TEXT PRIMARY KEY,
-                symbol TEXT,
-                name TEXT,
-                last_updated TIMESTAMP,
-                data_source TEXT,
-                metadata TEXT
-            )
-            ''')
+                         CREATE TABLE IF NOT EXISTS assets
+                         (
+                             asset_id
+                             TEXT
+                             PRIMARY
+                             KEY,
+                             symbol
+                             TEXT,
+                             name
+                             TEXT,
+                             last_updated
+                             TIMESTAMP,
+                             data_source
+                             TEXT,
+                             metadata
+                             TEXT
+                         )
+                         ''')
 
-            # OHLCV-Tabellen für jeden Timeframe
+            # OHLCV-Tabellen für jeden Timeframe - DATETIME COLUMN
             timeframes = ["1h", "1d", "3d", "1w", "1M"]
             for tf in timeframes:
                 table_name = f"ohlcv_{tf.replace('M', 'm')}"
                 conn.execute(f'''
                 CREATE TABLE IF NOT EXISTS {table_name} (
                     asset_id TEXT,
-                    date TIMESTAMP,
+                    datetime TIMESTAMP,
                     open REAL,
                     high REAL,
                     low REAL,
                     close REAL,
                     volume REAL,
-                    PRIMARY KEY (asset_id, date)
+                    PRIMARY KEY (asset_id, datetime)
                 )
                 ''')
 
-                # Index für Datums-Abfragen
+                # Index für Datetime-Abfragen
                 conn.execute(f'''
-                CREATE INDEX IF NOT EXISTS idx_{tf}_date ON {table_name} (date)
+                CREATE INDEX IF NOT EXISTS idx_{tf}_datetime ON {table_name} (datetime)
                 ''')
 
+            # 🔄 MIGRATION: Rename old 'date' columns to 'datetime' if they exist
+            for tf in timeframes:
+                table_name = f"ohlcv_{tf.replace('M', 'm')}"
+                try:
+                    # Check if old 'date' column exists
+                    cursor = conn.execute(f"PRAGMA table_info({table_name})")
+                    columns = [row[1] for row in cursor.fetchall()]
+
+                    if 'date' in columns and 'datetime' not in columns:
+                        print(f"[Cache] Migrating {table_name}: 'date' → 'datetime'")
+                        # Rename column
+                        conn.execute(f'ALTER TABLE {table_name} RENAME COLUMN date TO datetime')
+
+                        # Drop old index and create new one
+                        conn.execute(f'DROP INDEX IF EXISTS idx_{tf}_date')
+                        conn.execute(f'''
+                        CREATE INDEX IF NOT EXISTS idx_{tf}_datetime ON {table_name} (datetime)
+                        ''')
+                except Exception as e:
+                    print(f"[Cache] Migration warning for {table_name}: {e}")
+
             conn.commit()
-            print("[Cache] DB-Schema initialisiert")
+            print("[Cache] DB-Schema mit datetime standard initialisiert")
 
     def save_asset_data(self, identifier: str, api_result: Dict[str, Any]) -> bool:
-        """Speichert Daten (thread-safe)"""
+        """Speichert Daten (thread-safe) - DATETIME VERSION"""
         if api_result['data'].empty:
             return False
 
         try:
             conn = self._get_connection()
 
-            # Deine bestehende Logik mit der neuen Verbindung
+            # Daten mit datetime standard
             df = api_result['data'].copy()
             metadata = api_result['metadata']
             timeframe = metadata.get('timeframe', '1d')
             tf_key = timeframe.replace('M', 'm')
+
+            # Ensure datetime column exists
+            if 'date' in df.columns:
+                df = df.rename(columns={'date': 'datetime'})
+            if 'datetime' not in df.columns:
+                raise ValueError("DataFrame muss 'datetime' column haben")
 
             # Metadaten speichern
             self._save_asset_metadata(identifier, metadata, conn)
@@ -106,8 +142,8 @@ class CryptoDataCache:
             existing_data = self.get_cached_data(identifier, timeframe)
 
             if existing_data is not None and not existing_data.empty:
-                max_date = existing_data['date'].max()
-                new_data = df[df['date'] > max_date]
+                max_datetime = existing_data['datetime'].max()
+                new_data = df[df['datetime'] > max_datetime]
             else:
                 new_data = df
 
@@ -133,35 +169,36 @@ class CryptoDataCache:
                                 if k not in ['identifier', 'symbol', 'name']})
 
         conn.execute('''
-        INSERT INTO assets (asset_id, symbol, name, last_updated, data_source, metadata)
-        VALUES (?, ?, ?, ?, ?, ?)
-        ON CONFLICT(asset_id) DO UPDATE SET
-            symbol = excluded.symbol,
-            name = excluded.name,
-            last_updated = excluded.last_updated,
-            data_source = excluded.data_source,
-            metadata = excluded.metadata
-        ''', (
-            identifier,
-            metadata.get('symbol', ''),
-            metadata.get('name', ''),
-            datetime.now().isoformat(),
-            metadata.get('source_api', 'unknown'),
-            meta_json
-        ))
+                     INSERT INTO assets (asset_id, symbol, name, last_updated, data_source, metadata)
+                     VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(asset_id) DO
+                     UPDATE SET
+                         symbol = excluded.symbol,
+                         name = excluded.name,
+                         last_updated = excluded.last_updated,
+                         data_source = excluded.data_source,
+                         metadata = excluded.metadata
+                     ''', (
+                         identifier,
+                         metadata.get('symbol', ''),
+                         metadata.get('name', ''),
+                         datetime.now().isoformat(),
+                         metadata.get('source_api', 'unknown'),
+                         meta_json
+                     ))
 
     def get_cached_data(self, identifier: str, timeframe: str = "1d") -> Optional[pd.DataFrame]:
-        """Lädt gecachte Daten (thread-safe)"""
+        """Lädt gecachte Daten (thread-safe) - DATETIME VERSION"""
         tf_key = timeframe.replace('M', 'm')
 
         try:
             conn = self._get_connection()
 
             query = f'''
-                    SELECT date, open, high, low, close, volume 
+                    SELECT datetime, open, high, low, close, volume 
                     FROM ohlcv_{tf_key}
-                    WHERE asset_id = ? AND date IS NOT NULL AND date != ''
-                    ORDER BY date
+                    WHERE asset_id = ?
+                    AND datetime IS NOT NULL AND datetime != ''
+                    ORDER BY datetime
             '''
 
             df = pd.read_sql_query(query, conn, params=(identifier,))
@@ -170,12 +207,12 @@ class CryptoDataCache:
                 # 🛡️ ROBUSTE DATETIME-KONVERTIERUNG
                 try:
                     # Vor Konvertierung bereinigen
-                    df['date'] = df['date'].replace('', pd.NaT)
-                    df['date'] = pd.to_datetime(df['date'], errors='coerce', utc=False)
+                    df['datetime'] = df['datetime'].replace('', pd.NaT)
+                    df['datetime'] = pd.to_datetime(df['datetime'], errors='coerce', utc=False)
 
                     # NaT-Zeilen entfernen
                     initial_len = len(df)
-                    df = df.dropna(subset=['date']).reset_index(drop=True)
+                    df = df.dropna(subset=['datetime']).reset_index(drop=True)
 
                     if len(df) < initial_len:
                         logger.cache_info(f"Cache: {initial_len - len(df)} invalid dates removed")
@@ -183,7 +220,7 @@ class CryptoDataCache:
                     return df if not df.empty else None
 
                 except Exception as e:
-                    print(f"❌ [Cache] Date conversion failed: {e}")
+                    print(f"❌ [Cache] Datetime conversion failed: {e}")
                     return None
 
             return None
@@ -199,7 +236,7 @@ class CryptoDataCache:
             query = '''
             SELECT asset_id, symbol, name, last_updated, data_source
             FROM assets
-            ORDER BY symbol
+            ORDER BY symbol \
             '''
 
             df = pd.read_sql_query(query, conn)
