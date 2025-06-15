@@ -51,6 +51,10 @@ INDICATOR = {
     # Weitere Indikator Patterns...
 }
 
+
+
+
+
 # ==============================================================================
 #                      Pattern Multi Timeframe Pattern Configs
 # ==============================================================================
@@ -124,7 +128,48 @@ TIMEFRAME_CONFIGS = {
     }
 }
 
-# Pattern-Erkennungs-Parameter  ++++ genutzt von double_patterns ++++
+# ==============================================================================
+#                      PATTERN RENDER
+# ==============================================================================
+
+# Formation Pattern Dispatcher Mapping (betrifft das Rendern)
+FORMATION_PATTERN_DISPATCHERS = {
+    # Double Patterns
+    'double_bottom': 'double_patterns',
+    'double_top': 'double_patterns',
+
+    # Head & Shoulders
+    'head_and_shoulders': 'head_shoulders',
+    'inverse_head_and_shoulders': 'head_shoulders',
+
+    # Triple Patterns
+    'triple_bottom': 'triple_patterns',
+    'triple_top': 'triple_patterns',
+
+    # Triangles
+    'ascending_triangle': 'triangles',
+    'descending_triangle': 'triangles',
+    'symmetrical_triangle': 'triangles',
+
+    # Flags & Pennants
+    'bullish_flag': 'flags',
+    'bearish_flag': 'flags',
+    'bullish_pennant': 'flags',
+    'bearish_pennant': 'flags',
+
+    # Wedges
+    'falling_wedge': 'wedges',
+    'rising_wedge': 'wedges',
+
+    # Weitere Pattern-Module hier ergänzen ...
+}
+
+
+# ==============================================================================
+#                      TXT
+# ==============================================================================
+
+# Pattern-Erkennung-Parameter  ++++ genutzt von double_patterns ++++
 PATTERN_CONFIGS = {
     "double_bottom": {
         "tolerance": 0.03,      # Toleranz für ähnliche Preispunkte (3%)

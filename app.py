@@ -36,7 +36,7 @@ from core.market_engine import market_engine
 from core.analysis_pipeline import analysis_pipeline
 from core.patterns.formation_patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH, ALL_NEUTRAL
 from config.settings import UI_CONFIG, PATTERN_CONFIG, CHART_CONFIG, get_enabled_patterns
-from config.pattern_settings import PATTERN_CONFIGS, TIMEFRAME_CONFIGS
+from config.pattern_settings import PATTERN_CONFIGS, TIMEFRAME_CONFIGS, FORMATION_PATTERN_DISPATCHERS
 
 # Initialize Dash app
 app = dash.Dash(__name__)
@@ -693,14 +693,20 @@ def create_professional_chart(df, patterns, symbol, timeframe):
             continue
 
         # =====================================================================
-        # 1️⃣ SPECIAL HANDLING: Double Patterns
+        # 1️⃣ SPECIAL HANDLING: Formation Patterns
         # =====================================================================
-        if pattern_name in ['double_bottom', 'double_top']:
-            try:
-                from core.patterns.formation_patterns.double_patterns import render_pattern_plotly
+        # Check if this is a Formation Pattern
+        if pattern_name in FORMATION_PATTERN_DISPATCHERS:
+            module_name = FORMATION_PATTERN_DISPATCHERS[pattern_name]
 
+            try:
+                # Dynamic Import basierend auf Pattern-Typ
+                module_path = f'core.patterns.formation_patterns.{module_name}'
+                module = __import__(module_path, fromlist=['render_pattern_plotly'])
+                render_function = getattr(module, 'render_pattern_plotly')
+
+                # Rendere alle Patterns dieses Typs
                 for pattern in signals:
-                    # Stelle sicher, dass pattern ein Dictionary ist
                     if not isinstance(pattern, dict):
                         print(f"⚠️ Pattern is not dict for {pattern_name}: {type(pattern)}")
                         continue
@@ -708,15 +714,14 @@ def create_professional_chart(df, patterns, symbol, timeframe):
                     if 'type' not in pattern:
                         pattern['type'] = pattern_name
 
-                    render_pattern_plotly(fig, df, pattern)
+                    render_function(fig, df, pattern)
                     pattern_count += 1
 
-                print(f"      ✅ Rendered {len(signals)} {pattern_name} overlays")
-                continue  # Skip standard marker für diese patterns
+                print(f"✅ Rendered {len(signals)} {pattern_name} formation overlays")
+                continue  # Skip standard marker
 
             except Exception as e:
-                print(f"      ⚠️ Could not render {pattern_name} overlay: {e}")
-                # Fallback zu Standard Marker unten
+                print(f"⚠️ Formation pattern {pattern_name} rendering failed: {e}")
 
         # =====================================================================
         # 2️⃣ STANDARD MARKER für alle anderen patterns
