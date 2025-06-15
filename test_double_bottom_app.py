@@ -82,7 +82,6 @@ def test_with_mock_data():
     }, index=dates)  # 🔧 DateTime-Index direkt setzen
 
     print(f"✅ Mock Daten erstellt: {len(df)} Kerzen")
-    print(f"   Preisbereich: ${df['close'].min():.0f} - ${df['close'].max():.0f}")
 
     # Simuliere Pattern Detection mit Mock-Patterns
     mock_patterns = {

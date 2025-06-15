@@ -549,8 +549,7 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, 
         summary = create_pattern_summary(filtered_patterns, len(df))
 
         # Total Patterns = all filtered patterns
-        #total_patterns = sum(len(signals) for signals in filtered_patterns.values())
-        total_patterns = analysis_pipeline.get_pattern_count(symbol, timeframe)
+        total_patterns = sum(len(signals) for signals in filtered_patterns.values())
 
         return fig, summary, total_patterns
 
@@ -668,9 +667,6 @@ def create_professional_chart(df, patterns, symbol, timeframe):
 
     pattern_legend_added = set()  # Track which patterns are in legend
 
-    # Debug: Pattern structure prüfen
-    print(f"📊 Pattern structure: {list(patterns.keys()) if patterns else 'None'}")
-
     # Flatten nested structure für Chart rendering
     flat_patterns = {}
 
@@ -689,15 +685,12 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         # FLAT STRUCTURE - use as is
         flat_patterns = patterns
 
-    print(f"📊 Flattened patterns: {len(flat_patterns)} pattern types")
     pattern_count = 0
 
     # Jetzt über die flache Struktur iterieren
     for pattern_name, signals in flat_patterns.items():
         if not signals:
             continue
-
-        print(f"   Processing {pattern_name}: {len(signals)} patterns")
 
         # =====================================================================
         # 1️⃣ SPECIAL HANDLING: Double Patterns

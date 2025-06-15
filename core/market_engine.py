@@ -410,18 +410,12 @@ class MarketEngine:
             print("⚠️ Leeres Pattern-Dictionary")
             return {}
 
-        # Debug
-        print(
-            f"🔍 Filter mit params: min_strength={min_strength}, directions={directions}, pattern_types={pattern_types}")
-        print(f"🔍 Patterns Typ: {type(patterns)}, Keys: {list(patterns.keys())}")
-
         # Spezialfall: 'all' in pattern_types
         if pattern_types and 'all' in pattern_types:
             pattern_types = None  # Alle Patterns verwenden
 
         # Verschachtelte Struktur erkennen
         if 'technical_indicators' in patterns or 'formation_patterns' in patterns:
-            print("🔍 Verschachtelte Pattern-Struktur erkannt")
             # Verschachtelte Struktur (neue API)
             filtered = {}
 
@@ -434,7 +428,6 @@ class MarketEngine:
                     print(f"⚠️ Kategorie {category} ist leer")
                     continue
 
-                print(f"🔍 Filtere Kategorie {category} mit {len(category_patterns)} Pattern-Typen")
                 category_filtered = self._filter_flat_patterns(
                     category_patterns, min_strength, directions, pattern_types)
 
