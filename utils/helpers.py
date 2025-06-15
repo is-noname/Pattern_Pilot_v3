@@ -172,3 +172,15 @@ def normalize_ohlcv_data(df):
             df[col] = pd.to_numeric(df[col], errors='coerce')
 
     return df
+
+# •••••••••••••••••••••••••• PREPARE. Patterns für Charts •••••••••••••••••••••••••• #
+def prepare_patterns_for_chart(patterns, df):
+    """Konvertiert Pattern-Indices zu Chart-ready Format"""
+    INDEX_KEYS = ['left_shoulder', 'head', 'right_shoulder', 'left_bottom', 'right_bottom',
+                  'breakout_idx', 'left_trough', 'right_trough']
+
+    for pattern_list in patterns.values():
+        for pattern in pattern_list:
+            for key in INDEX_KEYS:
+                if key in pattern and isinstance(pattern[key], int):
+                    pattern[f"{key}_datetime"] = df['datetime'].iloc[pattern[key]]

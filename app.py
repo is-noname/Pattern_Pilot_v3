@@ -29,6 +29,7 @@ import json
 import os
 import sys
 from flask import request
+from utils.helpers import prepare_patterns_for_chart
 
 # Import your existing engine and settings
 from core.market_engine import market_engine
@@ -502,7 +503,18 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, 
         # Detect patterns using your existing engine
         #patterns = market_engine.detect_patterns(df)
         result = analysis_pipeline.analyze_symbol(symbol, timeframe, limit)
-        patterns = result['patterns'] if isinstance(result, dict) else {}
+             # patterns = result['patterns'] if isinstance(result, dict) else {}
+        if isinstance(result, dict) and 'patterns' in result:
+            nested_patterns = result['patterns']
+            # Flatten the nested structure
+            patterns = {}
+            for category, category_patterns in nested_patterns.items():
+                if isinstance(category_patterns, dict):
+                    patterns.update(category_patterns)
+                else:
+                    print(f"⚠️ Unexpected category type: {type(category_patterns)}")
+        else:
+            patterns = {}
         print(f"🔍 Result type: {type(result)}")
         print(f"🔍 Result: {result}")
 
@@ -599,6 +611,11 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         plotly.graph_objects.Figure: Vollständiger Trading-Chart
     """
 
+    # Stelle sicher, dass datetime existiert
+    if 'datetime' not in df.columns:
+        df['datetime'] = pd.date_range(start='2024-01-01', periods=len(df), freq='D')
+
+
     fig = make_subplots(
         rows=2, cols=1,
         shared_xaxes=True,
@@ -610,7 +627,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
     # •••••••••••••••••••••••••• Candlestick chart •••••••••••••••••••••••••• #
     fig.add_trace(
         go.Candlestick(
-            x=df['datetime'] if 'datetime' in df.columns else df.index,
+            x=df['datetime'] if 'datetime' in df.columns else list(range(len(df))),
             open=df['open'],
             high=df['high'],
             low=df['low'],
@@ -767,8 +784,11 @@ def create_professional_chart(df, patterns, symbol, timeframe):
                 )
             )
 
+        # ✅ Helper Call hier einfügen
+        chart_patterns = prepare_patterns_for_chart(patterns, df)
+
         # ================================================================================
-        # 🎨 PATTERN OVERLAYS - Eine Schleife für alles
+        # 🎨 PATTERN OVERLAYS - eine Schleife für alles
         # ================================================================================
 
         pattern_legend_added = set()
