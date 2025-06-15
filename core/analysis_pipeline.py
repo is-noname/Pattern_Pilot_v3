@@ -53,21 +53,18 @@ class AnalysisPipeline:
         self._analyze_manager = None
         self._cache_instance = None
 
-        # Resource Management für Token Diversity
-        self._symbol_cache = {}  # Current analysis cache per symbol
-        self._timeframe_cache = {}  # Multi-timeframe data storage
-        self._analysis_results = {}  # Bounded result cache
-        self._contract_metadata_cache = {}  # Contract address metadata
+        # ------ Resource Management für Token Diversity------------
+
+        # Contract address metadata TODO: vorbereitet aber erstmal prüfen ob nicht schon im altsystem
 
         # Resource Limits für Memory Management
-        self.max_cached_symbols = 5  # LRU für verschiedene Tokens
         self.max_timeframe_data = 4  # Limit für Multi-Timeframe Storage
         self.max_analysis_results = 10  # Bounded analysis history
 
         # Pipeline State
         self.pipeline_active = True
         self.last_error = None
-
+        self._analysis_results = {}
         # Component Health Validation
         self._validate_components()
         print("✅ AnalysisPipeline Singleton initialized")
@@ -114,6 +111,12 @@ class AnalysisPipeline:
                 print(f"⚠️  cache_instance unavailable: {e}")
                 self._cache_instance = False
         return self._cache_instance if self._cache_instance is not False else None
+
+    # Zentrale Cache-Koordination
+    @property
+    def primary_cache(self):
+        """SQLite als Primary, Memory als L1"""
+        return self.cache_instance
 
     # endregion
 
@@ -176,10 +179,7 @@ class AnalysisPipeline:
                 'timeframe': timeframe,
                 'symbol_info': symbol_info,
                 'data': df,
-                'patterns': {
-                    'technical_indicators': technical_patterns,
-                    'formation_patterns': formation_patterns
-                },
+                'patterns': {technical_patterns, formation_patterns},  # Merge flat
                 'analysis_summary': analysis_summary,
                 'timestamp': datetime.now()
             }
@@ -313,20 +313,6 @@ class AnalysisPipeline:
         if collected > 0:
             print(f"🧹 Garbage collection freed {collected} objects")
 
-    def _manage_cache_expansion(self, symbol: str):
-        """
-        LRU-basiertes Cache Management für Token Diversity
-
-        Critical für Contract Address Integration
-        """
-        if len(self._symbol_cache) >= self.max_cached_symbols:
-            # Remove oldest cached symbol
-            oldest_symbol = next(iter(self._symbol_cache))
-            removed_data = self._symbol_cache.pop(oldest_symbol)
-
-            # Calculate memory footprint
-            memory_kb = self._get_memory_footprint(removed_data)
-            print(f"🧹 Evicted cache for {oldest_symbol}: {memory_kb:.1f} KB")
 
     def _get_memory_footprint(self, data: Any) -> float:
         """Estimate memory footprint of cached data"""
@@ -348,9 +334,6 @@ class AnalysisPipeline:
             self._analysis_results = {k: self._analysis_results[k] for k in keep_keys}
             print(f"🧹 Cleaned analysis cache, kept {len(keep_keys)} recent results")
 
-        # Clear symbol cache
-        self._symbol_cache.clear()
-        self._timeframe_cache.clear()
 
         # Force garbage collection
         import gc
