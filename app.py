@@ -785,61 +785,61 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         # 🎨 PATTERN OVERLAYS - eine Schleife für alles
         # ================================================================================
 
-        pattern_count = 0
-
-        FORMATION_PATTERN_TYPES = ALL_BULLISH + ALL_BEARISH + ALL_NEUTRAL
-
-        for pattern_name, signals in patterns.items():
-            if not signals:
-                continue
-
-            # Chart Patterns: Use global dispatcher
-            if pattern_name in FORMATION_PATTERN_TYPES:
-                try:
-                    from core.patterns.formation_patterns import render_pattern_plotly
-                    for signal in signals:
-                        if 'type' not in signal:
-                            signal['type'] = pattern_name
-                        render_pattern_plotly(fig, df, signal)
-                        pattern_count += 1
-                    print(f"✅ Chart pattern: {pattern_name} ({len(signals)} overlays)")
-                    continue
-                except Exception as e:
-                    print(f"⚠️ Chart pattern {pattern_name} failed: {e}")
-
-            # Technical Indicators: Simple markers
-            for signal in signals:
-                signal_datetime = signal.get('datetime')
-                signal_price = signal.get('price', 0)
-                strength = signal.get('strength', 0.5)
-                direction = signal.get('direction', 'neutral')
-
-                color = '#4CAF50' if direction == 'bullish' else '#f44336' if direction == 'bearish' else '#ffaa00'
-                symbol = 'triangle-up' if direction == 'bullish' else 'triangle-down' if direction == 'bearish' else 'circle'
-                emoji = PATTERN_CONFIG.get('pattern_emojis', {}).get(pattern_name, '📊')
-
-                fig.add_trace(go.Scatter(
-                    x=[signal_datetime],
-                    y=[signal_price * 1.1],
-                    mode='markers+text',
-                    marker=dict(
-                        size=8 + (strength * 12),
-                        color=color,
-                        symbol=symbol,
-                        line=dict(width=1, color='white')
-                    ),
-                    text=[emoji],
-                    textposition="middle center",
-                    showlegend=False,
-                    hovertemplate=f"<b>{pattern_name}</b><br>" +
-                                  f"Price: %{{y:.4f}}<br>" +
-                                  f"Strength: {strength:.2f}<br>" +
-                                  f"Direction: {direction}<br>" +
-                                  "<extra></extra>"
-                ))
-                pattern_count += 1
-
-        print(f"✅ {pattern_count} total patterns rendered")
+        # pattern_count = 0
+        #
+        # FORMATION_PATTERN_TYPES = ALL_BULLISH + ALL_BEARISH + ALL_NEUTRAL # TODO Variable klein schreiben
+        #
+        # for pattern_name, signals in patterns.items():
+        #     if not signals:
+        #         continue
+        #
+        #     # Chart Patterns: Use global dispatcher
+        #     if pattern_name in FORMATION_PATTERN_TYPES:
+        #         try:
+        #             from core.patterns.formation_patterns import render_pattern_plotly
+        #             for signal in signals:
+        #                 if 'type' not in signal:
+        #                     signal['type'] = pattern_name
+        #                 render_pattern_plotly(fig, df, signal)
+        #                 pattern_count += 1
+        #             print(f"✅ Chart pattern: {pattern_name} ({len(signals)} overlays)")
+        #             continue
+        #         except Exception as e:
+        #             print(f"⚠️ Chart pattern {pattern_name} failed: {e}")
+        #
+        #     # Technical Indicators: Simple markers
+        #     for signal in signals:
+        #         signal_datetime = signal.get('datetime')
+        #         signal_price = signal.get('price', 0)
+        #         strength = signal.get('strength', 0.5)
+        #         direction = signal.get('direction', 'neutral')
+        #
+        #         color = '#4CAF50' if direction == 'bullish' else '#f44336' if direction == 'bearish' else '#ffaa00'
+        #         symbol = 'triangle-up' if direction == 'bullish' else 'triangle-down' if direction == 'bearish' else 'circle'
+        #         emoji = PATTERN_CONFIG.get('pattern_emojis', {}).get(pattern_name, '📊')
+        #
+        #         fig.add_trace(go.Scatter(
+        #             x=[signal_datetime],
+        #             y=[signal_price * 1.1],
+        #             mode='markers+text',
+        #             marker=dict(
+        #                 size=8 + (strength * 12),
+        #                 color=color,
+        #                 symbol=symbol,
+        #                 line=dict(width=1, color='white')
+        #             ),
+        #             text=[emoji],
+        #             textposition="middle center",
+        #             showlegend=False,
+        #             hovertemplate=f"<b>{pattern_name}</b><br>" +
+        #                           f"Price: %{{y:.4f}}<br>" +
+        #                           f"Strength: {strength:.2f}<br>" +
+        #                           f"Direction: {direction}<br>" +
+        #                           "<extra></extra>"
+        #         ))
+        #         pattern_count += 1
+        #
+        # print(f"✅ {pattern_count} total patterns rendered")
 
 
     # Professional styling
