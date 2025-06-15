@@ -174,12 +174,17 @@ class AnalysisPipeline:
                     print(f"⚠️  Analysis aggregation failed: {e}")
 
             # 5. Result Compilation
+            all_patterns = {}
+            all_patterns.update(technical_patterns)
+            if formation_patterns:
+                all_patterns.update(formation_patterns)
+
             result = {
                 'symbol': symbol,
                 'timeframe': timeframe,
                 'symbol_info': symbol_info,
                 'data': df,
-                'patterns': {technical_patterns, formation_patterns},  # Merge flat
+                'patterns': all_patterns,  # Merge flat
                 'analysis_summary': analysis_summary,
                 'timestamp': datetime.now()
             }
