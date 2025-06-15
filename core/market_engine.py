@@ -209,9 +209,19 @@ class MarketEngine:
                     'timestamp', 'open', 'high', 'low', 'close', 'volume'
                 ])
 
-                # Convert timestamp to datetime
                 df['datetime'] = pd.to_datetime(df['timestamp'], unit='ms')
                 df = df.sort_values('datetime').reset_index(drop=True)
+
+                # Ensure numeric columns
+                numeric_cols = ['open', 'high', 'low', 'close', 'volume']
+                for col in numeric_cols:
+                    df[col] = pd.to_numeric(df[col], errors='coerce')
+
+                # Remove NaN rows
+                df = df.dropna(subset=['open', 'high', 'low', 'close'])
+
+                # Mark as pattern-ready to prevent re-normalization
+                df.attrs['pattern_ready'] = True
 
                 # Cache result
                 self.cache[cache_key] = (df, time.time())

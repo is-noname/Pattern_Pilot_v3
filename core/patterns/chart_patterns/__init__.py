@@ -134,7 +134,7 @@ def detect_all_patterns(df, timeframe="1d", state=None):
     print(f"🔍 Pattern Detection für {len(df)} Datenpunkte ({timeframe})")
 
     # Prüfen ob DataFrame bereits pattern_ready ist
-    is_pattern_ready = hasattr(df, 'pattern_ready') and df.pattern_ready
+    is_pattern_ready = df.attrs.get('pattern_ready', False)
 
     # Nur normalisieren wenn nötig
     working_df = df if is_pattern_ready else prepare_dataframe_for_patterns(df)
