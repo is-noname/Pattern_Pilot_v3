@@ -166,8 +166,8 @@ def get_layout():
 
     # Chart Patterns mit Icon
     pattern_options += [
-        {"label": f"📈 {name.replace('_', ' ').title()}", "value": name}
-        for name in sorted(formation_patterns)
+        {"label": f"📈 {key.replace('_', ' ').title()}", "value": key}
+        for key in PATTERN_CONFIGS.keys()
     ]
 
 
