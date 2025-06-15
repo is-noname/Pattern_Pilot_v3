@@ -154,13 +154,14 @@ class AnalysisPipeline:
 
             # 2. Technical Patterns (market_engine)
             technical_patterns = self.market_engine.detect_patterns(df)
+            print(f"🔍 technical_patterns: {type(technical_patterns)} - {list(technical_patterns.keys()) if isinstance(technical_patterns, dict) else 'NOT A DICT'}")
 
             # 3. Chart Formation Patterns (pattern_manager) - Optional
             formation_patterns = {}
             if self.pattern_manager:
                 try:
                     formation_patterns = self.pattern_manager.detect_patterns(df, timeframe)
-                    print(f"✅ Formation patterns detected: {len(formation_patterns)}")
+                    print(f"🔍 formation_patterns: {type(formation_patterns)} - {list(formation_patterns.keys()) if isinstance(formation_patterns, dict) else 'NOT A DICT'}")
                 except Exception as e:
                     print(f"⚠️  Formation pattern detection failed: {e}")
 
