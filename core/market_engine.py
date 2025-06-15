@@ -861,7 +861,7 @@ class MarketEngine:
                     break
 
             # 2️⃣ Volume & Marktdaten - Aus Top-Coins berechnen
-            top_symbols = ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'XRP/USDT']
+            top_symbols = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT']
             total_volume = 0
             total_mcap = 0
             btc_mcap = 0
