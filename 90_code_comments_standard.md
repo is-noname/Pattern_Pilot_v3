@@ -187,6 +187,7 @@ Temporäre Kommentare für Debugging (sollten vor Commit entfernt werden):
 3. **Regelmäßige Updates**: Kommentare bei Code-Änderungen aktualisieren.
 4. **Konsistenz**: Gleicher Stil im gesamten Projekt.
 5. **Dokumentation von Edge Cases**: Besondere Randfälle und ihre Behandlung dokumentieren.
+6. **Use TODO comments**: Als Notiz für offene Aufgaben anfügen.
 
 ## Vermeiden
 
