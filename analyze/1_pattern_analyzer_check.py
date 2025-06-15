@@ -1,9 +1,9 @@
 # test_pattern_analyzer.py
 import pandas as pd
 from cache.cache_manager import cache_instance
-from patterns import detect_all_patterns
+from core.patterns import detect_all_patterns
 from analyze.pattern_analyzer import PatternAnalyzer  # Klasse importieren statt Singleton
-from api.api_manager import APIManager
+#from api.api_manager import APIManager
 
 
 def test_pattern_analyzer():

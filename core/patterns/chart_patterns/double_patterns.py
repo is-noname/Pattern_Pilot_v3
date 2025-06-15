@@ -471,6 +471,8 @@ def render_pattern_plotly(fig, df, pattern):
         print(f"Unbekannter Pattern-Typ für Double-Patterns (Plotly): {pattern_type}")
 
 
+
+
 # ================================================================================
 # 🎯 USAGE EXAMPLES
 # ================================================================================

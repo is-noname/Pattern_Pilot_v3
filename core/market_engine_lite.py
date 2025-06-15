@@ -168,9 +168,6 @@ class MarketEngine:
                 filtered[pattern_name] = filtered_signals
 
         return filtered
-            print(f"DEBUG: filtered: {type(filtered)}")
-        if isinstance(filtered, str):
-            print(f"DEBUG: filtered is string: {filtered}")
     # ==============================================================================
     #                      _detect_doji
     #==============================================================================

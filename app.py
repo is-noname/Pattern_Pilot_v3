@@ -791,130 +791,61 @@ def create_professional_chart(df, patterns, symbol, timeframe):
         # 🎨 PATTERN OVERLAYS - eine Schleife für alles
         # ================================================================================
 
-        pattern_legend_added = set()
-
-        # Debug: Pattern structure prüfen
-        print(f"📊 Pattern structure: {list(patterns.keys()) if patterns else 'None'}")
-
-        # Flatten nested structure für Chart rendering
-        flat_patterns = {}
-
-        # Check ob nested structure (technical_indicators, formation_patterns)
-        if 'technical_indicators' in patterns or 'formation_patterns' in patterns:
-            # NESTED STRUCTURE - flatten it
-            for category, category_patterns in patterns.items():
-                if isinstance(category_patterns, dict):
-                    for pattern_name, signal_list in category_patterns.items():
-                        if isinstance(signal_list, list):
-                            flat_patterns[pattern_name] = signal_list
-                        else:
-                            print(f"⚠️ Unexpected signal_list type for {pattern_name}: {type(signal_list)}")
-        else:
-            # FLAT STRUCTURE - use as is
-            flat_patterns = patterns
-
-        print(f"📊 Flattened patterns: {len(flat_patterns)} pattern types")
-        print(f"🎨 Processing patterns for overlays...")
-
         pattern_count = 0
+        chart_patterns = ['double_bottom', 'double_top', 'head_and_shoulders', 'inverse_head_and_shoulders',
+                          'triple_bottom', 'triple_top', 'ascending_triangle', 'descending_triangle']
 
-        # EINE Schleife für ALLE Pattern (Marker + Overlays)
-        for pattern_name, signals in flat_patterns.items():
+        for pattern_name, signals in patterns.items():
             if not signals:
                 continue
 
-            print(f"   Processing {pattern_name}: {len(signals)} patterns")
-
-            # ================================================================================
-            # 1️⃣ PLOTLY OVERLAYS für formation_patterns (double_bottom, etc.)
-            # ================================================================================
-            if pattern_name in ['double_bottom', 'double_top']:
+            # Chart Patterns: Use global dispatcher
+            if pattern_name in chart_patterns:
                 try:
-                    from core.patterns.chart_patterns.double_patterns import render_pattern_plotly
-
-                    for pattern in signals:
-                        if 'type' not in pattern:
-                            pattern['type'] = pattern_name
-
-                        render_pattern_plotly(fig, df, pattern)
+                    from core.patterns.chart_patterns import render_pattern_plotly
+                    for signal in signals:
+                        if 'type' not in signal:
+                            signal['type'] = pattern_name
+                        render_pattern_plotly(fig, df, signal)
                         pattern_count += 1
-
-                    print(f"      ✅ Rendered {len(signals)} {pattern_name} overlays")
-                    continue  # Skip marker für diese patterns
-
+                    print(f"✅ Chart pattern: {pattern_name} ({len(signals)} overlays)")
+                    continue
                 except Exception as e:
-                    print(f"      ⚠️ Could not render {pattern_name} overlay: {e}")
-                    # Fallback zu Standard Marker unten
+                    print(f"⚠️ Chart pattern {pattern_name} failed: {e}")
 
-            # ================================================================================
-            # 2️⃣ STANDARD MARKER für alle anderen patterns
-            # ================================================================================
-            # Get pattern style
-            style = pattern_styles.get(pattern_name, {
-                'symbol': 'circle',
-                'color': '#ffffff',
-                'size': 12,
-                'emoji': '📊'
-            })
-
-
-
-            for i, signal in enumerate(signals):
-                # Sicherstellen dass signal ein Dict ist
-                if not isinstance(signal, dict):
-                    print(f"⚠️ Signal is not dict for {pattern_name}: {type(signal)}")
-                    continue
-
-                # Ab hier ist signal garantiert ein Dictionary
-                direction = signal.get('direction', 'neutral')
+            # Technical Indicators: Simple markers
+            for signal in signals:
+                signal_datetime = signal.get('datetime')
+                signal_price = signal.get('price', 0)
                 strength = signal.get('strength', 0.5)
+                direction = signal.get('direction', 'neutral')
 
-                # Farbe basierend auf Direction
-                color = style.get('color', '#ffffff')
-                if direction == 'bullish':
-                    color = '#4CAF50'  # Grün
-                elif direction == 'bearish':
-                    color = '#f44336'  # Rot
+                color = '#4CAF50' if direction == 'bullish' else '#f44336' if direction == 'bearish' else '#ffaa00'
+                symbol = 'triangle-up' if direction == 'bullish' else 'triangle-down' if direction == 'bearish' else 'circle'
+                emoji = PATTERN_CONFIG.get('pattern_emojis', {}).get(pattern_name, '📊')
 
-                # Nur den ersten Eintrag in die Legende
-                show_legend = pattern_name not in pattern_legend_added
-                if show_legend:
-                    pattern_legend_added.add(pattern_name)
-
-                # Emoji + Pattern Name für Hover
-                emoji = style.get('emoji', '📊')
-                hover_text = f"{emoji} {pattern_name.replace('_', ' ').title()}"
-                if 'price' in signal:
-                    hover_text += f" ({signal['price']:.2f})"
-
-                # Signal Index und Größe
-                idx = signal.get('index', 0)
-                if idx >= len(df):
-                    print(f"⚠️ Signal index {idx} out of bounds for dataframe with {len(df)} rows")
-                    continue
-
-                size = int(style.get('size', 10) * (0.5 + strength))
-
-                # Add marker at pattern position
                 fig.add_trace(go.Scatter(
-                    x=[df.index[idx]],
-                    y=[signal.get('price', df['close'].iloc[idx]) * 1.01],  # Leicht über Kerze
-                    mode='markers',
+                    x=[signal_datetime],
+                    y=[signal_price * 1.1],
+                    mode='markers+text',
                     marker=dict(
+                        size=8 + (strength * 12),
                         color=color,
-                        size=size,
-                        symbol=style.get('symbol', 'circle')
+                        symbol=symbol,
+                        line=dict(width=1, color='white')
                     ),
-                    name=pattern_name.replace('_', ' ').title(),
-                    text=hover_text,
-                    hoverinfo='text',
-                    showlegend=show_legend
-                ), row=1, col=1)
-
+                    text=[emoji],
+                    textposition="middle center",
+                    showlegend=False,
+                    hovertemplate=f"<b>{pattern_name}</b><br>" +
+                                  f"Price: %{{y:.4f}}<br>" +
+                                  f"Strength: {strength:.2f}<br>" +
+                                  f"Direction: {direction}<br>" +
+                                  "<extra></extra>"
+                ))
                 pattern_count += 1
 
-            print(f"📊 Added {pattern_count} pattern markers to chart")
-
+        print(f"✅ {pattern_count} total patterns rendered")
 
 
     # Professional styling
@@ -1022,28 +953,12 @@ def create_pattern_summary(patterns, candle_count):
                    style={"color": "#666"})
         ], className="pattern-summary")
 
-    # Flatten nested structure für konsistente Verarbeitung
-    flat_patterns = {}
+        # Calculate statistics - EINFACH
+        all_signals = []
+        for pattern_name, signals in patterns.items():
+            if isinstance(signals, list):
+                all_signals.extend(signals)
 
-    # Check ob nested structure (technical_indicators, formation_patterns)
-    if 'technical_indicators' in patterns or 'formation_patterns' in patterns:
-        # NESTED STRUCTURE - flatten it
-        for category, category_patterns in patterns.items():
-            if isinstance(category_patterns, dict):
-                for pattern_name, signal_list in category_patterns.items():
-                    if isinstance(signal_list, list):
-                        flat_patterns[pattern_name] = signal_list
-    else:
-        # FLAT STRUCTURE - use as is
-        flat_patterns = patterns
-
-
-
-    # Calculate statistics
-    all_signals = []
-    for pattern_name, signals in flat_patterns.items():
-        if isinstance(signals, list):
-            all_signals.extend(signals)
 
     if not all_signals:
         return html.Div([
