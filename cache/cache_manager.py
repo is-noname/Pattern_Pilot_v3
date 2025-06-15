@@ -265,7 +265,7 @@ class CryptoDataCache:
             conn.commit()
 
         except Exception as e:
-            print(f"[Cache] Lösch-Fehler: {e}")
+            print(f"[Cache] Löschfehler: {e}")
             if hasattr(self._local, 'conn') and self._local.conn:
                 self._local.conn.rollback()
 
