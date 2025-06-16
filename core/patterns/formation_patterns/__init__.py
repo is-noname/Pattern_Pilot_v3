@@ -1,4 +1,4 @@
-# patterns/__init__.py - FIXED VERSION
+# patterns/formation_patterns/__init__.py - FIXED VERSION
 import pandas as pd
 from .double_patterns import detect_double_bottom, detect_double_top, render_double_bottom, render_double_top
 from .head_shoulders import detect_head_and_shoulders, detect_inverse_head_and_shoulders, render_head_and_shoulders, \

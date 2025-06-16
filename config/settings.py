@@ -219,12 +219,19 @@ PATTERN_CONFIG = {
         'doji_star': {'symbol': 'star', 'color': '#ffff00', 'size': 4, 'emoji': '⭐'},
         # Multi-Candle Patterns-Styles
         'support_resistance': {'symbol': 'square', 'color': '#aa00ff', 'size': 3, 'emoji': '🔷'},
-        'ma_crossover': {'symbol': 'x', 'color': '#ff00dd', 'size': 6, 'emoji': '💎'},
-        'macd_crossover': {'symbol': 'x-open', 'color': '#ff00dd', 'size': 5, 'emoji': '⚡'},
+        'ma_crossover': {'symbol': 'x', 'color': '#ff00dd', 'size': 6, 'emoji': '💎'}, #ff0080
+        'macd_crossover': {'symbol': 'x-open', 'color': '#ff00dd', 'size': 5, 'emoji': '⚡'}, #ff0080
         'rsi_oversold': {'symbol': 'triangle-up', 'color': '#00ff00', 'size': 4, 'emoji': '📈'},
         'rsi_overbought': {'symbol': 'triangle-down', 'color': '#ff0000', 'size': 4, 'emoji': '📉'},
         'bollinger_squeeze': {'symbol': 'diamond-wide', 'color': '#117e23', 'size': 5, 'emoji': '💥'},
         #Formation-Patterns
+    },
+
+    # Formation Pattern Dispatcher Mapping (betrifft das Rendern)
+    'FORMATION_PATTERN_DISPATCHERS': {
+        # Double Patterns
+        'double_bottom': 'double_patterns',
+        'double_top': 'double_patterns'
     }
 }
 # endregion

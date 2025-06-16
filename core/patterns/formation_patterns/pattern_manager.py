@@ -7,7 +7,7 @@ from .pattern_categories import ALL_BULLISH, ALL_BEARISH, ALL_NEUTRAL
 # Pattern-Detektoren importieren (wir nutzen die vorhandene Registry)
 from . import PATTERN_DETECTORS, PATTERN_RENDERERS
 # Config-Helfer importieren
-from . import get_pattern_config
+from core.patterns.formation_patterns import get_pattern_config
 from config.pattern_settings import TIMEFRAME_CONFIGS, PATTERN_CONFIGS
 
 

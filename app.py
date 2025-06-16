@@ -161,7 +161,7 @@ def get_layout():
     # Candlestick Patterns mit Icon
     pattern_options += [
         {"label": f"📊 {name.replace('_', ' ').title()}", "value": name}
-        for name in PATTERN_CONFIG['candlestick_patterns']
+        for name in PATTERN_CONFIG['candlestick_patterns']  #TODO hier 'FORMATION_PATTERN_DISPATCHERS' einsetzen?
     ]
 
     # Chart Patterns mit Icon
@@ -507,6 +507,7 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, 
              # patterns = result['patterns'] if isinstance(result, dict) else {}
         if isinstance(result, dict) and 'patterns' in result:
             nested_patterns = result['patterns']
+
             # Flatten the nested structure
             patterns = {}
             for category, category_patterns in nested_patterns.items():

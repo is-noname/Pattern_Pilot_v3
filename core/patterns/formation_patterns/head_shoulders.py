@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from config.pattern_settings import PATTERN_CONFIGS
+from config.pattern_settings import PATTERN_CONFIGS #, TODO PTRN_CONF get_pattern_config noch nciht drin aber in 0.3; scaut dann in PATTERN_CONFIGS nach
 
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
@@ -19,7 +19,7 @@ def detect_head_and_shoulders(df, config=None, timeframe="1d"):
     """
     # Config laden
     if config is None:
-        from config.pattern_settings import get_pattern_config
+        from config.pattern_settings import get_pattern_config #TODO PTRN_CONF wo is get_pattern_config hin war das in 3.1 noch da oder aus 1.2?
         config = get_pattern_config("head_and_shoulders", PATTERN_CONFIGS.get("head_and_shoulders", {}), timeframe)
 
     tolerance = config.get("tolerance", 0.05)
