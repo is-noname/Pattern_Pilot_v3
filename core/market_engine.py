@@ -469,7 +469,7 @@ class MarketEngine:
         # 1. Nach Pattern-Typen filtern (wenn angegeben)
         if pattern_types and pattern_types != ['all']:
             patterns = {k: v for k, v in patterns.items() if k in pattern_types}
-            print(f"🔍 Nach Pattern-Typen gefiltert: {list(patterns.keys())}")
+            print(f"🔍 Nach Pattern-Typen gefiltert: {list(patterns.keys())}")   #TODO: hier haben wir glaube ich mal von type auf key gedreht. Seit dem keine Signals mehr für formation_patterns
 
         # 2. Durch jedes Pattern iterieren
         for pattern_name, signals in patterns.items():
