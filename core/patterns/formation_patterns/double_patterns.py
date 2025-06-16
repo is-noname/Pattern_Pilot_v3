@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from config.pattern_settings import PATTERN_CONFIGS
 import plotly.graph_objects as go
-
+formation_patterns= ""
 
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
@@ -389,7 +389,7 @@ def render_double_bottom_plotly(fig, df, pattern):
                 bordercolor="lime",
                 font=dict(color="white", size=10)
             )
-
+    return patterns
     # =============================================================
     # 🔍 DEBUG KOORDINATEN-PROBLEM
     # =============================================================
@@ -455,6 +455,7 @@ def render_double_top_plotly(fig, df, pattern):
                           "Price: $%{y:.4f}<br>" +
                           "Confirmed: Yes<extra></extra>"
         ))
+        return formation_patterns
 
 
 def render_pattern_plotly(fig, df, pattern):

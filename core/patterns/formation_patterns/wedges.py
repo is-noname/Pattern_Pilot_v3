@@ -17,6 +17,42 @@ def detect_falling_wedge(df, config=None, timeframe="1d"):
     - Fallende Widerstandslinie (oben) und fallende Unterstützungslinie (unten)
     - Untere Linie flacher als obere Linie (konvergierend)
     - Ausbruch nach oben signalisiert Trendumkehr
+
+    🔻 Erkennt fallende Keile (Falling Wedge)
+
+    📊 Pattern-Typ: Bullisches Umkehrmuster in Abwärtstrends
+
+    🔍 Pattern-Eigenschaften:
+        - Fallende obere Trendlinie (Widerstand)
+        - Fallende untere Trendlinie (Unterstützung)
+        - Untere Linie fällt flacher → Linien konvergieren
+        - Volumen nimmt ab während der Formation
+        - Ausbruch nach oben = Trendumkehr Signal
+
+    ⚙️ Parameter:
+        - df (DataFrame): OHLCV-Daten mit Integer-Index
+        - config (dict, optional): Überschreibt Standard-Konfiguration
+        - min_pattern_bars: Mindest-Balken für Pattern (default: 10)
+        - max_pattern_bars: Maximal-Balken für Pattern (default: 100)
+        - min_touches: Min. Berührungen pro Trendlinie (default: 2)
+        timeframe (str): Zeitrahmen für Config-Lookup (default: "1d")
+
+    🎯 Returns:
+    list: Pattern-Dictionaries mit:
+        - type: "falling_wedge"
+        - start_idx/end_idx: Pattern-Grenzen
+        - upper_slope/upper_intercept: Obere Trendlinie
+        - lower_slope/lower_intercept: Untere Trendlinie
+        - upper_points/lower_points: Berührungspunkte
+        - confirmed: Bool - Ausbruch bestätigt
+        - breakout_idx: Index des Ausbruchs (falls confirmed)
+        - target: Kursziel (Pattern-Höhe über Ausbruch)
+        - stop_loss: Stop-Loss Level
+
+    💡 Trading-Kontext:
+         In Abwärtstrends = bullisches Umkehrsignal
+         In Aufwärtstrends = Konsolidierung vor Fortsetzung
+
     """
     # Config laden
     if config is None:
@@ -187,6 +223,30 @@ def detect_rising_wedge(df, config=None, timeframe="1d"):
     - Steigende Widerstandslinie (oben) und steigende Unterstützungslinie (unten)
     - Obere Linie flacher als untere Linie (konvergierend)
     - Ausbruch nach unten signalisiert Trendumkehr
+
+    NEU
+    🔺 Erkennt steigende Keile (Rising Wedge)
+
+    📊 Pattern-Typ: Bearisches Umkehrmuster in Aufwärtstrends
+
+    🔍 Pattern-Eigenschaften:
+    - Steigende obere Trendlinie (Widerstand)
+    - Steigende untere Trendlinie (Unterstützung)
+    - Obere Linie steigt flacher → Linien konvergieren
+    - Volumen nimmt ab während Formation
+    - Ausbruch nach unten = Trendumkehr Signal
+
+    ⚙️ Parameter:
+        df (DataFrame): OHLCV-Daten mit Integer-Index
+        config (dict, optional): Pattern-spezifische Konfiguration
+        timeframe (str): Zeitrahmen-Kontext
+
+    🎯 Returns:
+        list: Analog zu falling_wedge, aber für steigende Keile
+
+    💡 Trading-Kontext:
+    In Aufwärtstrends = bearisches Umkehrsignal
+    Oft am Ende von längeren Bullenmärkten
     """
     # Config laden
     if config is None:
@@ -356,7 +416,20 @@ def detect_rising_wedge(df, config=None, timeframe="1d"):
 
 def render_falling_wedge(ax, df, pattern):
     """
-    Zeichnet einen fallenden Keil auf die Achse
+    🎨 Visualisiert fallenden Keil auf Chart-Achse
+
+    ⚙️ Parameter:
+        ax (matplotlib.Axes): Chart-Achse für Zeichnung
+        df (DataFrame): Basis-Datensatz
+        pattern (dict): Pattern-Dict von detect_falling_wedge()
+
+    🎨 Zeichnet:
+        - Rote obere Trendlinie (Widerstand)
+        - Grüne untere Trendlinie (Unterstützung)
+        - Berührungspunkte als Scatter-Plots
+        - Ausbruchspunkt bei confirmed=True
+        - Gestrichelte Kursziel-Linie
+        - Optional: Stärke-Indikator (falls SHOW_STRENGTH_IN_CHART=True)
     """
     start_idx = pattern['start_idx']
     end_idx = pattern['end_idx']
@@ -431,7 +504,10 @@ def render_falling_wedge(ax, df, pattern):
 
 def render_rising_wedge(ax, df, pattern):
     """
-    Zeichnet einen steigenden Keil auf die Achse
+    🎨 Visualisiert steigenden Keil auf Chart-Achse
+
+    Analog zu render_falling_wedge() aber für steigende Keile
+    Gleiche Visualisierungs-Elemente, angepasste Farben/Richtungen
     """
     start_idx = pattern['start_idx']
     end_idx = pattern['end_idx']

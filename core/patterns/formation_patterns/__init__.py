@@ -213,3 +213,33 @@ def debug_dataframe_structure(df, context=""):
         print(f"  Date Range: {df['date'].min()} bis {df['date'].max()}")
 
     print(f"  Memory: {df.memory_usage(deep=True).sum() / 1024:.1f} KB")
+
+
+# ================================================================================
+# 🔹 INTEGRATION HELPER FUNCTION
+# ================================================================================
+
+def add_patterns_to_chart(fig, df, patterns):
+    """
+    Fügt alle erkannten Patterns zu einem Plotly Chart hinzu
+
+    Args:
+        fig: Plotly Figure Objekt
+        df: DataFrame mit OHLCV Daten
+        patterns: Dictionary mit Pattern-Listen
+    """
+
+    rendered_count = 0
+
+    for pattern_type, pattern_list in patterns.items():
+        for pattern in pattern_list:
+            # Stelle sicher, dass Pattern den type hat
+            if 'type' not in pattern:
+                pattern['type'] = pattern_type
+
+            # Rendere Pattern
+            if render_pattern_plotly(fig, df, pattern):
+                rendered_count += 1
+
+    print(f"✅ {rendered_count} Patterns erfolgreich zu Chart hinzugefügt")
+    return rendered_count

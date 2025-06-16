@@ -14,6 +14,7 @@ from typing import Dict, List, Optional, Any, Union
 import pandas as pd
 from datetime import datetime
 import time
+from core.patterns.formation_patterns.pattern_manager import pattern_manager
 
 
 class AnalysisPipeline:
