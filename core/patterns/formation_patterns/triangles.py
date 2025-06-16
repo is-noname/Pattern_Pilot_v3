@@ -19,6 +19,44 @@ def detect_ascending_triangle(df, config=None, timeframe="1d"):
     - Horizontale Widerstandslinie (oben)
     - Aufsteigende Unterstützungslinie (unten)
     - Erwarteter Ausbruch nach oben
+
+    NEU
+    📈 Erkennt aufsteigende Dreiecke (Ascending Triangle)
+
+    📊 Pattern-Typ: Bullisches Fortsetzungsmuster
+
+    🔍 Pattern-Eigenschaften:
+    - Horizontaler Widerstand (obere Begrenzung)
+    - Steigende Unterstützungslinie (untere Begrenzung)
+    - Käufer werden aggressiver bei jedem Rücksetzer
+    - Verkäufer verteidigen konstantes Widerstandslevel
+    - Ausbruch nach oben wahrscheinlich (≈70%)
+
+    ⚙️ Parameter:
+        df (DataFrame): OHLCV-Daten mit Integer-Index
+        config (dict, optional): Pattern-Konfiguration
+            - lookback_periods: Suchradius für lokale Extrema (default: 5)
+            - min_touches: Min. Berührungen pro Linie (default: 2)
+            - min_pattern_bars: Min. Pattern-Länge (default: 10)
+            - max_pattern_bars: Max. Pattern-Länge (default: 50)
+        timeframe (str): Zeitrahmen für Config-Lookup
+
+    🎯 Returns:
+        list: Pattern-Dictionaries mit:
+            - type: "ascending_triangle"
+            - start_idx/end_idx: Pattern-Boundaries
+            - resistance_level: Horizontaler Widerstand
+            - support_slope/support_intercept: Unterstützungslinie
+            - resistance_points/support_points: Berührungspunkte
+            - confirmed: Ausbruch bestätigt
+            - breakout_idx: Ausbruchsindex
+            - target: Kursziel (Dreieck-Höhe über Widerstand)
+            - stop_loss: Stop unterhalb Unterstützung
+
+    💡 Trading-Setup:
+    Entry: Ausbruch über Widerstand + Volumen-Anstieg
+    Stop: Unter die letzte Unterstützungs-Berührung
+    Target: Dreieck-Höhe projiziert über Widerstand
     """
     # Config laden
     if config is None:
@@ -174,6 +212,28 @@ def detect_descending_triangle(df, config=None, timeframe="1d"):
     - Horizontale Unterstützungslinie (unten)
     - Absteigende Widerstandslinie (oben)
     - Erwarteter Ausbruch nach unten
+
+    NEU
+    📉 Erkennt absteigende Dreiecke (Descending Triangle)
+
+    📊 Pattern-Typ: Bearisches Fortsetzungsmuster
+
+    🔍 Pattern-Eigenschaften:
+    - Horizontale Unterstützung (untere Begrenzung)
+    - Fallende Widerstandslinie (obere Begrenzung)
+    - Verkäufer werden aggressiver bei jedem Anstieg
+    - Käufer verteidigen konstantes Unterstützungslevel
+    - Ausbruch nach unten wahrscheinlich (≈70%)
+
+    ⚙️ Parameter: Analog zu ascending_triangle
+
+    🎯 Returns: Analog zu ascending_triangle,
+               aber für bearische Ausbrüche
+
+    💡 Trading-Setup:
+    Entry: Durchbruch unter Unterstützung + Volumen
+    Stop: Über die letzte Widerstands-Berührung
+    Target: Dreieck-Höhe projiziert unter Unterstützung
     """
     # Config laden
     if config is None:
@@ -330,6 +390,30 @@ def detect_symmetrical_triangle(df, config=None, timeframe="1d"):
     - Steigende Unterstützungslinie (unten)
     - Konvergierende Linien mit ähnlichem Steigungswinkel
     - Ausbruchsrichtung oft in Richtung des vorherigen Trends
+
+    NEU
+    ⚖️ Erkennt symmetrische Dreiecke (Symmetrical Triangle)
+
+    📊 Pattern-Typ: Neutrales Fortsetzungsmuster
+
+    🔍 Pattern-Eigenschaften:
+    - Fallende Widerstandslinie (obere Begrenzung)
+    - Steigende Unterstützungslinie (untere Begrenzung)
+    - Beide Linien konvergieren mit ähnlichem Winkel
+    - Unentschieden zwischen Käufern und Verkäufern
+    - Ausbruch-Richtung folgt meist Vortrend
+
+    ⚙️ Parameter:
+        Zusätzlich zu Standard-Triangle-Parametern:
+        - angle_similarity: Ähnlichkeit der Steigungswinkel (default: 0.7)
+
+    🎯 Returns:
+        Pattern-Dict mit beiden Trendlinien-Informationen
+        breakout_direction: 'up' oder 'down' bei Bestätigung
+
+    💡 Trading-Setup:
+    Neutral bis Ausbruch → dann Richtung des Ausbruchs folgen
+    Höhere Vorsicht: Kann in beide Richtungen ausbrechen
     """
     # Config laden
     if config is None:
