@@ -161,7 +161,7 @@ def get_layout():
     # Candlestick Patterns mit Icon
     pattern_options += [
         {"label": f"📊 {name.replace('_', ' ').title()}", "value": name}
-        for name in PATTERN_CONFIG['candlestick_patterns']  #TODO hier 'FORMATION_PATTERN_DISPATCHERS' einsetzen?
+        for name in PATTERN_CONFIG['candlestick_patterns']  #TODO hier iwo müssten noch fromation patterns ergänzt werden
     ]
 
     # Chart Patterns mit Icon
@@ -796,7 +796,7 @@ def create_professional_chart(df, patterns, symbol, timeframe):
 
         # pattern_count = 0
         #
-        # FORMATION_PATTERN_TYPES = ALL_BULLISH + ALL_BEARISH + ALL_NEUTRAL # TODO Variable klein schreiben
+        # FORMATION_PATTERN_TYPES = ALL_BULLISH + ALL_BEARISH + ALL_NEUTRAL # TODO Variable prüfen; von hin und her Umbau?
         #
         # for pattern_name, signals in patterns.items():
         #     if not signals:
