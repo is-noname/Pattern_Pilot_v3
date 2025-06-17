@@ -485,7 +485,7 @@ class MarketEngine:
 
             # 2.2 Leere Liste abfangen
             if len(signals) == 0:
-                print(f"⚠️ Keine Signals für {pattern_name}")
+                print(f"⚠️ isinstance Keine Signals für {pattern_name}")
                 continue
 
             # 2.3 Durch jedes Signal iterieren und filtern

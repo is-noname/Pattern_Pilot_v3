@@ -504,17 +504,10 @@ def analyze_symbol(n_clicks, symbol, timeframe, limit, exchange, pattern_types, 
         # Detect patterns using your existing engine
         #patterns = market_engine.detect_patterns(df)
         result = analysis_pipeline.analyze_symbol(symbol, timeframe, limit)
-             # patterns = result['patterns'] if isinstance(result, dict) else {}
-        if isinstance(result, dict) and 'patterns' in result:
-            nested_patterns = result['patterns']
 
-            # Flatten the nested structure
-            patterns = {}
-            for category, category_patterns in nested_patterns.items():
-                if isinstance(category_patterns, dict):
-                    patterns.update(category_patterns)
-                else:
-                    print(f"⚠️ Unexpected category type: {type(category_patterns)}")
+        if isinstance(result, dict) and 'patterns' in result:
+            patterns = result['patterns']  # Direct! Keine Zwischenvariable, kein Flattening
+
         else:
             patterns = {}
         print(f"🔍 Result type: {type(result)}")
