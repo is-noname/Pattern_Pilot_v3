@@ -464,7 +464,8 @@ def render_double_top_plotly(fig, df, pattern):
             hovertemplate="<b>Breakdown Point</b><br>" +
                           "Price: $%{y:.4f}<br>" +
                           "Confirmed: Yes<extra></extra>"
-        ))
+            )
+        )
         return pattern
 
 
