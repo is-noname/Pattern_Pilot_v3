@@ -289,11 +289,15 @@ def render_double_bottom_plotly(fig, df, pattern):
 
     # Automatische X-Koordinaten je nach Index-Typ
     if isinstance(df.index, pd.RangeIndex):
-        # RangeIndex: Nutze direkte Index-Zahlen
-        x_coords = [pattern['P1'], pattern['P2']]
+        # RangeIndex: Nutze datetime column
+        def get_x_coord(idx):
+            return df['datetime'].iloc[idx] if 'datetime' in df.columns else idx
     else:
-        # DatetimeIndex: Nutze df.index[position]
-        x_coords = [df.index[pattern['P1']], df.index[pattern['P2']]]
+        # DatetimeIndex: Nutze df.index direkt
+        def get_x_coord(idx):
+            return df.index[idx]
+
+    x_coords = [get_x_coord(pattern['P1']), get_x_coord(pattern['P2'])]
 
     print(f"🔧 Using x_coords: {x_coords}")
     # =============================================================
@@ -332,7 +336,7 @@ def render_double_bottom_plotly(fig, df, pattern):
 
     # ✅ Neckline Label
     fig.add_annotation(
-        x=df.index[pattern['P2']],
+        x=get_x_coord(pattern['P2']),  #x=df.index[pattern['P2']],
         y=pattern['neckline'],
         text=f"Neckline: ${pattern['neckline']:.4f}",
         showarrow=True,
@@ -346,7 +350,7 @@ def render_double_bottom_plotly(fig, df, pattern):
     # ✅ Breakout Point (falls bestätigt)
     if pattern.get('confirmed') and pattern.get('breakout_idx') is not None:
         fig.add_trace(go.Scatter(
-            x=[df.index[pattern['breakout_idx']]],
+            x=[get_x_coord(pattern['breakout_idx'])], #x=[df.index[pattern['breakout_idx']]],
             y=[df['close'].iloc[pattern['breakout_idx']]],
             mode='markers',
             marker=dict(
@@ -366,8 +370,8 @@ def render_double_bottom_plotly(fig, df, pattern):
         if pattern.get('target') is not None:
             fig.add_shape(
                 type="line",
-                x0=df.index[pattern['breakout_idx']],
-                x1=df.index[-1],  # Bis zum Ende des Charts
+                x0=get_x_coord(pattern['breakout_idx']), #x0=df.index[pattern['breakout_idx']],
+                x1=get_x_coord(-1),  # Letzter Punkt x1=df.index[-1],  Bis zum Ende des Charts
                 y0=pattern['target'],
                 y1=pattern['target'],
                 line=dict(
@@ -379,7 +383,7 @@ def render_double_bottom_plotly(fig, df, pattern):
 
             # Target Label
             fig.add_annotation(
-                x=df.index[-1],
+                x=get_x_coord(-1),
                 y=pattern['target'],
                 text=f"Target: ${pattern['target']:.4f}",
                 showarrow=True,
@@ -389,7 +393,7 @@ def render_double_bottom_plotly(fig, df, pattern):
                 bordercolor="lime",
                 font=dict(color="white", size=10)
             )
-    return pattern
+
     # =============================================================
     # 🔍 DEBUG KOORDINATEN-PROBLEM
     # =============================================================
@@ -399,7 +403,13 @@ def render_double_bottom_plotly(fig, df, pattern):
     print(f"🔍 P1={pattern['P1']}, P2={pattern['P2']}")
     print(f"🔍 df.index[P1]={df.index[pattern['P1']]}")
     print(f"🔍 df.index[P2]={df.index[pattern['P2']]}")
-    # =============================================================
+    print(f"🔍 DEBUG X: {[df.index[pattern['P1']], df.index[pattern['P2']]]}")
+    print(f"🔍 DEBUG Y: {[df['low'].iloc[pattern['P1']], df['low'].iloc[pattern['P2']]]}")
+    print(f"🔍 Chart X-Range: {fig.layout.xaxis.range}")
+    print(f"🔍 Chart Y-Range: {fig.layout.yaxis.range}")
+    print(f"🔍 OLD X: {[df.index[pattern['P1']], df.index[pattern['P2']]]}")
+    print(f"🔍 NEW X: {[df['datetime'].iloc[pattern['P1']], df['datetime'].iloc[pattern['P2']]]}")
+    return pattern
 
 
 def render_double_top_plotly(fig, df, pattern):
@@ -407,7 +417,7 @@ def render_double_top_plotly(fig, df, pattern):
 
     # ✅ Resistance Points (P1, P2) als rote Marker
     fig.add_trace(go.Scatter(
-        x=[df.index[pattern['P1']], df.index[pattern['P2']]],
+        x=[df['datetime'].iloc[pattern['P1']], df['datetime'].iloc[pattern['P2']]], #x=[df.index[pattern['P1']], df.index[pattern['P2']]],
         y=[df['high'].iloc[pattern['P1']], df['high'].iloc[pattern['P2']]],
         mode='markers',
         marker=dict(
@@ -426,8 +436,8 @@ def render_double_top_plotly(fig, df, pattern):
     # ✅ Neckline als gestrichelte horizontale Linie
     fig.add_shape(
         type="line",
-        x0=df.index[pattern['P1']],
-        x1=df.index[pattern['P2']],
+        x0=df['datetime'].iloc[pattern['P1']], #x0=df.index[pattern['P1']],
+        x1=df['datetime'].iloc[pattern['P2']], #x1=df.index[pattern['P2']],
         y0=pattern['neckline'],
         y1=pattern['neckline'],
         line=dict(
@@ -440,7 +450,7 @@ def render_double_top_plotly(fig, df, pattern):
     # ✅ Breakout Point (falls bestätigt)
     if pattern.get('confirmed') and pattern.get('breakout_idx') is not None:
         fig.add_trace(go.Scatter(
-            x=[df.index[pattern['breakout_idx']]],
+            x=[df['datetime'].iloc[pattern['breakout_idx']]], #x=[df.index[pattern['breakout_idx']]],
             y=[df['close'].iloc[pattern['breakout_idx']]],
             mode='markers',
             marker=dict(
