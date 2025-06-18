@@ -260,7 +260,7 @@ class MarketEngine:
             # Fallback: nur TA-Lib patterns
             return {
                 'technical_indicators': ta_patterns,
-                'formation_patterns': {}
+                'formation_patterns': formation_patterns
             }
 
     def _detect_technical_patterns(self, df: pd.DataFrame) -> Dict[str, Any]:

@@ -15,7 +15,7 @@ import pandas as pd
 from datetime import datetime
 import time
 from core.patterns.formation_patterns.pattern_manager import pattern_manager
-from core.patterns.formation_patterns import formation_patterns
+#from core.patterns.formation_patterns import formation_patterns
 
 class AnalysisPipeline:
     """
@@ -154,7 +154,9 @@ class AnalysisPipeline:
                 return {'error': 'No data available'}
 
             # 2. Technical Patterns (market_engine)
-            technical_patterns = self.market_engine.detect_patterns(df)
+            pattern_results = self.market_engine.detect_patterns(df)
+            technical_patterns = pattern_results.get('technical_indicators', {})
+            formation_patterns = pattern_results.get('formation_patterns', {})
 
             # 3. Chart Formation Patterns (pattern_manager) - Optional
             #formation_patterns = {}
