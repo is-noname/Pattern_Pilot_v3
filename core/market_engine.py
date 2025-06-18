@@ -505,7 +505,7 @@ class MarketEngine:
                 # Stärke-Filter anwenden (falls vorhanden)
                 if min_strength > 0:
                     # Sichere Variante mit get und Defaultwert
-                    strength = signal.get('strength', 0)
+                    strength = signal.get('strength', 1)
                     if strength < min_strength:
                         continue
 
@@ -513,6 +513,10 @@ class MarketEngine:
                 if directions:
                     # Sichere Variante mit get und Defaultwert
                     direction = signal.get('direction', 'neutral')
+                    # ✅ ADDITION: Formation Patterns by 'confirmed' status
+                    if direction == 'neutral' and 'confirmed' in signal:
+                        direction = 'bullish' if signal['confirmed'] else 'neutral'
+
                     if direction not in directions:
                         continue
 
