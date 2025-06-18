@@ -401,7 +401,7 @@ def render_pattern(ax, df, pattern):
     """
     Rendert ein Pattern basierend auf seinem Typ
     """
-    pattern_type = pattern.get("type", "")
+    pattern_type = pattern.get("type", 'unknown')
 
     if pattern_type == "rounding_bottom":
         render_rounding_bottom(ax, df, pattern)

@@ -181,5 +181,15 @@ PATTERN_CONFIGS = {
         "tolerance": 0.03,
         "lookback_periods": 5,
         "min_pattern_bars": 5
+    },
+    "triple_bottom": {
+            "tolerance": 0.03,      # Toleranz für ähnliche Preispunkte (3%)
+            "lookback_periods": 5,  # Anzahl der Perioden für lokale Tiefs
+            "min_pattern_bars": 5   # Mindestabstand zwischen den Tiefs
+        },
+    "triple_top": {
+        "tolerance": 0.03,
+        "lookback_periods": 5,
+        "min_pattern_bars": 5
     }
 }

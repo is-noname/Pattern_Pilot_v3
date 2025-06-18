@@ -761,7 +761,7 @@ def render_pattern_plotly(fig, df, pattern):
     """
     Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
     """
-    pattern_type = pattern.get("type", "")
+    pattern_type = pattern.get("type", 'unknown')
 
     if pattern_type == "breakaway_gap":
         render_breakaway_gap_plotly(fig, df, pattern)

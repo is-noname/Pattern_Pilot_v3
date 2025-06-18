@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from config.pattern_settings import PATTERN_CONFIGS #, TODO PTRN_CONF get_pattern_config noch nciht drin aber in 0.3; scaut dann in PATTERN_CONFIGS nach
+import plotly.graph_objects as go
 
 SHOW_STRENGTH_IN_CHART = False  # Diese Zeile hinzufügen
 
@@ -339,20 +340,288 @@ def render_pattern(ax, df, pattern):
 #                      RENDER H&S IN PLOTLY
 # ==============================================================================
 def render_head_and_shoulders_plotly(fig, df, pattern):
-    """Plotly Version des Head and Shoulders Pattern Renderers"""
-    # ... [Code hier] ...
-    pass
+    """
+    ✅ FIXED: Head and Shoulders Formation Plotly Renderer
+
+    Pattern Structure:
+    - left_shoulder, head, right_shoulder: Peak indices
+    - left_trough, right_trough: Valley indices
+    - neckline_slope, neckline_intercept: Neckline definition
+    - confirmed, breakout_idx, target: Breakout info
+    """
+
+    # =============================================================
+    # 🔧 X-COORDINATE CONVERSION (MANDATORY FIX)
+    # =============================================================
+
+    def get_x_coord(idx):
+        """Convert array index to proper X-coordinate"""
+        if isinstance(df.index, pd.RangeIndex):
+            # RangeIndex: Must use datetime column
+            return df['datetime'].iloc[idx] if 'datetime' in df.columns else idx
+        else:
+            # DatetimeIndex: Use index directly
+            return df.index[idx]
+
+    # =============================================================
+    # 🎯 PATTERN RENDERING: Head & Shoulders Formation
+    # =============================================================
+
+    # ✅ 1. SHOULDER & HEAD POINTS (3 peaks)
+    shoulder_points = [
+        pattern['left_shoulder'],
+        pattern['head'],
+        pattern['right_shoulder']
+    ]
+
+    shoulder_x = [get_x_coord(idx) for idx in shoulder_points]
+    shoulder_y = [df['high'].iloc[idx] for idx in shoulder_points]
+
+    fig.add_trace(go.Scatter(
+        x=shoulder_x,
+        y=shoulder_y,
+        mode='markers',
+        marker=dict(
+            color='red',
+            size=15,
+            symbol=['diamond', 'star', 'diamond'],  # Head ist star
+            line=dict(width=2, color='white')
+        ),
+        name='Head & Shoulders',
+        showlegend=False,
+        hovertemplate="<b>%{text}</b><br>Price: $%{y:.4f}<extra></extra>",
+        text=['Left Shoulder', 'Head', 'Right Shoulder']
+    ))
+
+    # ✅ 2. NECKLINE (verbindet die beiden Troughs)
+    if 'left_trough' in pattern and 'right_trough' in pattern:
+        # Neckline punkte
+        left_trough_x = get_x_coord(pattern['left_trough'])
+        right_trough_x = get_x_coord(pattern['right_trough'])
+
+        left_trough_y = df['low'].iloc[pattern['left_trough']]
+        right_trough_y = df['low'].iloc[pattern['right_trough']]
+
+        # Neckline als Shape (kann geneigt sein)
+        fig.add_shape(
+            type="line",
+            x0=left_trough_x,
+            x1=right_trough_x,
+            y0=left_trough_y,
+            y1=right_trough_y,
+            line=dict(color="red", width=2, dash="dash"),
+        )
+
+        # Neckline Punkte markieren
+        fig.add_trace(go.Scatter(
+            x=[left_trough_x, right_trough_x],
+            y=[left_trough_y, right_trough_y],
+            mode='markers',
+            marker=dict(color='red', size=8, symbol='circle'),
+            name='Neckline Points',
+            showlegend=False,
+            hovertemplate="<b>Neckline</b><br>Price: $%{y:.4f}<extra></extra>"
+        ))
+
+    # ✅ 3. BREAKOUT POINT (wenn confirmed)
+    if pattern.get('confirmed') and pattern.get('breakout_idx') is not None:
+        breakout_x = get_x_coord(pattern['breakout_idx'])
+        breakout_y = df['close'].iloc[pattern['breakout_idx']]
+
+        fig.add_trace(go.Scatter(
+            x=[breakout_x],
+            y=[breakout_y],
+            mode='markers',
+            marker=dict(
+                color='red',
+                size=20,
+                symbol='triangle-down',  # Bearish breakout
+                line=dict(width=2, color='white')
+            ),
+            name='H&S Breakout',
+            showlegend=False,
+            hovertemplate="<b>H&S Breakout</b><br>Price: $%{y:.4f}<extra></extra>"
+        ))
+
+        # ✅ 4. TARGET LINE (wenn verfügbar)
+        if pattern.get('target') is not None:
+            # Target line von breakout bis chart ende
+            fig.add_shape(
+                type="line",
+                x0=breakout_x,
+                x1=get_x_coord(-1),  # Letzter punkt im dataset
+                y0=pattern['target'],
+                y1=pattern['target'],
+                line=dict(color="red", width=2, dash="dot"),
+            )
+
+            # Target Label
+            fig.add_annotation(
+                x=breakout_x,
+                y=pattern['target'],
+                text=f"Target: ${pattern['target']:.2f}",
+                showarrow=True,
+                arrowhead=2,
+                arrowcolor="red",
+                bgcolor="red",
+                bordercolor="white",
+                font=dict(color="white", size=10)
+            )
+
+        # ✅ 5. STOP LOSS LINE (wenn verfügbar)
+        if pattern.get('stop_loss') is not None:
+            fig.add_shape(
+                type="line",
+                x0=breakout_x,
+                x1=get_x_coord(-1),
+                y0=pattern['stop_loss'],
+                y1=pattern['stop_loss'],
+                line=dict(color="orange", width=1, dash="dot"),
+            )
 
 
 def render_inverse_head_and_shoulders_plotly(fig, df, pattern):
-    """Plotly Version des Inverse Head and Shoulders Pattern Renderers"""
-    # ... [Code hier] ...
-    pass
+    """
+    ✅ FIXED: Inverse Head and Shoulders Formation Plotly Renderer
+
+    Pattern Structure (inverted):
+    - left_shoulder, head, right_shoulder: Trough indices (head is deepest)
+    - left_peak, right_peak: Peak indices
+    - neckline_slope, neckline_intercept: Neckline definition (resistance)
+    - confirmed, breakout_idx, target: Breakout info (bullish)
+    """
+
+    # =============================================================
+    # 🔧 X-COORDINATE CONVERSION (MANDATORY FIX)
+    # =============================================================
+
+    def get_x_coord(idx):
+        """Convert array index to proper X-coordinate"""
+        if isinstance(df.index, pd.RangeIndex):
+            return df['datetime'].iloc[idx] if 'datetime' in df.columns else idx
+        else:
+            return df.index[idx]
+
+    # =============================================================
+    # 🎯 PATTERN RENDERING: Inverse Head & Shoulders Formation
+    # =============================================================
+
+    # ✅ 1. SHOULDER & HEAD POINTS (3 troughs)
+    trough_points = [
+        pattern['left_shoulder'],
+        pattern['head'],
+        pattern['right_shoulder']
+    ]
+
+    trough_x = [get_x_coord(idx) for idx in trough_points]
+    trough_y = [df['low'].iloc[idx] for idx in trough_points]
+
+    fig.add_trace(go.Scatter(
+        x=trough_x,
+        y=trough_y,
+        mode='markers',
+        marker=dict(
+            color='lime',
+            size=15,
+            symbol=['diamond', 'star', 'diamond'],  # Head ist star
+            line=dict(width=2, color='white')
+        ),
+        name='Inverse H&S',
+        showlegend=False,
+        hovertemplate="<b>%{text}</b><br>Price: $%{y:.4f}<extra></extra>",
+        text=['Left Shoulder', 'Head', 'Right Shoulder']
+    ))
+
+    # ✅ 2. NECKLINE (verbindet die beiden Peaks)
+    if 'left_peak' in pattern and 'right_peak' in pattern:
+        # Neckline punkte
+        left_peak_x = get_x_coord(pattern['left_peak'])
+        right_peak_x = get_x_coord(pattern['right_peak'])
+
+        left_peak_y = df['high'].iloc[pattern['left_peak']]
+        right_peak_y = df['high'].iloc[pattern['right_peak']]
+
+        # Neckline als Shape (kann geneigt sein)
+        fig.add_shape(
+            type="line",
+            x0=left_peak_x,
+            x1=right_peak_x,
+            y0=left_peak_y,
+            y1=right_peak_y,
+            line=dict(color="lime", width=2, dash="dash"),
+        )
+
+        # Neckline Punkte markieren
+        fig.add_trace(go.Scatter(
+            x=[left_peak_x, right_peak_x],
+            y=[left_peak_y, right_peak_y],
+            mode='markers',
+            marker=dict(color='lime', size=8, symbol='circle'),
+            name='Neckline Points',
+            showlegend=False,
+            hovertemplate="<b>Neckline</b><br>Price: $%{y:.4f}<extra></extra>"
+        ))
+
+    # ✅ 3. BREAKOUT POINT (wenn confirmed)
+    if pattern.get('confirmed') and pattern.get('breakout_idx') is not None:
+        breakout_x = get_x_coord(pattern['breakout_idx'])
+        breakout_y = df['close'].iloc[pattern['breakout_idx']]
+
+        fig.add_trace(go.Scatter(
+            x=[breakout_x],
+            y=[breakout_y],
+            mode='markers',
+            marker=dict(
+                color='lime',
+                size=20,
+                symbol='triangle-up',  # Bullish breakout
+                line=dict(width=2, color='white')
+            ),
+            name='Inverse H&S Breakout',
+            showlegend=False,
+            hovertemplate="<b>Inverse H&S Breakout</b><br>Price: $%{y:.4f}<extra></extra>"
+        ))
+
+        # ✅ 4. TARGET LINE (wenn verfügbar)
+        if pattern.get('target') is not None:
+            # Target line von breakout bis chart ende
+            fig.add_shape(
+                type="line",
+                x0=breakout_x,
+                x1=get_x_coord(-1),  # Letzter punkt im dataset
+                y0=pattern['target'],
+                y1=pattern['target'],
+                line=dict(color="lime", width=2, dash="dot"),
+            )
+
+            # Target Label
+            fig.add_annotation(
+                x=breakout_x,
+                y=pattern['target'],
+                text=f"Target: ${pattern['target']:.2f}",
+                showarrow=True,
+                arrowhead=2,
+                arrowcolor="lime",
+                bgcolor="lime",
+                bordercolor="white",
+                font=dict(color="white", size=10)
+            )
+
+        # ✅ 5. STOP LOSS LINE (wenn verfügbar)
+        if pattern.get('stop_loss') is not None:
+            fig.add_shape(
+                type="line",
+                x0=breakout_x,
+                x1=get_x_coord(-1),
+                y0=pattern['stop_loss'],
+                y1=pattern['stop_loss'],
+                line=dict(color="orange", width=1, dash="dot"),
+            )
 
 
 def render_pattern_plotly(fig, df, pattern):
     """
-    Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
+    ✅ UPDATED: Head & Shoulders Pattern Dispatcher für Plotly
     """
     pattern_type = pattern.get("type", "")
 
@@ -361,7 +630,24 @@ def render_pattern_plotly(fig, df, pattern):
     elif pattern_type == "inverse_head_and_shoulders":
         render_inverse_head_and_shoulders_plotly(fig, df, pattern)
     else:
-        print(f"Unbekannter Pattern-Typ für Head-Shoulders (Plotly): {pattern_type}")
+        print(f"❌ Unbekannter H&S Pattern-Typ: {pattern_type}")
 
 
+# ==============================================================================
+#                      🔧 DEBUG & TEST FUNCTIONS
+# ==============================================================================
+
+def debug_pattern_coordinates(df, pattern):
+    """Debug function to verify X-coordinate conversion"""
+
+    def get_x_coord(idx):
+        return df['datetime'].iloc[idx] if 'datetime' in df.columns else idx
+
+    print(f"🔍 Pattern Debug: {pattern.get('type', 'unknown')}")
+    print(f"🔍 Left Shoulder Index: {pattern.get('left_shoulder')} → {get_x_coord(pattern.get('left_shoulder', 0))}")
+    print(f"🔍 Head Index: {pattern.get('head')} → {get_x_coord(pattern.get('head', 0))}")
+    print(f"🔍 Right Shoulder Index: {pattern.get('right_shoulder')} → {get_x_coord(pattern.get('right_shoulder', 0))}")
+
+    if pattern.get('breakout_idx'):
+        print(f"🔍 Breakout Index: {pattern['breakout_idx']} → {get_x_coord(pattern['breakout_idx'])}")
 

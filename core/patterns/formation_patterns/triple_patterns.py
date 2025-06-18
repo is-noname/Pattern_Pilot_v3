@@ -646,7 +646,7 @@ def render_pattern_plotly(fig, df, pattern):
     """
     Rendert ein Pattern basierend auf seinem Typ (PLOTLY)
     """
-    pattern_type = pattern.get("type", "")
+    pattern_type = pattern.get("type", 'unknown')
 
     if pattern_type == "triple_top":
         render_triple_top_plotly(fig, df, pattern)

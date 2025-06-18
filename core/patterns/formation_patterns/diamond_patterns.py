@@ -424,7 +424,7 @@ def render_pattern(ax, df, pattern):
     """
     Rendert ein Diamond-Pattern basierend auf seinem Typ
     """
-    pattern_type = pattern.get("type", "")
+    pattern_type = pattern.get("type", 'unknown')
 
     if pattern_type == "diamond_top":
         render_diamond_top(ax, df, pattern)
