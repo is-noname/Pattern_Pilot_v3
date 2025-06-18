@@ -3,7 +3,7 @@
 Zentrale Schnittstelle für alle Analysekomponenten
 Verhindert zirkuläre Importe durch zentrale Koordination
 """
-#from patterns import detect_all_patterns
+from core.patterns import detect_all_patterns
 from core.patterns.formation_patterns.pattern_categories import ALL_BULLISH, ALL_BEARISH
 from analyze.pattern_analyzer import PatternAnalyzer
 from analyze.timeframe_conflict_analyzer import TimeframeConflictAnalyzer

@@ -246,16 +246,22 @@ class MarketEngine:
         # TA-Lib patterns (existing)
         ta_patterns = self._detect_technical_patterns(df)
 
-        # Chart patterns via pattern_manager
+        # Formation Patterns via pattern_manager
         try:
             from core.patterns.formation_patterns.pattern_manager import pattern_manager
             formation_patterns = pattern_manager.detect_patterns(df)
 
-            # Merge patterns
-            return {**ta_patterns, **formation_patterns}
+            return {
+                'technical_indicators': ta_patterns,
+                'formation_patterns': formation_patterns,
+            }
+
         except ImportError:
             # Fallback: nur TA-Lib patterns
-            return ta_patterns
+            return {
+                'technical_indicators': ta_patterns,
+                'formation_patterns': {}
+            }
 
     def _detect_technical_patterns(self, df: pd.DataFrame) -> Dict[str, Any]:
         """

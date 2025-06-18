@@ -1,5 +1,7 @@
 # patterns/__init__.py - FIXED VERSION
 import pandas as pd
+
+from core.patterns.formation_patterns import render_double_bottom_plotly
 from core.patterns.formation_patterns.double_patterns import detect_double_bottom, detect_double_top, render_double_bottom, render_double_top
 from core.patterns.formation_patterns.head_shoulders import detect_head_and_shoulders, detect_inverse_head_and_shoulders, render_head_and_shoulders, \
     render_inverse_head_and_shoulders
@@ -64,7 +66,7 @@ PATTERN_DETECTORS = {
 }
 
 PATTERN_RENDERERS = {
-    "double_bottom": render_double_bottom,
+    "double_bottom": render_double_bottom_plotly,
     "double_top": render_double_top,
     "head_and_shoulders": render_head_and_shoulders,
     "inverse_head_and_shoulders": render_inverse_head_and_shoulders,

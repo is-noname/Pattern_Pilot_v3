@@ -1,6 +1,7 @@
 # patterns/formation_patterns/__init__.py - FIXED VERSION
 import pandas as pd
-from .double_patterns import detect_double_bottom, detect_double_top, render_double_bottom, render_double_top
+from .double_patterns import detect_double_bottom, detect_double_top, render_double_bottom_plotly, render_double_top_plotly, \
+    formation_patterns
 from .head_shoulders import detect_head_and_shoulders, detect_inverse_head_and_shoulders, render_head_and_shoulders, \
     render_inverse_head_and_shoulders
 from .triple_patterns import detect_triple_top, detect_triple_bottom, render_triple_top, render_triple_bottom
@@ -91,8 +92,8 @@ PATTERN_DETECTORS = {
 }
 
 PATTERN_RENDERERS = {
-    "double_bottom": render_double_bottom,
-    "double_top": render_double_top,
+    "double_bottom": render_double_bottom_plotly,
+    "double_top": render_double_top_plotly,
     "head_and_shoulders": render_head_and_shoulders,
     "inverse_head_and_shoulders": render_inverse_head_and_shoulders,
     "triple_top": render_triple_top,

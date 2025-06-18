@@ -15,7 +15,7 @@ import pandas as pd
 from datetime import datetime
 import time
 from core.patterns.formation_patterns.pattern_manager import pattern_manager
-
+from core.patterns.formation_patterns import formation_patterns
 
 class AnalysisPipeline:
     """
@@ -157,12 +157,12 @@ class AnalysisPipeline:
             technical_patterns = self.market_engine.detect_patterns(df)
 
             # 3. Chart Formation Patterns (pattern_manager) - Optional
-            formation_patterns = {}
-            if self.pattern_manager:
-                try:
-                    formation_patterns = self.pattern_manager.detect_patterns(df, timeframe)
-                except Exception as e:
-                    print(f"⚠️  Formation pattern detection failed: {e}")
+            #formation_patterns = {}
+            # if self.pattern_manager:
+            #     try:
+            #         formation_patterns = self.pattern_manager.detect_patterns(df, timeframe)
+            #     except Exception as e:
+            #         print(f"⚠️  Formation pattern detection failed: {e}")
 
             # 4. Analysis Aggregation (analyze_manager) - Optional
             analysis_summary = None
