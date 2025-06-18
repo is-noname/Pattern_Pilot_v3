@@ -1,4 +1,4 @@
-#import pandas as pd
+import pandas as pd
 import numpy as np
 from config.pattern_settings import PATTERN_CONFIGS
 import plotly.graph_objects as go
@@ -339,14 +339,308 @@ def render_pattern(ax, df, pattern):
 #                      RENDER TRIPLE PATTERNS PLOTLY
 # ==============================================================================
 def render_triple_bottom_plotly(fig, df, pattern):
-    """Plotly Version des Triple Bottom Pattern Renderers"""
-    # ... [Code hier] ...
-    pass
+    """
+    Plotly Version des Triple Bottom Pattern Renderers
+
+    Triple Bottom: Bullish reversal pattern with 3 support touches
+    Pattern Structure: first_bottom, second_bottom, third_bottom, neckline, target, etc.
+    """
+
+    # =============================================================
+    # 🔧 X-COORDINATE CONVERSION (MANDATORY)
+    # =============================================================
+    def get_x_coord(idx):
+        """Convert array index to proper X-coordinate"""
+        if isinstance(df.index, pd.RangeIndex):
+            # RangeIndex: Must use datetime column
+            return df['datetime'].iloc[idx] if 'datetime' in df.columns else idx
+        else:
+            # DatetimeIndex: Use index directly
+            return df.index[idx]
+
+    # Extract pattern points
+    bottom_points = [
+        pattern['first_bottom'],
+        pattern['second_bottom'],
+        pattern['third_bottom']
+    ]
+
+    # Convert to proper X-coordinates
+    x_coords = [get_x_coord(idx) for idx in bottom_points]
+    y_coords = [df['low'].iloc[idx] for idx in bottom_points]
+
+    print(f"🔧 Triple Bottom Points: {bottom_points}")
+    print(f"🔧 X-Coords: {x_coords}")
+
+    # =============================================================
+    # 🎯 TRIPLE BOTTOM RENDERING
+    # =============================================================
+
+    # ✅ Three Support Points (first, second, third bottom)
+    fig.add_trace(go.Scatter(
+        x=x_coords,
+        y=y_coords,
+        mode='markers',
+        marker=dict(
+            color='lime',
+            size=12,
+            symbol='circle',
+            line=dict(width=2, color='white')
+        ),
+        name='Triple Bottom Support',
+        showlegend=False,
+        hovertemplate="<b>Triple Bottom Point</b><br>" +
+                      "Price: $%{y:.4f}<br>" +
+                      "Date: %{x}<extra></extra>"
+    ))
+
+    # ✅ Connecting Line between bottoms
+    fig.add_trace(go.Scatter(
+        x=x_coords,
+        y=y_coords,
+        mode='lines',
+        line=dict(
+            color='lime',
+            width=2,
+            dash='dot'
+        ),
+        name='Support Trendline',
+        showlegend=False,
+        hoverinfo='skip'
+    ))
+
+    # ✅ Neckline (resistance level between peaks)
+    neckline_start = get_x_coord(bottom_points[0])
+    neckline_end = get_x_coord(bottom_points[-1])
+
+    fig.add_shape(
+        type="line",
+        x0=neckline_start,
+        x1=neckline_end,
+        y0=pattern['neckline'],
+        y1=pattern['neckline'],
+        line=dict(
+            color="red",
+            width=2,
+            dash="dash"
+        )
+    )
+
+    # ✅ Neckline Label
+    fig.add_annotation(
+        x=neckline_end,
+        y=pattern['neckline'],
+        text=f"Neckline: ${pattern['neckline']:.4f}",
+        showarrow=True,
+        arrowhead=2,
+        arrowcolor="red",
+        bgcolor="rgba(255,0,0,0.8)",
+        bordercolor="red",
+        font=dict(color="white", size=10)
+    )
+
+    # ✅ Breakout Point (if confirmed)
+    if pattern.get('confirmed') and pattern.get('breakout_idx') is not None:
+        breakout_x = get_x_coord(pattern['breakout_idx'])
+        breakout_y = df['close'].iloc[pattern['breakout_idx']]
+
+        fig.add_trace(go.Scatter(
+            x=[breakout_x],
+            y=[breakout_y],
+            mode='markers',
+            marker=dict(
+                color='lime',
+                size=15,
+                symbol='triangle-up',
+                line=dict(width=2, color='white')
+            ),
+            name='Breakout',
+            showlegend=False,
+            hovertemplate="<b>Breakout Point</b><br>" +
+                          "Price: $%{y:.4f}<br>" +
+                          "Confirmed: Yes<extra></extra>"
+        ))
+
+        # ✅ Target Line (if available)
+        if pattern.get('target') is not None:
+            fig.add_shape(
+                type="line",
+                x0=breakout_x,
+                x1=get_x_coord(-1),  # To end of chart
+                y0=pattern['target'],
+                y1=pattern['target'],
+                line=dict(
+                    color="lime",
+                    width=2,
+                    dash="dot"
+                )
+            )
+
+            # Target Label
+            fig.add_annotation(
+                x=get_x_coord(-1),
+                y=pattern['target'],
+                text=f"Target: ${pattern['target']:.4f}",
+                showarrow=True,
+                arrowhead=2,
+                arrowcolor="lime",
+                bgcolor="rgba(0,255,0,0.8)",
+                bordercolor="lime",
+                font=dict(color="white", size=10)
+            )
+
 
 def render_triple_top_plotly(fig, df, pattern):
-    """Plotly Version des Triple Top Pattern Renderers"""
-    # ... [Code hier] ...
-    pass
+    """
+    Plotly Version des Triple Top Pattern Renderers
+
+    Triple Top: Bearish reversal pattern with 3 resistance touches
+    Pattern Structure: first_top, second_top, third_top, neckline, target, etc.
+    """
+
+    # =============================================================
+    # 🔧 X-COORDINATE CONVERSION (MANDATORY)
+    # =============================================================
+    def get_x_coord(idx):
+        """Convert array index to proper X-coordinate"""
+        if isinstance(df.index, pd.RangeIndex):
+            # RangeIndex: Must use datetime column
+            return df['datetime'].iloc[idx] if 'datetime' in df.columns else idx
+        else:
+            # DatetimeIndex: Use index directly
+            return df.index[idx]
+
+    # Extract pattern points
+    top_points = [
+        pattern['first_top'],
+        pattern['second_top'],
+        pattern['third_top']
+    ]
+
+    # Convert to proper X-coordinates
+    x_coords = [get_x_coord(idx) for idx in top_points]
+    y_coords = [df['high'].iloc[idx] for idx in top_points]
+
+    print(f"🔧 Triple Top Points: {top_points}")
+    print(f"🔧 X-Coords: {x_coords}")
+
+    # =============================================================
+    # 🎯 TRIPLE TOP RENDERING
+    # =============================================================
+
+    # ✅ Three Resistance Points (first, second, third top)
+    fig.add_trace(go.Scatter(
+        x=x_coords,
+        y=y_coords,
+        mode='markers',
+        marker=dict(
+            color='red',
+            size=12,
+            symbol='circle',
+            line=dict(width=2, color='white')
+        ),
+        name='Triple Top Resistance',
+        showlegend=False,
+        hovertemplate="<b>Triple Top Point</b><br>" +
+                      "Price: $%{y:.4f}<br>" +
+                      "Date: %{x}<extra></extra>"
+    ))
+
+    # ✅ Connecting Line between tops
+    fig.add_trace(go.Scatter(
+        x=x_coords,
+        y=y_coords,
+        mode='lines',
+        line=dict(
+            color='red',
+            width=2,
+            dash='dot'
+        ),
+        name='Resistance Trendline',
+        showlegend=False,
+        hoverinfo='skip'
+    ))
+
+    # ✅ Neckline (support level between troughs)
+    neckline_start = get_x_coord(top_points[0])
+    neckline_end = get_x_coord(top_points[-1])
+
+    fig.add_shape(
+        type="line",
+        x0=neckline_start,
+        x1=neckline_end,
+        y0=pattern['neckline'],
+        y1=pattern['neckline'],
+        line=dict(
+            color="lime",
+            width=2,
+            dash="dash"
+        )
+    )
+
+    # ✅ Neckline Label
+    fig.add_annotation(
+        x=neckline_end,
+        y=pattern['neckline'],
+        text=f"Neckline: ${pattern['neckline']:.4f}",
+        showarrow=True,
+        arrowhead=2,
+        arrowcolor="lime",
+        bgcolor="rgba(0,255,0,0.8)",
+        bordercolor="lime",
+        font=dict(color="white", size=10)
+    )
+
+    # ✅ Breakout Point (if confirmed)
+    if pattern.get('confirmed') and pattern.get('breakout_idx') is not None:
+        breakout_x = get_x_coord(pattern['breakout_idx'])
+        breakout_y = df['close'].iloc[pattern['breakout_idx']]
+
+        fig.add_trace(go.Scatter(
+            x=[breakout_x],
+            y=[breakout_y],
+            mode='markers',
+            marker=dict(
+                color='red',
+                size=15,
+                symbol='triangle-down',
+                line=dict(width=2, color='white')
+            ),
+            name='Breakdown',
+            showlegend=False,
+            hovertemplate="<b>Breakdown Point</b><br>" +
+                          "Price: $%{y:.4f}<br>" +
+                          "Confirmed: Yes<extra></extra>"
+        ))
+
+        # ✅ Target Line (if available)
+        if pattern.get('target') is not None:
+            fig.add_shape(
+                type="line",
+                x0=breakout_x,
+                x1=get_x_coord(-1),  # To end of chart
+                y0=pattern['target'],
+                y1=pattern['target'],
+                line=dict(
+                    color="red",
+                    width=2,
+                    dash="dot"
+                )
+            )
+
+            # Target Label
+            fig.add_annotation(
+                x=get_x_coord(-1),
+                y=pattern['target'],
+                text=f"Target: ${pattern['target']:.4f}",
+                showarrow=True,
+                arrowhead=2,
+                arrowcolor="red",
+                bgcolor="rgba(255,0,0,0.8)",
+                bordercolor="red",
+                font=dict(color="white", size=10)
+            )
+
 
 def render_pattern_plotly(fig, df, pattern):
     """
@@ -360,3 +654,6 @@ def render_pattern_plotly(fig, df, pattern):
         render_triple_bottom_plotly(fig, df, pattern)
     else:
         print(f"Unbekannter Pattern-Typ für Triple-Patterns (Plotly): {pattern_type}")
+        return False
+
+    return True

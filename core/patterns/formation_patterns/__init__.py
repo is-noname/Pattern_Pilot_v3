@@ -4,7 +4,7 @@ from .double_patterns import detect_double_bottom, detect_double_top, render_dou
     formation_patterns
 from .head_shoulders import detect_head_and_shoulders, detect_inverse_head_and_shoulders, render_head_and_shoulders, \
     render_inverse_head_and_shoulders
-from .triple_patterns import detect_triple_top, detect_triple_bottom, render_triple_top, render_triple_bottom
+from .triple_patterns import detect_triple_top, detect_triple_bottom, render_triple_top_plotly, render_triple_bottom_plotly
 from .triangles import detect_ascending_triangle, detect_descending_triangle, detect_symmetrical_triangle, \
     render_ascending_triangle, render_descending_triangle, render_symmetrical_triangle
 from .flags import detect_bullish_flag, detect_bearish_flag, detect_bullish_pennant, detect_bearish_pennant, \
@@ -96,8 +96,8 @@ PATTERN_RENDERERS = {
     "double_top": render_double_top_plotly,
     "head_and_shoulders": render_head_and_shoulders,
     "inverse_head_and_shoulders": render_inverse_head_and_shoulders,
-    "triple_top": render_triple_top,
-    "triple_bottom": render_triple_bottom,
+    "triple_top": render_triple_top_plotly,
+    "triple_bottom": render_triple_bottom_plotly,
     "ascending_triangle": render_ascending_triangle,
     "descending_triangle": render_descending_triangle,
     "symmetrical_triangle": render_symmetrical_triangle,
