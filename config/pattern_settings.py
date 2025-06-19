@@ -191,5 +191,15 @@ PATTERN_CONFIGS = {
         "tolerance": 0.03,
         "lookback_periods": 5,
         "min_pattern_bars": 5
+    },
+    "head_and_shoulders": {
+        "tolerance": 0.03,
+        "lookback_periods": 5,
+        "min_pattern_bars": 5
+    },
+    "inverse_head_and_shoulders": {
+        "tolerance": 0.03,
+        "lookback_periods": 5,
+        "min_pattern_bars": 5
     }
 }
