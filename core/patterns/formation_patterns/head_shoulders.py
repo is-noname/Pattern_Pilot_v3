@@ -623,7 +623,7 @@ def render_pattern_plotly(fig, df, pattern):
     """
     ✅ UPDATED: Head & Shoulders Pattern Dispatcher für Plotly
     """
-    pattern_type = pattern.get("type", "")
+    pattern_type = pattern.get("type", 'unknown')
 
     if pattern_type == "head_and_shoulders":
         render_head_and_shoulders_plotly(fig, df, pattern)
