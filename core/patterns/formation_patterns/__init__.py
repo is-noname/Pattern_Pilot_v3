@@ -2,7 +2,7 @@
 import pandas as pd
 from .double_patterns import detect_double_bottom, detect_double_top, render_double_bottom_plotly, render_double_top_plotly, \
     formation_patterns
-from .head_shoulders import detect_head_and_shoulders, detect_inverse_head_and_shoulders, render_head_and_shoulders_plotly, \
+from core.patterns.formation_patterns.head_shoulders import detect_head_and_shoulders, detect_inverse_head_and_shoulders, render_head_and_shoulders_plotly, \
     render_inverse_head_and_shoulders_plotly
 from .triple_patterns import detect_triple_top, detect_triple_bottom, render_triple_top_plotly, render_triple_bottom_plotly
 from .triangles import detect_ascending_triangle, detect_descending_triangle, detect_symmetrical_triangle, \
@@ -58,7 +58,7 @@ def get_pattern_config(pattern_name, config=None, timeframe="1d"):
     return config
 
 
-# Registriere alle verfügbaren Pattern-Detektoren
+# Registriere alle verfügbaren Pattern-Detektoren TODO ungenutzt?
 PATTERN_DETECTORS = {
     "double_bottom": detect_double_bottom,
     "double_top": detect_double_top,
@@ -91,7 +91,7 @@ PATTERN_DETECTORS = {
     "diamond_bottom": detect_diamond_bottom
 }
 
-PATTERN_RENDERERS = {
+PATTERN_RENDERERS = { # TODO ungenutzt?
     "double_bottom": render_double_bottom_plotly,
     "double_top": render_double_top_plotly,
     "head_and_shoulders": render_head_and_shoulders_plotly,
